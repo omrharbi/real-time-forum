@@ -25,7 +25,7 @@ backend/
 ├── services/
 │   └── userService.go  # Business logic related to users
 ├── server.go          # Entry point of the backend server
-└── .env               # Environment variables (DB credentials, JWT secret)
+└── .env              
 
 frontend/
 ├── public/
