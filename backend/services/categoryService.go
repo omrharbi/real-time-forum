@@ -13,11 +13,12 @@ type CategoryService interface {
 }
 
 type CategoryserviceImpl struct {
-	catRepo repo.CategoryRepository
+	catRepo  repo.CategoryRepository
+	postRepo repo.PostRepository
 }
 
-func NewcategorysService(repo repo.CategoryRepository) CategoryService {
-	return &CategoryserviceImpl{catRepo: repo}
+func NewcategorysService(repo repo.CategoryRepository, postRepo repo.PostRepository) CategoryService {
+	return &CategoryserviceImpl{catRepo: repo, postRepo: postRepo}
 }
 
 // AddCategory implements CategoryService.
@@ -32,6 +33,5 @@ func (c *CategoryserviceImpl) AddCategory(ctx context.Context, post_id int, cate
 // GetPostsByCategoryId implements CategoryService.
 func (c *CategoryserviceImpl) GetPostsByCategoryId(ctx context.Context, categoryName string) []models.PostResponde {
 	query := c.catRepo.GetPostsByCategor(categoryName)
-	poss := postServiceImpl{}
-	return poss.GetPosts(ctx, query)
+	return c.postRepo.GetPosts(ctx, query)
 }

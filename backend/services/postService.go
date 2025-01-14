@@ -16,14 +16,14 @@ type PostService interface {
 	GetPosts(ctx context.Context, query string) []models.PostResponde
 }
 
-type postServiceImpl struct {
+type PstService struct {
 	postRepo     repo.PostRepository
 	caredRepo    repo.CardRepository
 	categoryRepo repo.CategoryRepository
 }
 
-func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository, categoryRepo repo.CategoryRepository) *postServiceImpl {
-	return &postServiceImpl{
+func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository, categoryRepo repo.CategoryRepository) *PstService {
+	return &PstService{
 		postRepo:     postRepo,
 		caredRepo:    caredRepo,
 		categoryRepo: categoryRepo,
@@ -31,7 +31,7 @@ func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository,
 }
 
 // Add implements postService.
-func (ps *postServiceImpl) Add(ctx context.Context, p *models.Post) {
+func (ps *PstService) Add(ctx context.Context, p *models.Post) {
 	content := html.EscapeString(p.Content)
 	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
 	p.Card_Id = cards
@@ -46,7 +46,7 @@ func (ps *postServiceImpl) Add(ctx context.Context, p *models.Post) {
 }
 
 // CheckPostErr implements postService.
-func (p *postServiceImpl) CheckPostErr(w http.ResponseWriter, ps *models.Post) {
+func (p *PstService) CheckPostErr(w http.ResponseWriter, ps *models.Post) {
 	if ps.Content == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("Invalid input")
@@ -54,7 +54,7 @@ func (p *postServiceImpl) CheckPostErr(w http.ResponseWriter, ps *models.Post) {
 }
 
 // GetPosts implements postService.
-func (p *postServiceImpl) GetPosts(ctx context.Context, query string) []models.PostResponde {
+func (p *PstService) GetPosts(ctx context.Context, query string) []models.PostResponde {
 	posts := p.postRepo.GetPosts(ctx, query)
 	return posts
 }

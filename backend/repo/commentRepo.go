@@ -10,8 +10,8 @@ import (
 
 type CommentRepository interface {
 	InsertComment(ctx context.Context, card_id, target_id int) int
-	GetCommentById(ctx context.Context, id int) *models.Comment_Row
-	GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View
+	GetCommentById(ctx context.Context, id int) *models.Comment
+	GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View
 }
 
 type commentRepositoryImpl struct {
@@ -23,8 +23,8 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 }
 
 // getAllCommentsbyTargetId implements CommentRepository.
-func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View {
-	list_Comments := make([]models.Comment_Row_View, 0)
+func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View {
+	list_Comments := make([]models.Comment_View, 0)
 	query := `SELECT c.id,c.user_id,c.content,c.created_at,
 	u.firstname,u.lastname, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
   (SELECT count(*) FROM likes l WHERE ( l.comment_id = cm.id ) and l.is_like = 1) likes , 
@@ -37,7 +37,7 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 		fmt.Println("Error in comment", err)
 	}
 	for data_Rows.Next() {
-		Row := models.Comment_Row_View{}
+		Row := models.Comment_View{}
 		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Comments, &Row.Likes, &Row.DisLikes)
 		if err != nil {
 			return nil
@@ -48,8 +48,8 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 }
 
 // getCommentById implements CommentRepository.
-func (c *commentRepositoryImpl) GetCommentById(ctx context.Context, id int) *models.Comment_Row {
-	Row := models.Comment_Row{}
+func (c *commentRepositoryImpl) GetCommentById(ctx context.Context, id int) *models.Comment {
+	Row := models.Comment{}
 	query := "SELECT * FROM comment WHERE comment.id =?;"
 	err := c.db.QueryRowContext(ctx, query, id).Scan(&Row.ID, &Row.Card_Id, &Row.Target_Id)
 	if err != nil {
