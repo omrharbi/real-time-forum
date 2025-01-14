@@ -13,6 +13,9 @@ type Card_View struct {
 	Content   string `json:"content"`
 	CreatedAt string `json:"date"`
 	FirstName string `json:"firstName"`
+	Nickname  string `json:"nickname"`
+	Age       int    `json:"age"`
+	Gender    string `json:"gender"`
 	LastName  string `json:"lastName"`
 	Likes     int    `json:"likes"`
 	DisLikes  int    `json:"dislikes"`

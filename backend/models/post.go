@@ -16,11 +16,12 @@ type PostResponde struct {
 	UserID       int    `json:"user_id"`
 	FirstName    string `json:"firstName"`
 	LastName     string `json:"lastName"`
+	Nickname     string `json:"nickname"`
+	Age          int    `json:"age"`
+	Gender       string `json:"gender"`
 	Title        string `json:"title"`
 	Content      string `json:"content"`
 	Likes        int    `json:"likes"`
-	Dislikes     int    `json:"dislikes"`
-	UserLiked    int    `json:"userliked"`
 	Userdisliked int    `json:"userdisliked"`
 	Comments     string `json:"comments"`
 	CreatedAt    string `json:"createdat"`
