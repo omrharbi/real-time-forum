@@ -58,6 +58,7 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/post", postController.HandlePost)
 	mux.HandleFunc("/api/home", homeController.HomeHandle)
 	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)
+	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)
 	// mux.HandleFunc("/api/category", handlers.HandelCategory)
 	// mux.HandleFunc("/api/login", handlers.HandleLogin)
 	// mux.HandleFunc("/api/comment", handlers.Handel_GetCommet)
