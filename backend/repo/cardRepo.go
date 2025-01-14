@@ -106,11 +106,13 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 // getCard implements cardRepository.
 func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) models.Card_View {
-	query := `SELECT c.id,c.user_id,c.content,c.created_at,u.firstname,u.lastname,
-	 (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id)
-	 comments,(SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = 1)
-	  likes , (SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = -1) dislikes
-			FROM card c  JOIN user u ON c.user_id = u.id WHERE c.id = ?;`
+	query := `SELECT c.id, c.user_id, c.content, c.created_at, u.firstname, u.lastname,
+       (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
+       (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id or l.comment_id = cm.id) AND l.is_like = 1) as likes,
+       (SELECT count(*) FROM likes l WHERE( l.post_id =p.id or l.comment_id = cm.id)AND l.is_like = 0) as dislikes
+		FROM card c JOIN comment cm  on c.id=cm.card_id JOIN post p on p.card_id=c.id
+		JOIN user u ON c.user_id = u.id
+		WHERE c.id = ?;`
 	Row := models.Card_View{}
 	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_Id, &Row.Content,
 		&Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Comments, &Row.Likes, &Row.DisLikes)

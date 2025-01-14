@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -114,18 +115,17 @@ func (u *userServiceImpl) LogOut(ctx context.Context, uuid models.UUID) (m messa
 
 // UUiduser implements UserService.
 func (u *userServiceImpl) UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID) {
-	fmt.Println(uuid)
-	// id, err := u.userRepo.GetUserIdWithUUID(ctx, uuid)
-	// if err != nil {
-	// 	m.MessageError = "Unauthorized token"
-	// 	return m, models.UUID{}
-	// }
-	// id_user, err := strconv.Atoi(id)
-	// if err != nil {
-	// 	m.MessageError = "Unauthorized token"
-	// 	return m, models.UUID{}
-	// }
-	// us.Iduser = id_user
+ 	id, err := u.userRepo.GetUserIdWithUUID(ctx, uuid)
+	if err != nil {
+		m.MessageError = "Unauthorized token"
+		return m, models.UUID{}
+	}
+	id_user, err := strconv.Atoi(id)
+	if err != nil {
+		m.MessageError = "Unauthorized token"
+		return m, models.UUID{}
+	}
+	us.Iduser = id_user
 
 	return m, us
 }

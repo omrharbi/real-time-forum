@@ -20,7 +20,7 @@ func InitDataBase() error {
 		}
 		defer db.Close()
 
-		sqlFile, err := os.ReadFile("../internal/database/database.sql")
+		sqlFile, err := os.ReadFile("../config/db.sql")
 		if err != nil {
 			return fmt.Errorf("failed to read SQL file: %v", err)
 		}
@@ -29,6 +29,16 @@ func InitDataBase() error {
 			return fmt.Errorf("failed to enable foreign keys: %v", err)
 		}
 
+		row := db.QueryRow("PRAGMA foreign_keys;")
+		var fkEnabled int
+		err = row.Scan(&fkEnabled)
+		if err != nil {
+			log.Fatalf("Failed to check foreign key status: %v", err)
+		}
+		fmt.Println(fkEnabled)
+		if fkEnabled != 1 {
+			log.Fatal("Foreign key constraints are not enabled")
+		}
 		_, err = db.Exec(string(sqlFile))
 		if err != nil {
 			return fmt.Errorf("failed to execute SQL: %v", err)

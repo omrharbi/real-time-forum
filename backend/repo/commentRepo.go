@@ -9,9 +9,9 @@ import (
 )
 
 type CommentRepository interface {
-	insertComment(ctx context.Context, card_id, target_id int) int
-	getCommentById(ctx context.Context, id int) *models.Comment_Row
-	getAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View
+	InsertComment(ctx context.Context, card_id, target_id int) int
+	GetCommentById(ctx context.Context, id int) *models.Comment_Row
+	GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View
 }
 
 type commentRepositoryImpl struct {
@@ -23,13 +23,14 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 }
 
 // getAllCommentsbyTargetId implements CommentRepository.
-func (c *commentRepositoryImpl) getAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View {
+func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_Row_View {
 	list_Comments := make([]models.Comment_Row_View, 0)
 	query := `SELECT c.id,c.user_id,c.content,c.created_at,
-	u.firstname,u.lastname, (SELECT count(*) FROM comment cm
-	 WHERE cm.target_id = c.id) comments,(SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = 1) likes , (SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = -1) dislikes
+	u.firstname,u.lastname, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
+  (SELECT count(*) FROM likes l WHERE ( l.comment_id = cm.id ) and l.is_like = 1) likes , 
+	(SELECT count(*) FROM likes l WHERE ( l.comment_id = cm.id ) and l.is_like = 0) dislikes
 			FROM card c  JOIN comment cm ON c.id = cm.card_id JOIN user u ON c.user_id = u.id
-			WHERE cm.target_id = ? 
+			WHERE cm.target_id = ?
 			GROUP BY c.id ORDER BY c.id DESC;`
 	data_Rows, err := c.db.QueryContext(ctx, query, target)
 	if err != nil {
@@ -47,7 +48,7 @@ func (c *commentRepositoryImpl) getAllCommentsbyTargetId(ctx context.Context, ta
 }
 
 // getCommentById implements CommentRepository.
-func (c *commentRepositoryImpl) getCommentById(ctx context.Context, id int) *models.Comment_Row {
+func (c *commentRepositoryImpl) GetCommentById(ctx context.Context, id int) *models.Comment_Row {
 	Row := models.Comment_Row{}
 	query := "SELECT * FROM comment WHERE comment.id =?;"
 	err := c.db.QueryRowContext(ctx, query, id).Scan(&Row.ID, &Row.Card_Id, &Row.Target_Id)
@@ -58,7 +59,7 @@ func (c *commentRepositoryImpl) getCommentById(ctx context.Context, id int) *mod
 }
 
 // insertComment implements CommentRepository.
-func (c *commentRepositoryImpl) insertComment(ctx context.Context, card_id int, target_id int) int {
+func (c *commentRepositoryImpl) InsertComment(ctx context.Context, card_id int, target_id int) int {
 	query := "INSERT INTO comment(card_id,target_id) VALUES(?,?);"
 	resl, _ := c.db.ExecContext(ctx, query, card_id, target_id)
 	id, err := resl.LastInsertId()

@@ -125,15 +125,14 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 	if err != nil {
 		return 0
 	}
-	// ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
-	// defer cancel()
-	fmt.Println(cookie.Value)
-	// m, uuid := uc.userService.UUiduser(ctx, cookie.Value)
-	// if m.MessageError != "" {
-	// 	fmt.Println(m.MessageError)
-	// }
-
-	return 0
+	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+	defer cancel()
+	m, uuid := uc.userService.UUiduser(ctx, cookie.Value)
+	if m.MessageError != "" {
+		fmt.Println(m.MessageError)
+	}
+	fmt.Println(uuid ,"uuid ")
+	return uuid.Iduser
 }
 
 func clearCookies(w http.ResponseWriter) {

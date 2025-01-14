@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"real-time-froum/models"
@@ -17,12 +16,14 @@ type PaginatedResponse struct {
 }
 
 type postController struct {
-	postService services.PostService
+	postService    services.PostService
+	userController *UserController
 }
 
-func NewpostController(service services.PostService) *postController {
+func NewpostController(service services.PostService, userController *UserController) *postController {
 	return &postController{
-		postService: service,
+		postService:    service,
+		userController: userController,
 	}
 }
 
@@ -32,8 +33,7 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// user:={}
-	user := UserController{}
-	id_user := user.GetUserId(r)
+	id_user := p.userController.GetUserId(r)
 	post := &models.Post{}
 	decode := DecodeJson(r)
 	err := decode.Decode(&post)
@@ -41,7 +41,6 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println(post)
 	if checkdeblicat(post.Name_Category) {
 		JsoneResponse(w, r, "Duplicate category: The category already exists", http.StatusConflict)
 		return
@@ -60,19 +59,12 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	post.User_Id = id_user
-	p.postService.CheckPostErr(w, post)
 
-	id := p.postService.Add(r.Context(), post)
-	fmt.Println(id)
-	// for _, name := range post.Name_Category {
-	// 	sp := &services.CategoryserviceImpl{}
-	// 	err := sp.AddCategory(r.Context(), id, name)
-	// 	if err != nil {
-	// 		JsoneResponse(w, r, "Failed to add category", http.StatusBadRequest)
-	// 		return
-	// 	}
-	// }
+	post.User_Id = id_user
+ 	p.postService.CheckPostErr(w, post)
+
+	p.postService.Add(r.Context(), post)
+
 	JsoneResponse(w, r, "create post Seccessfuly", http.StatusCreated)
 }
 

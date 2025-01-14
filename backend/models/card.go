@@ -18,3 +18,11 @@ type Card_View struct {
 	DisLikes  int    `json:"dislikes"`
 	Comments  int    `json:"comments"`
 }
+
+type PaginatedResponse struct {
+	Posts        []Card_View `json:"posts"`
+	TotalPosts   int         `json:"totalPosts"`
+	TotalPages   int         `json:"totalPages"`
+	CurrentPage  int         `json:"currentPage"`
+	PostsPerPage int         `json:"postsPerPage"`
+}

@@ -55,10 +55,12 @@ CREATE TABLE likes (
     user_id INTEGER not NULL,
     comment_id INTEGER,
     post_id INTEGER,
+    card_id INTEGER  NOT NULL,
     is_like BOOLEAN NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (comment_id) REFERENCES comment(id),
     FOREIGN KEY (post_id) REFERENCES post(id),
+    FOREIGN KEY (card_id) REFERENCES card(id),
     
      CONSTRAINT check_comment_or_post CHECK (
         (comment_id IS NOT NULL AND post_id IS NULL) OR

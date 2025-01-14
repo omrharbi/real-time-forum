@@ -35,24 +35,25 @@ func main() {
 func SetupAPIRoutes(mux *http.ServeMux) {
 	db := config.Config()
 	userRepo := repo.NewUserRepository(db.Connection)
-	userService := services.NewUserService(userRepo)
-
+	cardRepo := repo.NewcardRepository(db.Connection)
+	categoryRepo := repo.NewCategoryRepository(db.Connection)
 	postRepo := repo.NewPostRepository(db.Connection)
-	postService := services.NewpostService(postRepo)
 
-	// categoryRepo := repo.NewCategoryRepository(db.Connection)
-	// categService := services.NewcategorysService(categoryRepo)
-	//	categoryService := services.NewpostService(categoryRepo)
-	// categoryService := userService.
+	// serveses
+	userService := services.NewUserService(userRepo)
+	cardService := services.NewcardssService(cardRepo)
+	postService := services.NewPostService(postRepo, cardRepo, categoryRepo)
+	// userService := services.NewUserService(userRepo)
 
 	// 4. Initialize the controller
 	userController := controllers.NewUserController(userService)
-	postController := controllers.NewpostController(postService)
+	homeController := controllers.NewHomeController(cardService)
+	postController := controllers.NewpostController(postService, userController)
 
 	mux.HandleFunc("/api/register", userController.HandleRegister)
 	mux.HandleFunc("/api/login", userController.HandleLogin)
 	mux.HandleFunc("/api/post", postController.HandlePost)
-	//  mux.HandleFunc("/api/home", userController.HomeHandle)
+	mux.HandleFunc("/api/home", homeController.HomeHandle)
 	// mux.HandleFunc("/api/category", handlers.HandelCategory)
 	// mux.HandleFunc("/api/login", handlers.HandleLogin)
 	// mux.HandleFunc("/api/comment", handlers.Handel_GetCommet)

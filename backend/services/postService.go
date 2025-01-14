@@ -11,25 +11,38 @@ import (
 )
 
 type PostService interface {
-	Add(ctx context.Context, p *models.Post) int
+	Add(ctx context.Context, p *models.Post) 
 	CheckPostErr(w http.ResponseWriter, ps *models.Post)
 	GetPosts(ctx context.Context, query string) []models.PostResponde
 }
 
 type postServiceImpl struct {
-	postRepo repo.PostRepository
+	postRepo     repo.PostRepository
+	caredRepo    repo.CardRepository
+	categoryRepo repo.CategoryRepository
+}
+
+func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository, categoryRepo repo.CategoryRepository) *postServiceImpl {
+	return &postServiceImpl{
+		postRepo:     postRepo,
+		caredRepo:    caredRepo,
+		categoryRepo: categoryRepo,
+	}
 }
 
 // Add implements postService.
-func (ps *postServiceImpl) Add(ctx context.Context, p *models.Post) int {
+func (ps *postServiceImpl) Add(ctx context.Context, p *models.Post) {
 	content := html.EscapeString(p.Content)
-	cards := &CardsserviceImpl{}
-
-	idpost := cards.Add(ctx, p.User_Id, content)
-
-	p.Card_Id = idpost
+	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
+	p.Card_Id = cards
 	id_posr := ps.postRepo.InserPost(ctx, p.Card_Id)
-	return int(id_posr)
+	for _, name := range p.Name_Category {
+		err := ps.categoryRepo.PostCategory(ctx, int(id_posr), name) // sp.AddCategory(r.Context(), id, name)
+		if err != nil {
+			// JsoneResponse(w, r, "Failed to add category", http.StatusBadRequest)
+			return
+		}
+	}
 }
 
 // CheckPostErr implements postService.
@@ -44,8 +57,4 @@ func (p *postServiceImpl) CheckPostErr(w http.ResponseWriter, ps *models.Post) {
 func (p *postServiceImpl) GetPosts(ctx context.Context, query string) []models.PostResponde {
 	posts := p.postRepo.GetPosts(ctx, query)
 	return posts
-}
-
-func NewpostService(repo repo.PostRepository) PostService {
-	return &postServiceImpl{postRepo: repo}
 }
