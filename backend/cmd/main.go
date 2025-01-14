@@ -63,9 +63,10 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)
 	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)
 	mux.HandleFunc("/api/category", categoryController.HandelCategory)
-	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
-	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
 	// mux.Handle("/api/profile/posts", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.HandleProfilePosts))))
+
+	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
+	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
 	// mux.Handle("/api/profile/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.HandleProfileLikes))))
 	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))
 	// mux.Handle("/api/deleted", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelDeletLike)))

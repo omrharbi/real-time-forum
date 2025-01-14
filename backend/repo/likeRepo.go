@@ -11,11 +11,11 @@ import (
 )
 
 type likesRepository interface {
-	inserLike(ctx context.Context, user_id, card_id, is_liked int, UserLiked, Userdisliked bool) (m messages.Messages)
+	InserLike(ctx context.Context, user_id, card_id, is_liked int, UserLiked, Userdisliked bool) (m messages.Messages)
 	GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds
 	GetLikes(ctx context.Context, post_id int) (int, int, int, int)
-	deletLike(ctx context.Context, user_id, card_id int)
-	likeExists(ctx context.Context, user_id, card_id int) bool
+	DeletLike(ctx context.Context, user_id, card_id int)
+	LikeExists(ctx context.Context, user_id, card_id int) bool
 }
 
 type likeRepositoryImpl struct {
@@ -73,7 +73,7 @@ func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []mo
 }
 
 // deletLike implements likesRepository.
-func (l *likeRepositoryImpl) deletLike(ctx context.Context, user_id int, card_id int) {
+func (l *likeRepositoryImpl) DeletLike(ctx context.Context, user_id int, card_id int) {
 	query := "DELETE FROM likes WHERE user_id=? AND card_id=?"
 	_, err := l.db.ExecContext(ctx, query, user_id, card_id)
 	if err != nil {
@@ -82,8 +82,8 @@ func (l *likeRepositoryImpl) deletLike(ctx context.Context, user_id int, card_id
 }
 
 // inserLike implements likesRepository.
-func (l *likeRepositoryImpl) inserLike(ctx context.Context, user_id int, card_id int, is_liked int, UserLiked bool, Userdisliked bool) (m messages.Messages) {
-	if l.likeExists(ctx, user_id, card_id) {
+func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id int, is_liked int, UserLiked bool, Userdisliked bool) (m messages.Messages) {
+	if l.LikeExists(ctx, user_id, card_id) {
 		query := `DELETE FROM likes WHERE user_id = ? AND card_id = ?`
 		_, err := l.db.ExecContext(ctx, query, user_id, card_id)
 		if err != nil {
@@ -100,7 +100,7 @@ func (l *likeRepositoryImpl) inserLike(ctx context.Context, user_id int, card_id
 }
 
 // likeExists implements likesRepository.
-func (l *likeRepositoryImpl) likeExists(ctx context.Context, user_id int, card_id int) bool {
+func (l *likeRepositoryImpl) LikeExists(ctx context.Context, user_id int, card_id int) bool {
 	var exists bool
 	query := "SELECT EXISTS (select is_like from likes where user_id = ? AND card_id = ?)"
 	err := l.db.QueryRowContext(ctx, query, user_id, card_id).Scan(&exists)
