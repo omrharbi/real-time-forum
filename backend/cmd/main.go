@@ -39,13 +39,15 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	categoryRepo := repo.NewCategoryRepository(db.Connection)
 	postRepo := repo.NewPostRepository(db.Connection)
 	commentRepo := repo.NewCommentRepository(db.Connection)
+	profiletRepo := repo.NewProfileRepository(db.Connection)
 
 	// serveses
 	userService := services.NewUserService(userRepo)
 	cardService := services.NewcardssService(cardRepo)
+	profileService := services.NewProfilesService(profiletRepo, postRepo)
 	commentService := services.NewCommentService(commentRepo, cardRepo)
 	postService := services.NewPostService(postRepo, cardRepo, categoryRepo)
-	categoryService := services.NewcategorysService(categoryRepo,postRepo)
+	categoryService := services.NewcategorysService(categoryRepo, postRepo)
 	// userService := services.NewUserService(userRepo)
 
 	// 4. Initialize the controller
@@ -54,6 +56,7 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	categoryController := controllers.NewcategoryController(categoryService)
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
+	profileController := controllers.NewprofileController(profileService, userController)
 	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister)
 	mux.HandleFunc("/api/login", userController.HandleLogin)
@@ -63,11 +66,11 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)
 	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)
 	mux.HandleFunc("/api/category", categoryController.HandelCategory)
-	// mux.Handle("/api/profile/posts", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.HandleProfilePosts))))
+	mux.HandleFunc("/api/profile/posts", profileController.HandleProfilePosts)
+	mux.HandleFunc("/api/profile/likes", profileController.HandleProfileLikes)
 
 	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
 	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
-	// mux.Handle("/api/profile/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.HandleProfileLikes))))
 	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))
 	// mux.Handle("/api/deleted", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelDeletLike)))
 	// mux.Handle("/api/logout", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandleLogOut)))
