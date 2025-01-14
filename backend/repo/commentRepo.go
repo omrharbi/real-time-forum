@@ -37,8 +37,9 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 	}
 	for data_Rows.Next() {
 		Row := models.Comment_View{}
-		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Comments, &Row.Likes, &Row.DisLikes)
+		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName ,&Row.Nickname,&Row.Age,&Row.Gender, &Row.Comments,&Row.Likes, &Row.DisLikes)
 		if err != nil {
+			fmt.Println(err , "GetAllCommentsbyTargetId")
 			return nil
 		}
 		list_Comments = append(list_Comments, Row)

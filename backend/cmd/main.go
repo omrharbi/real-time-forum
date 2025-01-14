@@ -52,7 +52,7 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	homeController := controllers.NewHomeController(cardService)
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
-
+	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister)
 	mux.HandleFunc("/api/login", userController.HandleLogin)
 	mux.HandleFunc("/api/post", postController.HandlePost)
@@ -61,8 +61,6 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)
 	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)
 	// mux.HandleFunc("/api/category", handlers.HandelCategory)
-	// mux.HandleFunc("/api/login", handlers.HandleLogin)
-	// mux.HandleFunc("/api/comment", handlers.Handel_GetCommet)
 	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
 	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
 	// mux.Handle("/api/profile/posts", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.HandleProfilePosts))))
