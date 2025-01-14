@@ -57,7 +57,10 @@ func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []mo
     on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =? `
 
 	likesusers := []models.ResponseUserLikeds{}
-	rows := l.db.QueryRowContext(ctx, querylike, card_id)
+	rows, err := l.db.QueryContext(ctx, querylike, card_id)
+	if err != nil {
+		fmt.Println("Error in likws get user liked", err)
+	}
 	for rows.Next() {
 		likes := models.ResponseUserLikeds{}
 		err := rows.Scan(&likes.UserLiked, &likes.UserDisliked, &likes.Uuid)

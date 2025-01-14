@@ -12,13 +12,13 @@ import (
 )
 
 type UserRepository interface {
-	emailExists(ctx context.Context, email string) bool
-	updateUUIDUser(ctx context.Context, uudi string, userId int64, expires time.Time) error
-	insertUser(ctx context.Context, users *models.User, password string) (sql.Result, error)
-	selectUser(ctx context.Context, log *models.Login) *models.User
+	EmailExists(ctx context.Context, email string, username string) bool
+	UpdateUUIDUser(ctx context.Context, uudi string, userId int64, expires time.Time) error
+	InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error)
+	SelectUser(ctx context.Context, log *models.Login) *models.User
 	CheckAuthenticat(ctx context.Context, uuid string) (bool, time.Time)
 	CheckUser(ctx context.Context, id int) bool
-	getUserIdWithUUID(ctx context.Context, uuid string) (string, error)
+	GetUserIdWithUUID(ctx context.Context, uuid string) (string, error)
 }
 
 type userRepositoryImpl struct {
@@ -30,23 +30,27 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 // insertUser implements UserRepository.
-func (u *userRepositoryImpl) insertUser(ctx context.Context,users *models.User, password string) (sql.Result, error) {
+func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error) {
 	Firstname := html.EscapeString(users.Firstname)
 	Lastname := html.EscapeString(users.Lastname)
 	Email := strings.ToLower(html.EscapeString(users.Email))
 	Password := html.EscapeString(password)
-	stm := "INSERT INTO user (firstname,lastname,email,password) VALUES(?,?,?,?)"
-	row, err := u.db.ExecContext(ctx, stm, Firstname, Lastname, Email, Password)
+	Nickname := html.EscapeString(users.Nickname)
+	Gender := html.EscapeString(users.Gender)
+ 	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password) VALUES(?,?,?,?,?,?,?)"
+	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password)
 	return row, err
 }
 
 // selectUser implements UserRepository.
-func (u *userRepositoryImpl) selectUser(ctx context.Context,log *models.Login) *models.User {
+func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) *models.User {
 	user := models.User{}
 	email := strings.ToLower(log.Email)
+	username := strings.ToLower(log.Nickname)
+
 	password := strings.ToLower(log.Password)
-	query := "select id,email,password, firstname ,lastname FROM user where email=?"
-	err := u.db.QueryRowContext(ctx, query, email, password).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname)
+	query := "select id,email,password, firstname ,lastname FROM user where email=? or nickname=?"
+	err := u.db.QueryRowContext(ctx, query, email, username, password).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname)
 	if err != nil {
 		fmt.Println("error to select user", err)
 	}
@@ -75,7 +79,7 @@ func (u *userRepositoryImpl) CheckAuthenticat(ctx context.Context, uuid string) 
 }
 
 // CheckUser implements UserRepository.
-func (u *userRepositoryImpl) CheckUser(ctx context.Context,id int) bool {
+func (u *userRepositoryImpl) CheckUser(ctx context.Context, id int) bool {
 	stm := `SELECT EXISTS (SELECT 1 FROM user WHERE id =  ?)  `
 	var exists bool
 	err := u.db.QueryRowContext(ctx, stm, id, id).Scan(&exists)
@@ -86,10 +90,12 @@ func (u *userRepositoryImpl) CheckUser(ctx context.Context,id int) bool {
 }
 
 // emailExists implements UserRepository.
-func (u *userRepositoryImpl) emailExists(ctx context.Context,email string) bool {
+func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nickname string) bool {
 	var exists bool
-	query := "SELECT EXISTS (select email from user where email=?)"
-	err := u.db.QueryRowContext(ctx, query, email).Scan(&exists)
+
+	query := "SELECT EXISTS (select email from user where email=? OR nickname= ?)"
+
+	err := u.db.QueryRowContext(ctx, query, email, nickname).Scan(&exists)
 	if err != nil {
 		fmt.Println("Error to EXISTS this Email", err)
 	}
@@ -97,7 +103,7 @@ func (u *userRepositoryImpl) emailExists(ctx context.Context,email string) bool 
 }
 
 // getUserIdWithUUID implements UserRepository.
-func (u *userRepositoryImpl) getUserIdWithUUID(ctx context.Context,uuid string) (string, error) {
+func (u *userRepositoryImpl) GetUserIdWithUUID(ctx context.Context, uuid string) (string, error) {
 	stm := `SELECT id FROM user WHERE UUID=? `
 	var uuiduser string
 	err := u.db.QueryRowContext(ctx, stm, uuid).Scan(&uuiduser)
@@ -108,8 +114,8 @@ func (u *userRepositoryImpl) getUserIdWithUUID(ctx context.Context,uuid string) 
 }
 
 // updateUUIDUser implements UserRepository.
-func (u *userRepositoryImpl) updateUUIDUser(ctx context.Context,uudi string, userId int64, expires time.Time) error {
+func (u *userRepositoryImpl) UpdateUUIDUser(ctx context.Context, uudi string, userId int64, expires time.Time) error {
 	stm := "UPDATE user SET UUID=?, expires =?  WHERE id=?"
-	_, err := u.db.ExecContext(ctx,  stm, uudi, expires, userId)
+	_, err := u.db.ExecContext(ctx, stm, uudi, expires, userId)
 	return err
 }

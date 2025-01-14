@@ -8,24 +8,24 @@ import (
 	"real-time-froum/models"
 )
 
-type cardRepository interface {
-	getAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int)
-	getAllCards(ctx context.Context) []models.Card_View
-	getCard(ctx context.Context, targetID int) models.Card_View
-	getCardById(ctx context.Context, id int) *models.Card
-	insertCard(ctx context.Context, user_id int, content string) int
+type CardRepository interface {
+	GetAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int)
+	GetAllCards(ctx context.Context) []models.Card_View
+	GetCard(ctx context.Context, targetID int) models.Card_View
+	GetCardById(ctx context.Context, id int) *models.Card
+	InsertCard(ctx context.Context, user_id int, content string) int
 }
 
 type cardRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewcardRepository(db *sql.DB) cardRepository {
+func NewcardRepository(db *sql.DB) CardRepository {
 	return &cardRepositoryImpl{db: db}
 }
 
 // getAllCards implements cardRepository.
-func (c *cardRepositoryImpl) getAllCards(ctx context.Context) []models.Card_View {
+func (c *cardRepositoryImpl) GetAllCards(ctx context.Context) []models.Card_View {
 	list_Cards := make([]models.Card_View, 0)
 	query := `SELECT c.id,c.user_id,c.content,c.created_at,u.firstname,u.lastname,
 	 count(cm.id) comments,(SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = 1)
@@ -49,7 +49,7 @@ func (c *cardRepositoryImpl) getAllCards(ctx context.Context) []models.Card_View
 }
 
 // getAllCardsForPages implements cardRepository.
-func (c *cardRepositoryImpl) getAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int) {
+func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int) {
 	list_Cards := make([]models.Card_View, 0)
 
 	countQuery := `SELECT COUNT(DISTINCT c.id) 
@@ -105,7 +105,7 @@ func (c *cardRepositoryImpl) getAllCardsForPages(ctx context.Context, page int, 
 }
 
 // getCard implements cardRepository.
-func (c *cardRepositoryImpl) getCard(ctx context.Context, targetID int) models.Card_View {
+func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) models.Card_View {
 	query := `SELECT c.id,c.user_id,c.content,c.created_at,u.firstname,u.lastname,
 	 (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id)
 	 comments,(SELECT count(*) FROM likes l WHERE l.card_id = c.id and l.is_like = 1)
@@ -121,7 +121,7 @@ func (c *cardRepositoryImpl) getCard(ctx context.Context, targetID int) models.C
 }
 
 // getCardById implements cardRepository.
-func (c *cardRepositoryImpl) getCardById(ctx context.Context, id int) *models.Card {
+func (c *cardRepositoryImpl) GetCardById(ctx context.Context, id int) *models.Card {
 	query := "SELECT * FROM card WHERE card.id =?;"
 	myCard_Row := &models.Card{}
 	err := c.db.QueryRowContext(ctx, query, id).Scan(&id, &myCard_Row.User_Id, &myCard_Row.Content, &myCard_Row.CreatedAt)
@@ -134,7 +134,7 @@ func (c *cardRepositoryImpl) getCardById(ctx context.Context, id int) *models.Ca
 }
 
 // insertCard implements cardRepository.
-func (c *cardRepositoryImpl) insertCard(ctx context.Context, user_id int, content string) int {
+func (c *cardRepositoryImpl) InsertCard(ctx context.Context, user_id int, content string) int {
 	query := "INSERT INTO card(user_id,content) VALUES(?,?)"
 	resl, _ := c.db.ExecContext(ctx, query, user_id, content)
 	id, err := resl.LastInsertId()

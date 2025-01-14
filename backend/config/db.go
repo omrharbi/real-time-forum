@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -10,31 +11,44 @@ type Database struct {
 	Connection *sql.DB
 }
 
-func InitDataBase() (*Database, error) {
+func InitDataBase() error {
 	if _, err := os.Stat("../../app.db"); os.IsNotExist(err) {
 		fmt.Println("Creating new database file...")
+		db, err := sql.Open("sqlite3", "../../app.db")
+		if err != nil {
+			return fmt.Errorf("failed to open database: %v", err)
+		}
+		defer db.Close()
+
+		sqlFile, err := os.ReadFile("../internal/database/database.sql")
+		if err != nil {
+			return fmt.Errorf("failed to read SQL file: %v", err)
+		}
+		_, err = db.Exec("PRAGMA foreign_keys = ON;")
+		if err != nil {
+			return fmt.Errorf("failed to enable foreign keys: %v", err)
+		}
+
+		_, err = db.Exec(string(sqlFile))
+		if err != nil {
+			return fmt.Errorf("failed to execute SQL: %v", err)
+		}
+
 	}
+	return nil
+}
+
+func Config() *Database {
 	db, err := sql.Open("sqlite3", "../../app.db")
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %v", err)
+		log.Fatal("error opening database: ", err)
 	}
 
-	_, err = db.Exec("PRAGMA foreign_keys = ON;")
+	err = db.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("failed to enable foreign keys: %v", err)
+		log.Fatal("error connecting to database:", err)
 	}
-
-	sqlFile, err := os.ReadFile("./db.sql")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read SQL file: %v", err)
-	}
-
-	_, err = db.Exec(string(sqlFile))
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute SQL: %v", err)
-	}
-
-	return &Database{Connection: db}, nil
+	return &Database{Connection: db}
 }
 
 func (db *Database) Close() error {

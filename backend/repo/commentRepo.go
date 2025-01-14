@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"real-time-froum/models"
 )
@@ -16,6 +17,7 @@ type CommentRepository interface {
 type commentRepositoryImpl struct {
 	db *sql.DB
 }
+
 func NewCommentRepository(db *sql.DB) CommentRepository {
 	return &commentRepositoryImpl{db: db}
 }
@@ -29,7 +31,10 @@ func (c *commentRepositoryImpl) getAllCommentsbyTargetId(ctx context.Context, ta
 			FROM card c  JOIN comment cm ON c.id = cm.card_id JOIN user u ON c.user_id = u.id
 			WHERE cm.target_id = ? 
 			GROUP BY c.id ORDER BY c.id DESC;`
-	data_Rows := c.db.QueryRowContext(ctx, query, target)
+	data_Rows, err := c.db.QueryContext(ctx, query, target)
+	if err != nil {
+		fmt.Println("Error in comment", err)
+	}
 	for data_Rows.Next() {
 		Row := models.Comment_Row_View{}
 		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Comments, &Row.Likes, &Row.DisLikes)
@@ -62,4 +67,3 @@ func (c *commentRepositoryImpl) insertComment(ctx context.Context, card_id int, 
 	}
 	return int(id)
 }
-
