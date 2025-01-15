@@ -7,9 +7,6 @@ type Card struct {
 	CreatedAt string
 }
 
-type Liked struct {
-	UserLiked int `json:"userLiked"`
-}
 type Card_View struct {
 	Id        int    `json:"id"`
 	User_Id   int    `json:"userid"`

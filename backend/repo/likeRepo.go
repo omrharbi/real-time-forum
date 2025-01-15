@@ -40,7 +40,7 @@ func (l *likeRepositoryImpl) GetLikes(ctx context.Context, card_id int) int {
 
 // GetuserLiked implements likesRepository.
 func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds {
-	querylike := `SELECT l.UserLiked , l.Userdisliked , u.UUID FROM likes l JOIN card c 
+	querylike := `SELECT l.is_like=1 , l.is_like=0 , u.UUID FROM likes l JOIN card c 
     on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =? `
 
 	likesusers := []models.ResponseUserLikeds{}
