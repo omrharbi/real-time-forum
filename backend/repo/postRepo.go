@@ -22,7 +22,7 @@ func NewPostRepository(db *sql.DB) PostRepository {
 
 // GetPosts implements PostRepository.
 func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []models.PostResponde {
-	rows, err := p.db.QueryContext(ctx, query)
+	rows, err := p.db.Query(query)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -43,15 +43,13 @@ func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []model
 			&post.Age,
 			&post.Gender,
 			&post.Comments,
+			&post.Likes,
+			&post.DisLikes,
 		)
 		if err != nil {
 			fmt.Println("er", err)
 			return nil
 		}
-		// likes, Userdisliked := p.GetLikes(post.Post_Id)
-		// post.Likes = likes
-		// post.Userdisliked = Userdisliked
-
 		posts = append(posts, post)
 	}
 	return posts
