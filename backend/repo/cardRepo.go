@@ -10,7 +10,7 @@ import (
 
 type CardRepository interface {
 	GetAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int)
-	GetCard(ctx context.Context, targetID int) models.Card_View
+	GetCard(ctx context.Context, targetID int) *models.Card_View
 	GetCardById(ctx context.Context, id int) *models.Card
 	InsertCard(ctx context.Context, user_id int, content string) int
 }
@@ -81,7 +81,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 // getCard implements cardRepository.
 
-func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) models.Card_View {
+func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.Card_View {
 	query := `SELECT c.id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id or l.comment_id = cm.id) AND l.is_like = 1) as likes,
@@ -89,11 +89,13 @@ func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) models.C
        	FROM card c LEFT JOIN comment cm  on c.id=cm.card_id LEFT  JOIN post p on p.card_id=c.id
 		JOIN user u ON c.user_id = u.id
 		WHERE c.id =?;`
-	Row := models.Card_View{}
+	Row := &models.Card_View{}
 	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes)
 	if err != nil {
-		return models.Card_View{}
+		return &models.Card_View{}
 	}
+	liked := c.GetUserLiked(ctx, Row.Id)
+	Row.UserLiked = liked.UserLiked
 	return Row
 }
 
@@ -102,6 +104,24 @@ func (c *cardRepositoryImpl) GetCardById(ctx context.Context, id int) *models.Ca
 	query := "SELECT * FROM card WHERE card.id =?;"
 	myCard_Row := &models.Card{}
 	err := c.db.QueryRowContext(ctx, query, id).Scan(&id, &myCard_Row.User_Id, &myCard_Row.Content, &myCard_Row.CreatedAt)
+
+	if err != nil {
+		return nil
+	} else {
+		return myCard_Row
+	}
+}
+
+func (c *cardRepositoryImpl) GetUserLiked(ctx context.Context, user_id int) *models.Liked {
+	query := `SELECT DISTINCT l.user_id  ,u.firstname, c.id,l.comment_id,l.post_id
+    FROM likes l 
+    INNER JOIN user u ON l.user_id = u.id 
+    INNER JOIN card c on c.id=l.card_id
+    WHERE c.id=?
+ORDER BY l.user_id;
+`
+	myCard_Row := &models.Liked{}
+	err := c.db.QueryRowContext(ctx, query).Scan(&myCard_Row.UserLiked)
 
 	if err != nil {
 		return nil

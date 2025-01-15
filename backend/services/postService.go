@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"html"
 	"net/http"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type PostService interface {
-	Add(ctx context.Context, p *models.Post) 
+	Add(ctx context.Context, p *models.Post)
 	CheckPostErr(w http.ResponseWriter, ps *models.Post)
 	GetPosts_Service(ctx context.Context, query string) []models.PostResponde
 }
@@ -33,6 +34,7 @@ func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository,
 // Add implements postService.
 func (ps *PstService) Add(ctx context.Context, p *models.Post) {
 	content := html.EscapeString(p.Content)
+	fmt.Println(p.User_Id)
 	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
 	p.Card_Id = cards
 	id_posr := ps.postRepo.InserPost(ctx, p.Card_Id)

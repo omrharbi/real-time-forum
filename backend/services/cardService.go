@@ -10,7 +10,7 @@ import (
 type CardsService interface {
 	Add(ctx context.Context, user_id int, Content string) int
 	GetCard(ctx context.Context, id int) *models.Card
-	GetOneCard(ctx context.Context, id int) models.Card_View
+	GetOneCard(ctx context.Context, id int) *models.Card_View
 	GetAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int)
 }
 
@@ -38,6 +38,6 @@ func (c *CardsserviceImpl) GetCard(ctx context.Context, id int) *models.Card {
 }
 
 // GetOneCard implements cardsService.
-func (c *CardsserviceImpl) GetOneCard(ctx context.Context, id int) models.Card_View {
+func (c *CardsserviceImpl) GetOneCard(ctx context.Context, id int) *models.Card_View {
 	return c.catRepo.GetCard(ctx, id)
 }

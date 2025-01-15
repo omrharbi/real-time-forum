@@ -10,6 +10,7 @@ type Comment struct {
 }
 
 type Comment_View struct {
+	Id_comment int  `json:"id_comment"`
 	Id        int    `json:"card_id"`
 	User_Id   int    `json:"userid"`
 	Content   string `json:"content"`

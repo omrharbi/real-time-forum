@@ -23,24 +23,7 @@ func NewCommentService(repo repo.CommentRepository, caredRepo repo.CardRepositor
 	return &commentServiceImpl{CommentRepo: repo, caredRepo: caredRepo}
 }
 
-// // GetComment implements CommentService.
-// func (c *commentServiceImpl) GetComment(ctx context.Context, id int) *models.Comment {
-// 	data_Row := c.CommentRepo.GetCommentById(ctx, id)
-// 	if data_Row == nil {
-// 		return nil
-// 	}
-// 	card := c.caredRepo.GetCard(ctx, data_Row.Card_Id)
-
-// 	newComment := &models.Comment{
-// 		ID:        data_Row.ID,
-// 		Card_Id:   data_Row.Card_Id,
-// 		Target_Id: data_Row.Target_Id,
-// 		Content:   card.Content,
-// 		User_Id:   card.User_Id,
-// 		CreatedAt: card.CreatedAt,
-// 	}
-// 	return newComment
-// }
+ 
 
 // AddComment implements CommentService.
 func (c *commentServiceImpl) AddComment(ctx context.Context, cm *models.Comment) {
