@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -55,8 +54,8 @@ func (cn *CommentController) Handler_AddComment(res http.ResponseWriter, req *ht
 		return
 	}
 	statusCode := cn.addComment(req)
-	if statusCode == http.StatusBadRequest {
-		JsoneResponse(res, req, "comment Infos are wrongs!! ", http.StatusBadRequest)
+	if statusCode == -1 {
+		JsoneResponse(res, req, "comment Infos are wrongs!! ", http.StatusUnauthorized)
 		return
 	}
 	if statusCode == http.StatusOK {
@@ -70,7 +69,6 @@ func (cn *CommentController) addComment(req *http.Request) int {
 	comment := models.Comment{}
 	comment.User_Id = iduser
 	if comment.User_Id == 0 {
-		fmt.Println("error")
 		return -1
 	}
 

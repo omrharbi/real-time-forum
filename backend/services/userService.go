@@ -27,14 +27,21 @@ type UserService interface {
 	AuthenticatLogin(ctx context.Context, UUID string) (m messages.Messages, expire time.Time)
 	UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID)
 	generatUUID(ctx context.Context) string
+	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 }
 
 type userServiceImpl struct {
 	userRepo repo.UserRepository
 }
 
+// CheckAuthenticat implements UserService.
+
 func NewUserService(repo repo.UserRepository) UserService {
 	return &userServiceImpl{userRepo: repo}
+}
+
+func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time) {
+	return u.userRepo.CheckAuthenticat(ctx, uuid)
 }
 
 // Getuuid implements UserService.
@@ -115,7 +122,7 @@ func (u *userServiceImpl) LogOut(ctx context.Context, uuid models.UUID) (m messa
 
 // UUiduser implements UserService.
 func (u *userServiceImpl) UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID) {
- 	id, err := u.userRepo.GetUserIdWithUUID(ctx, uuid)
+	id, err := u.userRepo.GetUserIdWithUUID(ctx, uuid)
 	if err != nil {
 		m.MessageError = "Unauthorized token"
 		return m, models.UUID{}

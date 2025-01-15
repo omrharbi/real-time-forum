@@ -7,6 +7,7 @@ import (
 
 	"real-time-froum/config"
 	"real-time-froum/controllers"
+	"real-time-froum/middlewares"
 	"real-time-froum/repo"
 	"real-time-froum/services"
 
@@ -57,20 +58,21 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
 	profileController := controllers.NewprofileController(profileService, userController)
+	middlewareController := middlewares.NewMeddlewireController(userService) //.NewMeddlewireController(userService)
 	// handlers
-	mux.HandleFunc("/api/register", userController.HandleRegister)//done
-	mux.HandleFunc("/api/login", userController.HandleLogin)//done
-	mux.HandleFunc("/api/post", postController.HandlePost)//done
-	mux.HandleFunc("/api/home", homeController.HomeHandle)//done
-	mux.HandleFunc("/api/card", homeController.GetCard_handler)//done
-	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)//done
-	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)//dome
-	mux.HandleFunc("/api/category", categoryController.HandelCategory)//done
-	mux.HandleFunc("/api/profile/posts", profileController.HandleProfilePosts)//done
-	mux.HandleFunc("/api/profile/likes", profileController.HandleProfileLikes)//done
+	mux.HandleFunc("/api/register", userController.HandleRegister) // done
+	mux.HandleFunc("/api/login", userController.HandleLogin)
+	// done
+	mux.Handle("/api/post", middlewareController.AuthenticateMiddleware(http.HandlerFunc(postController.HandlePost)))                     // Protected
+	mux.Handle("/api/home", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.HomeHandle)))                     // Protected
+	mux.Handle("/api/card", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.GetCard_handler)))                // Protected
+	mux.Handle("/api/addcomment", middlewareController.AuthenticateMiddleware(http.HandlerFunc(commentController.Handler_AddComment)))    // Protected
+	mux.Handle("/api/comment", middlewareController.AuthenticateMiddleware(http.HandlerFunc(commentController.Handel_GetCommet)))         // Protected
+	mux.Handle("/api/category", middlewareController.AuthenticateMiddleware(http.HandlerFunc(categoryController.HandelCategory)))         // Protected
+	mux.Handle("/api/profile/posts", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfilePosts))) // Protected
+	mux.Handle("/api/profile/likes", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfileLikes))) // Protected
 
 	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
-	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
 	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))
 	// mux.Handle("/api/deleted", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelDeletLike)))
 	// mux.Handle("/api/logout", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandleLogOut)))

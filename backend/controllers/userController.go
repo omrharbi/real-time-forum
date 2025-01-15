@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -66,7 +67,7 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	defer cancel()
 
-	timeex := time.Now().Add(5 * time.Hour).UTC()
+	timeex := time.Now().Add(5 * time.Second).UTC()
 	loged, message, uuid := uc.userService.Authentication(ctx, timeex, &user)
 
 	if message.MessageError != "" {
@@ -131,11 +132,36 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 	if m.MessageError != "" {
 		fmt.Println(m.MessageError)
 	}
-	fmt.Println(uuid ,"uuid ")
+	fmt.Println(uuid, "uuid ")
 	return uuid.Iduser
 }
 
 func clearCookies(w http.ResponseWriter) {
 	SetCookie(w, "token", "", time.Now())
 	SetCookie(w, "user_id", "", time.Now())
+}
+
+func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		JsoneResponse(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	cookies, err := r.Cookie("token")
+	if err != nil {
+		JsoneResponse(w, r, err.Error(), http.StatusUnauthorized)
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(cookies.Value)
+	is, expire := uc.userService.CheckAuth(r.Context(), cookies.Value)
+	fmt.Println(is, expire)
+	if !time.Now().Before(expire) {
+		u := models.UUID{}
+		uc.userService.UUiduser(r.Context(), cookies.Value)
+		uc.userService.LogOut(r.Context(), u)
+		fmt.Println("Log out")
+		return
+	} else {
+		json.NewEncoder(w).Encode(is)
+	}
 }
