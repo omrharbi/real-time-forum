@@ -58,16 +58,16 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	postController := controllers.NewpostController(postService, userController)
 	profileController := controllers.NewprofileController(profileService, userController)
 	// handlers
-	mux.HandleFunc("/api/register", userController.HandleRegister)
-	mux.HandleFunc("/api/login", userController.HandleLogin)
-	mux.HandleFunc("/api/post", postController.HandlePost)
-	mux.HandleFunc("/api/home", homeController.HomeHandle)
-	mux.HandleFunc("/api/card", homeController.GetCard_handler)
-	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)
-	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)
-	mux.HandleFunc("/api/category", categoryController.HandelCategory)
-	mux.HandleFunc("/api/profile/posts", profileController.HandleProfilePosts)
-	mux.HandleFunc("/api/profile/likes", profileController.HandleProfileLikes)
+	mux.HandleFunc("/api/register", userController.HandleRegister)//done
+	mux.HandleFunc("/api/login", userController.HandleLogin)//done
+	mux.HandleFunc("/api/post", postController.HandlePost)//done
+	mux.HandleFunc("/api/home", homeController.HomeHandle)//done
+	mux.HandleFunc("/api/card", homeController.GetCard_handler)//done
+	mux.HandleFunc("/api/addcomment", commentController.Handler_AddComment)//done
+	mux.HandleFunc("/api/comment", commentController.Handel_GetCommet)//dome
+	mux.HandleFunc("/api/category", categoryController.HandelCategory)//done
+	mux.HandleFunc("/api/profile/posts", profileController.HandleProfilePosts)//done
+	mux.HandleFunc("/api/profile/likes", profileController.HandleProfileLikes)//done
 
 	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
 	// mux.HandleFunc("/api/isLogged", handlers.HandleIsLogged)
