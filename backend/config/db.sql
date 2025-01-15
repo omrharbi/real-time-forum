@@ -67,12 +67,10 @@ CREATE TABLE likes (
         (comment_id IS NOT NULL AND post_id IS NULL) OR
         (post_id IS NOT NULL AND comment_id IS NULL)
     ),
-
     -- Ensure is_like is always either TRUE or FALSE
     CONSTRAINT check_is_like CHECK (
         is_like IN (TRUE, FALSE)
     ),
-
     -- Prevent duplicate likes or dislikes by the same user on the same card
     CONSTRAINT unique_like_per_user_card UNIQUE 
     (user_id, card_id)

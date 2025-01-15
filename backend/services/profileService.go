@@ -23,12 +23,12 @@ func NewProfilesService(repo repo.ProfileRepository, postRepo repo.PostRepositor
 
 // GetPostsProfile implements ProfileService.
 func (p *ProfileserviceImpl) GetPostsProfile(ctx context.Context, user_id int) []models.PostResponde {
-	query := p.porRepo.GetPostsProfile(ctx, user_id)
+	query := p.porRepo.GetPostsProfile(user_id)
 	return p.postRepo.GetPosts(ctx, query)
 }
 
 // GetProfileByLikes implements ProfileService.
 func (p *ProfileserviceImpl) GetProfileByLikes(ctx context.Context, user_id int) []models.PostResponde {
-	query := p.porRepo.GetProfileByLikes(ctx, user_id)
+	query := p.porRepo.GetProfileByLikes(user_id)
 	return p.postRepo.GetPosts(ctx, query)
 }
