@@ -48,11 +48,10 @@ func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []model
 			fmt.Println("er", err)
 			return nil
 		}
-		// likes, dislikes, userliked, Userdisliked := p..GetLikes(post.Post_Id)
-		// post.Likes = likes
-		// post.Dislikes = dislikes
-		// post.UserLiked = userliked
-		// post.Userdisliked = Userdisliked
+		likes, Userdisliked := p.GetLikes(post.Post_Id)
+		post.Likes = likes
+		post.Userdisliked = Userdisliked
+
 		posts = append(posts, post)
 	}
 	return posts

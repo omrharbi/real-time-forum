@@ -10,7 +10,7 @@ import (
 
 type CommentRepository interface {
 	InsertComment(ctx context.Context, card_id, target_id int) int
-	GetCommentById(ctx context.Context, id int) *models.Comment
+	//GetCommentById(ctx context.Context, id int) *models.Comment
 	GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View
 }
 
@@ -25,7 +25,7 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 // getAllCommentsbyTargetId implements CommentRepository.
 func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View {
 	list_Comments := make([]models.Comment_View, 0)
-	query := `SELECT c.id as card_id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
+	query := `SELECT c.id as card_id, u.id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
   	(SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 1) likes , 
 	(SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 0) dislikes
 			FROM card c  JOIN comment cm ON c.id = cm.card_id JOIN user u ON c.user_id = u.id
@@ -47,16 +47,16 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 	return list_Comments
 }
 
-// getCommentById implements CommentRepository.
-func (c *commentRepositoryImpl) GetCommentById(ctx context.Context, id int) *models.Comment {
-	Row := models.Comment{}
-	query := "SELECT * FROM comment WHERE comment.id =?;"
-	err := c.db.QueryRowContext(ctx, query, id).Scan(&Row.ID, &Row.Card_Id, &Row.Target_Id)
-	if err != nil {
-		return nil
-	}
-	return &Row
-}
+// // getCommentById implements CommentRepository.
+// func (c *commentRepositoryImpl) GetCommentById(ctx context.Context, id int) *models.Comment {
+// 	Row := models.Comment{}
+// 	query := "SELECT * FROM comment WHERE comment.id =?;"
+// 	err := c.db.QueryRowContext(ctx, query, id).Scan(&Row.ID, &Row.Card_Id, &Row.Target_Id)
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	return &Row
+// }
 
 // insertComment implements CommentRepository.
 func (c *commentRepositoryImpl) InsertComment(ctx context.Context, card_id int, target_id int) int {

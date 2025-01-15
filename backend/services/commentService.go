@@ -10,7 +10,7 @@ import (
 
 type CommentService interface {
 	AddComment(ctx context.Context, cm *models.Comment)
-	GetComment(ctx context.Context, id int) *models.Comment
+	// GetComment(ctx context.Context, id int) *models.Comment
 	GetAllCommentsbyTarget(ctx context.Context, target int) []models.Comment_View
 }
 
@@ -19,16 +19,29 @@ type commentServiceImpl struct {
 	caredRepo   repo.CardRepository
 }
 
-
-
 func NewCommentService(repo repo.CommentRepository, caredRepo repo.CardRepository) CommentService {
 	return &commentServiceImpl{CommentRepo: repo, caredRepo: caredRepo}
 }
 
-// GetComment implements CommentService.
-func (c *commentServiceImpl) GetComment(ctx context.Context, id int) *models.Comment {
-	panic("unimplemented")
-}
+// // GetComment implements CommentService.
+// func (c *commentServiceImpl) GetComment(ctx context.Context, id int) *models.Comment {
+// 	data_Row := c.CommentRepo.GetCommentById(ctx, id)
+// 	if data_Row == nil {
+// 		return nil
+// 	}
+// 	card := c.caredRepo.GetCard(ctx, data_Row.Card_Id)
+
+// 	newComment := &models.Comment{
+// 		ID:        data_Row.ID,
+// 		Card_Id:   data_Row.Card_Id,
+// 		Target_Id: data_Row.Target_Id,
+// 		Content:   card.Content,
+// 		User_Id:   card.User_Id,
+// 		CreatedAt: card.CreatedAt,
+// 	}
+// 	return newComment
+// }
+
 // AddComment implements CommentService.
 func (c *commentServiceImpl) AddComment(ctx context.Context, cm *models.Comment) {
 	content := html.EscapeString(cm.Content)
@@ -50,24 +63,3 @@ func (c *commentServiceImpl) GetAllCommentsbyTarget(ctx context.Context, target 
 	}
 	return list_Comments
 }
-
-// GetComment implements CommentService.
-// func (c *commentServiceImpl) GetComment(ctx context.Context, id int) *models.Comment {
-// 	data_Row := c.CommentRepo.GetCommentById(ctx, id)
-// 	if data_Row == nil {
-// 		return nil
-// 	}
-// 	card := c.caredRepo.GetCard(ctx, data_Row.Card_Id)
-// 	if card == nil {
-// 		return nil
-// 	}
-// 	// newComment := &Comment{
-// 	// 	ID:        data_Row.ID,
-// 	// 	Card_Id:   data_Row.Card_Id,
-// 	// 	Target_Id: data_Row.Target_Id,
-// 	// 	Content:   card.Content,
-// 	// 	User_Id:   card.User_Id,
-// 	// 	CreatedAt: card.CreatedAt,
-// 	// }
-// 	return newComment
-// }

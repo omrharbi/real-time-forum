@@ -55,10 +55,7 @@ func (h *HomeController) HomeHandle(w http.ResponseWriter, r *http.Request) {
 
 func (h *HomeController) GetCard_handler(res http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
-	if req.URL.Path != "/api/card" {
-		JsoneResponse(res, req, "Path not found", http.StatusNotFound)
-		return
-	}
+	 
 	if req.Method != http.MethodGet {
 		JsoneResponse(res, req, "Status Method Not Allowed", http.StatusMethodNotAllowed)
 		return
