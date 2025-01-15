@@ -23,7 +23,7 @@ func NewProfileRepository(db *sql.DB) ProfileRepository {
 func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 	query := `SELECT
 	p.card_id AS 'card_id', 
-	c.user_id  AS 'user_id',
+	u.UUID  AS 'user_uuid',
 	p.id,
 	c.content,
 	c.created_at ,
@@ -45,7 +45,7 @@ func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 func (p *ProfileRepositoryImpl) GetProfileByLikes(user_id int) string {
 	query := `SELECT
 		p.card_id AS 'card_id', 
-		c.user_id  AS 'user_id',
+		u.UUID AS 'user_uuid',
 		p.id,
 		c.content,
 		c.created_at ,
