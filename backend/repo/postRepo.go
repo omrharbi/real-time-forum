@@ -44,8 +44,7 @@ func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []model
 			&post.Gender,
 			&post.Comments,
 			&post.Likes,
-			&post.DisLikes,
-			&post.Userdisliked,
+			&post.DisLikes, 
 		)
 		if err != nil {
 			fmt.Println("er", err)
