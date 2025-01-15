@@ -94,8 +94,7 @@ func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.
 	if err != nil {
 		return &models.Card_View{}
 	}
-	liked := c.GetUserLiked(ctx, Row.Id)
-	Row.UserLiked = liked.UserLiked
+
 	return Row
 }
 
@@ -104,24 +103,6 @@ func (c *cardRepositoryImpl) GetCardById(ctx context.Context, id int) *models.Ca
 	query := "SELECT * FROM card WHERE card.id =?;"
 	myCard_Row := &models.Card{}
 	err := c.db.QueryRowContext(ctx, query, id).Scan(&id, &myCard_Row.User_Id, &myCard_Row.Content, &myCard_Row.CreatedAt)
-
-	if err != nil {
-		return nil
-	} else {
-		return myCard_Row
-	}
-}
-
-func (c *cardRepositoryImpl) GetUserLiked(ctx context.Context, user_id int) *models.Liked {
-	query := `SELECT DISTINCT l.user_id  ,u.firstname, c.id,l.comment_id,l.post_id
-    FROM likes l 
-    INNER JOIN user u ON l.user_id = u.id 
-    INNER JOIN card c on c.id=l.card_id
-    WHERE c.id=?
-ORDER BY l.user_id;
-`
-	myCard_Row := &models.Liked{}
-	err := c.db.QueryRowContext(ctx, query).Scan(&myCard_Row.UserLiked)
 
 	if err != nil {
 		return nil
