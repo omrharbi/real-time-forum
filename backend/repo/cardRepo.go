@@ -47,7 +47,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 	offset := (page - 1) * postsPerPage
 
-	query := `SELECT c.id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
               count(cm.id) comments,
               (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
         		(SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
@@ -67,23 +67,22 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 	for data_Rows.Next() {
 		Row := models.Card_View{}
-		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt,
+		err := data_Rows.Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt,
 			&Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments,
 			&Row.Likes, &Row.DisLikes)
 		if err != nil {
 			return nil, 0
-		} 
+		}
 		list_Cards = append(list_Cards, Row)
 	}
 
 	return list_Cards, totalPosts
 }
 
-
 // getCard implements cardRepository.
 
 func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.Card_View {
-	query := `SELECT c.id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id or l.comment_id = cm.id) AND l.is_like = 1) as likes,
         (SELECT count(*) FROM likes l WHERE( l.post_id =p.id or l.comment_id = cm.id)AND l.is_like = 0) as dislikes
@@ -91,7 +90,7 @@ func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.
 		JOIN user u ON c.user_id = u.id
 		WHERE c.id =?;`
 	Row := &models.Card_View{}
-	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes)
+	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes)
 	if err != nil {
 		return &models.Card_View{}
 	}

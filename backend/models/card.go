@@ -9,7 +9,7 @@ type Card struct {
 
 type Card_View struct {
 	Id        int    `json:"id"`
-	User_Id   int    `json:"userid"`
+	User_uuid   string    `json:"userid"`
 	Content   string `json:"content"`
 	CreatedAt string `json:"date"`
 	FirstName string `json:"firstName"`
