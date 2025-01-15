@@ -13,7 +13,7 @@ import (
 type likesRepository interface {
 	InserLike(ctx context.Context, user_id, card_id, is_liked int, UserLiked, Userdisliked bool) (m messages.Messages)
 	GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds
-	GetLikes(ctx context.Context, post_id int) (int, int, int)
+	GetLikes(ctx context.Context, card_id int) int
 	DeletLike(ctx context.Context, user_id, card_id int)
 	LikeExists(ctx context.Context, user_id, card_id int) bool
 }
@@ -27,22 +27,15 @@ func NewLikesRepository(db *sql.DB) likesRepository {
 }
 
 // GetLikes implements likesRepository.
-func (l *likeRepositoryImpl) GetLikes(ctx context.Context, post_id int) (int, int, int) {
-	querylike := `SELECT   DISTINCT c.user_id , (SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 1) 
-	likes , 
-	(SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 0) dislikes FROM post  p
-      LEFT JOIN card  c ON p.card_id=c.id    JOIN  likes l WHERE p.card_id = l.card_id AND (l.is_like = 1 or l.is_like = 0 ) AND p.id = ? ` + strconv.Itoa(post_id)
-	like := 0
-	dislike := 0
+func (l *likeRepositoryImpl) GetLikes(ctx context.Context, card_id int) int {
+	querylike := `SELECT  l.user_id FROM   card  c   JOIN  likes l WHERE   (l.is_like = 1 or l.is_like = 0 ) AND c.id = ? ` + strconv.Itoa(card_id)
 	userliked := 0
-
-	err := l.db.QueryRowContext(ctx, querylike).Scan(&userliked, &like, &userliked)
+	err := l.db.QueryRowContext(ctx, querylike).Scan(&userliked)
 	if err != nil {
 		fmt.Println(err)
-		like = 0
 	}
 
-	return like, dislike, userliked
+	return userliked
 }
 
 // GetuserLiked implements likesRepository.

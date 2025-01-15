@@ -30,7 +30,10 @@ func (c *CategoryRepositoryImpl) GetPostsByCategor(  categoryName string) string
     c.content,
     c.created_at,
     u.firstname,
-    u.lastname,count(cm.id) comments
+    u.lastname,
+	u.nickname,
+	u.age,
+	u.gender, count(cm.id) comments
 			FROM card c JOIN post p on c.id = p.card_id LEFT JOIN comment cm
 			ON c.id = cm.target_id JOIN user u ON c.user_id = u.id
             JOIN post_category pc on pc.post_id=p.id 

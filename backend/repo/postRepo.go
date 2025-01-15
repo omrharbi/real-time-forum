@@ -24,6 +24,7 @@ func NewPostRepository(db *sql.DB) PostRepository {
 func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []models.PostResponde {
 	rows, err := p.db.QueryContext(ctx, query)
 	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	defer rows.Close()

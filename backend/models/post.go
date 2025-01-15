@@ -19,8 +19,7 @@ type PostResponde struct {
 	Nickname     string `json:"nickname"`
 	Age          int    `json:"age"`
 	Gender       string `json:"gender"`
-	Title        string `json:"title"`
-	Content      string `json:"content"`
+ 	Content      string `json:"content"`
 	Likes        int    `json:"likes"`
 	Userdisliked int    `json:"userdisliked"`
 	Comments     string `json:"comments"`

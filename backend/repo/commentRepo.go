@@ -25,7 +25,7 @@ func NewCommentRepository(db *sql.DB) CommentRepository {
 // getAllCommentsbyTargetId implements CommentRepository.
 func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View {
 	list_Comments := make([]models.Comment_View, 0)
-	query := `SELECT c.id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
+	query := `SELECT c.id as card_id, c.user_id, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender, (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) comments,
   	(SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 1) likes , 
 	(SELECT count(*) FROM likes l WHERE ( l.card_id = c.id ) and l.is_like = 0) dislikes
 			FROM card c  JOIN comment cm ON c.id = cm.card_id JOIN user u ON c.user_id = u.id
@@ -37,9 +37,9 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 	}
 	for data_Rows.Next() {
 		Row := models.Comment_View{}
-		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName ,&Row.Nickname,&Row.Age,&Row.Gender, &Row.Comments,&Row.Likes, &Row.DisLikes)
+		err := data_Rows.Scan(&Row.Id, &Row.User_Id, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes)
 		if err != nil {
-			fmt.Println(err , "GetAllCommentsbyTargetId")
+			fmt.Println(err, "GetAllCommentsbyTargetId")
 			return nil
 		}
 		list_Comments = append(list_Comments, Row)

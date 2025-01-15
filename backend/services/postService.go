@@ -13,7 +13,7 @@ import (
 type PostService interface {
 	Add(ctx context.Context, p *models.Post) 
 	CheckPostErr(w http.ResponseWriter, ps *models.Post)
-	GetPosts(ctx context.Context, query string) []models.PostResponde
+	GetPosts_Service(ctx context.Context, query string) []models.PostResponde
 }
 
 type PstService struct {
@@ -54,7 +54,7 @@ func (p *PstService) CheckPostErr(w http.ResponseWriter, ps *models.Post) {
 }
 
 // GetPosts implements postService.
-func (p *PstService) GetPosts(ctx context.Context, query string) []models.PostResponde {
+func (p *PstService) GetPosts_Service(ctx context.Context, query string) []models.PostResponde {
 	posts := p.postRepo.GetPosts(ctx, query)
 	return posts
 }
