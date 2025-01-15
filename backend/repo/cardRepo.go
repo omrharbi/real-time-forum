@@ -73,10 +73,24 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 		if err != nil {
 			return nil, 0
 		}
+		userliked := c.Userliked(Row.Id)
+		Row.UserLiked = userliked
 		list_Cards = append(list_Cards, Row)
 	}
 
 	return list_Cards, totalPosts
+}
+
+func (c *cardRepositoryImpl) Userliked(id_card int) int {
+	query := `SELECT   u.UUID FROM likes l JOIN card c 
+    on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =?`
+	UserdiLiked := 0
+
+	err := c.db.QueryRow(query, id_card).Scan(&UserdiLiked)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return UserdiLiked
 }
 
 // getCard implements cardRepository.
