@@ -23,7 +23,7 @@ func NewProfileRepository(db *sql.DB) ProfileRepository {
 func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 	query := `SELECT
 	p.card_id AS 'card_id', 
-	u.id AS 'user_id',
+	c.user_id  AS 'user_id',
 	p.id,
 	c.content,
 	c.created_at ,
@@ -45,7 +45,7 @@ func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 func (p *ProfileRepositoryImpl) GetProfileByLikes(user_id int) string {
 	query := `SELECT
 		p.card_id AS 'card_id', 
-		u.id AS 'user_id',
+		c.user_id  AS 'user_id',
 		p.id,
 		c.content,
 		c.created_at ,
@@ -57,6 +57,7 @@ func (p *ProfileRepositoryImpl) GetProfileByLikes(user_id int) string {
 		count(cm.id) comments,
 		(SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
      	(SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+		 
 		FROM post p, card c, likes l ,user u LEFT JOIN comment cm
 		ON c.id = cm.target_id  WHERE p.card_id=c.id AND l.is_like = 1
 		AND c.user_id=u.id AND p.card_id = l.card_id AND l.user_id ="` + strconv.Itoa(user_id) + "\" GROUP BY c.id  ORDER BY c.id DESC"
