@@ -33,7 +33,7 @@ func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []model
 		var post models.PostResponde
 		err := rows.Scan(
 			&post.Card_Id,
-			&post.Uses_uuid,
+			&post.User_uuid,
 			&post.Post_Id,
 			&post.Content,
 			&post.CreatedAt,
@@ -44,7 +44,7 @@ func (p *postRepositoryImpl) GetPosts(ctx context.Context, query string) []model
 			&post.Gender,
 			&post.Comments,
 			&post.Likes,
-			&post.DisLikes, 
+			&post.DisLikes,
 		)
 		if err != nil {
 			fmt.Println("er", err)

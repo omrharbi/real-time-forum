@@ -12,7 +12,7 @@ type Comment struct {
 type Comment_View struct {
 	Id_comment int    `json:"id_comment"`
 	Id         int    `json:"card_id"`
-	User_uuid  int    `json:"User_uuid"`
+	User_uuid  string    `json:"user_uuid"`
 	Content    string `json:"content"`
 	CreatedAt  string `json:"date"`
 	FirstName  string `json:"firstName"`

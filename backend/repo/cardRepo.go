@@ -84,8 +84,8 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.Card_View {
 	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
-        (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id or l.comment_id = cm.id) AND l.is_like = 1) as likes,
-        (SELECT count(*) FROM likes l WHERE( l.post_id =p.id or l.comment_id = cm.id)AND l.is_like = 0) as dislikes
+        (SELECT count(*) FROM likes l WHERE ( l.card_id =p.card_id  ) AND l.is_like = 1) as likes,
+        (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes
        	FROM card c LEFT JOIN comment cm  on c.id=cm.card_id LEFT  JOIN post p on p.card_id=c.id
 		JOIN user u ON c.user_id = u.id
 		WHERE c.id =?;`
