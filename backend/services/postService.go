@@ -35,6 +35,30 @@ func (ps *PstService) Add(ctx context.Context, p *models.Post) (m messages.Messa
 		m.MessageError = "Content Is Null"
 		return m
 	}
+	if len(p.Name_Category) == 0 {
+		m.MessageError = "Your Category  Is Empty"
+		return m
+	}
+
+	if checkdeblicat(p.Name_Category) {
+		m.MessageError = "Duplicate category: The category already exists"
+		return
+	}
+	if len(p.Content) > 1000 {
+		m.MessageError = "Your content is long"
+		return
+	}
+	if p.Content == "" {
+		m.MessageError = "Your content is emty"
+		return
+	}
+	for _, n := range p.Name_Category {
+		if !checkGategory(n) {
+			m.MessageError = "Your category is incorrect"
+			return
+		}
+	}
+
 	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
 	p.Card_Id = cards
 	id_posr := ps.postRepo.InserPost(ctx, p.Card_Id)
@@ -51,4 +75,37 @@ func (ps *PstService) Add(ctx context.Context, p *models.Post) (m messages.Messa
 func (p *PstService) GetPosts_Service(ctx context.Context, query string) []models.PostResponde {
 	posts := p.postRepo.GetPosts(ctx, query)
 	return posts
+}
+
+func checkdeblicat(cat []string) bool {
+	for i := 0; i < len(cat); i++ {
+		for j := i + 1; j < len(cat); j++ {
+			if cat[i] == cat[j] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func checkGategory(name string) bool {
+	cate := []string{
+		"General",
+		"Technology",
+		"Sports",
+		"Entertainment",
+		"Science",
+		"Health",
+		"Food",
+		"Travel",
+		"Fashion",
+		"Art",
+		"Music",
+	}
+	for _, v := range cate {
+		if v == name {
+			return true
+		}
+	}
+	return false
 }

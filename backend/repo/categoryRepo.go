@@ -84,5 +84,5 @@ func (c *CategoryRepositoryImpl) PostCategory(ctx context.Context, postId int, c
 	return messages.Messages{}
 }
 
-	
+
 // getCategoryId implements CategoryRepository.
