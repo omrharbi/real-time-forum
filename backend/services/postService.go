@@ -3,16 +3,16 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"html"
 	"net/http"
 
+	"real-time-froum/messages"
 	"real-time-froum/models"
 	"real-time-froum/repo"
 )
 
 type PostService interface {
-	Add(ctx context.Context, p *models.Post)
+	Add(ctx context.Context, p *models.Post) (m messages.Messages)
 	CheckPostErr(w http.ResponseWriter, ps *models.Post)
 	GetPosts_Service(ctx context.Context, query string) []models.PostResponde
 }
@@ -32,9 +32,12 @@ func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository,
 }
 
 // Add implements postService.
-func (ps *PstService) Add(ctx context.Context, p *models.Post) {
+func (ps *PstService) Add(ctx context.Context, p *models.Post) (m messages.Messages) {
 	content := html.EscapeString(p.Content)
-	fmt.Println(p.User_Id)
+	if content == "" {
+		m.MessageError = "Content Is Null"
+		return m
+	}
 	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
 	p.Card_Id = cards
 	id_posr := ps.postRepo.InserPost(ctx, p.Card_Id)
@@ -42,9 +45,11 @@ func (ps *PstService) Add(ctx context.Context, p *models.Post) {
 		err := ps.categoryRepo.PostCategory(ctx, int(id_posr), name) // sp.AddCategory(r.Context(), id, name)
 		if err != nil {
 			// JsoneResponse(w, r, "Failed to add category", http.StatusBadRequest)
-			return
+			m.MessageError = err.Error()
+			return m
 		}
 	}
+	return messages.Messages{}
 }
 
 // CheckPostErr implements postService.

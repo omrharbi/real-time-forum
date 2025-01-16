@@ -111,7 +111,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 func (u *userServiceImpl) LogOut(ctx context.Context, uuid models.UUID) (m messages.Messages) {
 	timeex := time.Now().Add(0 * time.Second)
 
-	err := u.userRepo.UpdateUUIDUser(ctx, "null", "ofline", int64(uuid.Iduser), timeex)
+	err := u.userRepo.UpdateUUIDUser(ctx, "null", "offline", int64(uuid.Iduser), timeex)
 	if err != nil {
 		m.MessageError = "Error To Update user"
 		return m

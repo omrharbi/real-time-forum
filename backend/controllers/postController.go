@@ -61,9 +61,11 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post.User_Id = id_user
- 	p.postService.CheckPostErr(w, post)
-
-	p.postService.Add(r.Context(), post)
+	ms := p.postService.Add(r.Context(), post)
+	if ms.MessageError != "" {
+		JsoneResponse(w, ms.MessageError, http.StatusBadRequest)
+		return
+	}
 
 	JsoneResponse(w, "create post Seccessfuly", http.StatusCreated)
 }
