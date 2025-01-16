@@ -92,13 +92,16 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				Firstname: user.Firstname,
 				Lastname:  user.Lastname,
 			}
+			
 			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), "online", user.Id, time)
 			if err != nil {
 				message.MessageError = "Error to Update"
 				fmt.Println("Error to Update")
 				return models.ResponceUser{}, message, uuid.UUID{}
 			}
-
+			ctx := saveContext(ctx, "user", loged.Email)
+			val := ctx.Value("user")
+			fmt.Println(val, "value Context")
 			return loged, messages.Messages{}, uuids
 		} else {
 			message.MessageError = "Email or password incorrect."
@@ -249,4 +252,15 @@ func (u *userServiceImpl) validateUser(users *models.User) messages.Messages {
 	}
 
 	return message
+}
+
+func saveContext(ctx context.Context, token string, val string) context.Context {
+	if ctx == nil {
+		ctx = context.TODO() // Use a placeholder context
+	}
+	return context.WithValue(ctx, token, val)
+}
+
+func GetContext(ctx context.Context, token string, val string) any {
+	return ctx.Value(token)
 }

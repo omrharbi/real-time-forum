@@ -63,17 +63,15 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	ctx := context.Background()
-	ctx = saveContext(ctx, "user", user.Email)
-	val := ctx.Value("user")
-	fmt.Println(val, "value Context")
+
 	timeex := time.Now().Add(8 * time.Second).UTC()
-	loged, message, uuid := uc.userService.Authentication(ctx, timeex, &user)
+	loged, message, uuid := uc.userService.Authentication(r.Context(), timeex, &user)
 
 	if message.MessageError != "" {
 		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
+	
 
 	SetCookie(w, "token", uuid.String(), timeex)
 	JsoneResponse(w, loged, http.StatusOK)
@@ -162,12 +160,4 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	} else {
 		json.NewEncoder(w).Encode(is)
 	}
-}
-
-func saveContext(ctx context.Context, token string, val string) context.Context {
-	return context.WithValue(ctx, token, val)
-}
-
-func getContext(ctx context.Context, token string, val string) any {
-	return ctx.Value(token)
 }

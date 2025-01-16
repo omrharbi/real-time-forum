@@ -22,8 +22,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-
-	SetupAPIRoutes(mux)
+	ctx := context.Background()
+	SetupAPIRoutes(mux,ctx)
 	// route.SetupPageRoutes(mux)
 
 	serverAddr := ":3333"
@@ -34,7 +34,7 @@ func main() {
 	}
 }
 
-func SetupAPIRoutes(mux *http.ServeMux) {
+func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	db := config.Config()
 	userRepo := repo.NewUserRepository(db.Connection)
 	cardRepo := repo.NewcardRepository(db.Connection)
@@ -42,7 +42,7 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	postRepo := repo.NewPostRepository(db.Connection)
 	commentRepo := repo.NewCommentRepository(db.Connection)
 	profiletRepo := repo.NewProfileRepository(db.Connection)
-	
+
 	// serveses
 	userService := services.NewUserService(userRepo)
 	cardService := services.NewcardssService(cardRepo)
