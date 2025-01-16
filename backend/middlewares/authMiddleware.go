@@ -35,7 +35,6 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			}
 		}
 		if cookies.Value == "" {
-
 			controllers.JsoneResponse(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

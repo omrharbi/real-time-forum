@@ -62,6 +62,7 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister) // done
 	mux.HandleFunc("/api/login", userController.HandleLogin)
+	mux.HandleFunc("/api/isLogged", userController.HandleIsLogged)
 	// done
 	mux.Handle("/api/post", middlewareController.AuthenticateMiddleware(http.HandlerFunc(postController.HandlePost)))                     // Protected
 	mux.Handle("/api/home", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.HomeHandle)))                     // Protected
@@ -71,7 +72,6 @@ func SetupAPIRoutes(mux *http.ServeMux) {
 	mux.Handle("/api/category", middlewareController.AuthenticateMiddleware(http.HandlerFunc(categoryController.HandelCategory)))         // Protected
 	mux.Handle("/api/profile/posts", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfilePosts))) // Protected
 	mux.Handle("/api/profile/likes", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfileLikes))) // Protected
-
 	mux.Handle("/api/logout", middlewareController.AuthenticateMiddleware(http.HandlerFunc(userController.HandleLogOut)))
 	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
 	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))

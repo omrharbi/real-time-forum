@@ -152,9 +152,7 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(cookies.Value)
 	is, expire := uc.userService.CheckAuth(r.Context(), cookies.Value)
-	fmt.Println(is, expire)
 	if !time.Now().Before(expire) {
 		u := models.UUID{}
 		uc.userService.UUiduser(r.Context(), cookies.Value)
