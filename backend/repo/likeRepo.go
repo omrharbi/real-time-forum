@@ -78,7 +78,7 @@ func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id
 			return
 		}
 	}
-	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,?, );"
+	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,? );"
 	_, err := l.db.ExecContext(ctx, query, user_id, card_id, is_liked)
 	if err != nil {
 		fmt.Println(err.Error())

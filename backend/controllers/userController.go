@@ -66,7 +66,7 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	timeex := time.Now().Add(8 * time.Second).UTC()
+	timeex := time.Now().Add(10 * time.Second).UTC()
 	loged, message, uuid := uc.userService.Authentication(uc.ctx, timeex, &user)
 
 	if message.MessageError != "" {
