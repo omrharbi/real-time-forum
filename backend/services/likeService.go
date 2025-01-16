@@ -10,7 +10,7 @@ import (
 
 type LikeServer interface {
 	Addlikes(ctx context.Context, like models.Like) messages.Messages
-	DeletLike(ctx context.Context, like models.Like)
+	DeletLike(ctx context.Context, like models.DeletLikes)
 	ChecklikesUser(ctx context.Context, like models.Like) []models.ResponseUserLikeds
 }
 
@@ -27,7 +27,7 @@ func (l *likesServiceImpl) Addlikes(ctx context.Context, like models.Like) messa
 	return m
 }
 
-func (l *likesServiceImpl) DeletLike(ctx context.Context, like models.Like) {
+func (l *likesServiceImpl) DeletLike(ctx context.Context, like models.DeletLikes) {
 	l.like.DeletLike(ctx, like.User_Id, like.Card_Id)
 }
 

@@ -57,7 +57,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	// 4. Initialize the controller
 	userController := controllers.NewUserController(userService, ctx)
 	homeController := controllers.NewHomeController(cardService)
-	likesController := controllers.NewLikesController(likesService)
+	likesController := controllers.NewLikesController(likesService, userController)
 	categoryController := controllers.NewcategoryController(categoryService)
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
@@ -78,6 +78,6 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/profile/likes", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfileLikes))) // Protected
 	mux.Handle("/api/logout", middlewareController.AuthenticateMiddleware(http.HandlerFunc(userController.HandleLogOut)))
 	mux.Handle("/api/likescheked", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.LikesCheckedHandle)))
-	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))
-	// mux.Handle("/api/deleted", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelDeletLike)))
+	mux.Handle("/api/addlike", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleAddLike)))
+	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
 }
