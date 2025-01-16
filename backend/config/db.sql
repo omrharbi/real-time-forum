@@ -11,6 +11,7 @@ CREATE TABLE user(
     password text not NULL,
     expires DATETIME,
     createAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status text not NULL,
     UUID text
 );
 

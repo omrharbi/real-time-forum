@@ -13,7 +13,7 @@ import (
 
 type UserRepository interface {
 	EmailExists(ctx context.Context, email string, username string) bool
-	UpdateUUIDUser(ctx context.Context, uudi string, userId int64, expires time.Time) error
+	UpdateUUIDUser(ctx context.Context, uudi string, status string, userId int64, expires time.Time) error
 	InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error)
 	SelectUser(ctx context.Context, log *models.Login) *models.User
 	CheckAuthenticat(ctx context.Context, uuid string) (bool, time.Time)
@@ -37,8 +37,8 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 	Password := html.EscapeString(password)
 	Nickname := html.EscapeString(users.Nickname)
 	Gender := html.EscapeString(users.Gender)
-	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password) VALUES(?,?,?,?,?,?,?)"
-	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password)
+	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password,status) VALUES(?,?,?,?,?,?,?,?)"
+	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password, "online")
 	return row, err
 }
 
@@ -117,8 +117,8 @@ func (u *userRepositoryImpl) GetUserIdWithUUID(ctx context.Context, uuid string)
 }
 
 // updateUUIDUser implements UserRepository.
-func (u *userRepositoryImpl) UpdateUUIDUser(ctx context.Context, uudi string, userId int64, expires time.Time) error {
-	stm := "UPDATE user SET UUID=?, expires =?  WHERE id=?"
-	_, err := u.db.ExecContext(ctx, stm, uudi, expires, userId)
+func (u *userRepositoryImpl) UpdateUUIDUser(ctx context.Context, uudi string, status string, userId int64, expires time.Time) error {
+	stm := "UPDATE user SET UUID=?,  expires =? ,status=? WHERE id=?"
+	_, err := u.db.ExecContext(ctx, stm, uudi, expires, status, userId)
 	return err
 }

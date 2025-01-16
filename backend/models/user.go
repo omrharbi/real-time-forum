@@ -15,6 +15,7 @@ type User struct {
 	Age       int       `json:"age"`
 	Gender    string    `json:"gender"`
 	Password  string    `json:"password"`
+	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"createdat"`
 	UUID      uuid.UUID `json:"uuid"`
 }

@@ -92,7 +92,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				Firstname: user.Firstname,
 				Lastname:  user.Lastname,
 			}
-			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), user.Id, time)
+			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), "online", user.Id, time)
 			if err != nil {
 				message.MessageError = "Error to Update"
 				fmt.Println("Error to Update")
@@ -111,7 +111,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 func (u *userServiceImpl) LogOut(ctx context.Context, uuid models.UUID) (m messages.Messages) {
 	timeex := time.Now().Add(0 * time.Second)
 
-	err := u.userRepo.UpdateUUIDUser(ctx, "null", int64(uuid.Iduser), timeex)
+	err := u.userRepo.UpdateUUIDUser(ctx, "null", "ofline", int64(uuid.Iduser), timeex)
 	if err != nil {
 		m.MessageError = "Error To Update user"
 		return m
@@ -202,6 +202,7 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 
 	rows, err := u.userRepo.InsertUser(ctx, users, password)
 	if err != nil {
+		fmt.Println(err)
 		message.MessageError = "Error creating this user."
 		return loged, message, uuid
 	}
@@ -211,9 +212,9 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		message.MessageError = err.Error()
 		return models.ResponceUser{}, message, ""
 	} else {
-		err = u.userRepo.UpdateUUIDUser(ctx, uuid, user_id, timeex)
+		err = u.userRepo.UpdateUUIDUser(ctx, uuid, "online", user_id, timeex)
 		if err != nil {
-			fmt.Println("Error to Update")
+			fmt.Println("Error to Update", err)
 			return models.ResponceUser{}, message, ""
 		}
 		message.MessageSucc = "User Created Successfully."
