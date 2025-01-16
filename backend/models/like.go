@@ -1,11 +1,10 @@
 package models
+
 type Like struct {
-	ID           int  `json:"id"`
-	User_Id      int  `json:"user_id"`
-	Card_Id      int  `json:"card_id"`
-	Is_Liked     int  `json:"is_liked"`
-	UserLiked    bool `json:"userliked"`
-	Userdisliked bool `json:"userdisliked"`
+	ID       int  `json:"id"`
+	User_Id  int  `json:"user_id"`
+	Card_Id  int  `json:"card_id"`
+	Is_Liked bool `json:"is_liked"`
 }
 type DeletLikes struct {
 	User_Id int `json:"uuid"`

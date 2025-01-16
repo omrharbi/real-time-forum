@@ -42,10 +42,12 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	postRepo := repo.NewPostRepository(db.Connection)
 	commentRepo := repo.NewCommentRepository(db.Connection)
 	profiletRepo := repo.NewProfileRepository(db.Connection)
+	likesRepo := repo.NewLikesRepository(db.Connection)
 
 	// serveses
 	userService := services.NewUserService(userRepo)
 	cardService := services.NewcardssService(cardRepo)
+	likesService := services.NewLikesServer(likesRepo)
 	profileService := services.NewProfilesService(profiletRepo, postRepo)
 	commentService := services.NewCommentService(commentRepo, cardRepo)
 	postService := services.NewPostService(postRepo, cardRepo, categoryRepo)
@@ -55,6 +57,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	// 4. Initialize the controller
 	userController := controllers.NewUserController(userService, ctx)
 	homeController := controllers.NewHomeController(cardService)
+	likesController := controllers.NewLikesController(likesService)
 	categoryController := controllers.NewcategoryController(categoryService)
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
@@ -74,7 +77,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/profile/posts", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfilePosts))) // Protected
 	mux.Handle("/api/profile/likes", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfileLikes))) // Protected
 	mux.Handle("/api/logout", middlewareController.AuthenticateMiddleware(http.HandlerFunc(userController.HandleLogOut)))
-	// mux.Handle("/api/likes", handlers.AuthenticateMiddleware((http.HandlerFunc(handlers.LikesHandle))))
+	mux.Handle("/api/likescheked", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.LikesCheckedHandle)))
 	// mux.Handle("/api/like", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelLike)))
 	// mux.Handle("/api/deleted", handlers.AuthenticateMiddleware(http.HandlerFunc(handlers.HandelDeletLike)))
 }

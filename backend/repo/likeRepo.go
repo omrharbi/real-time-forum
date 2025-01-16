@@ -10,8 +10,8 @@ import (
 	"real-time-froum/models"
 )
 
-type likesRepository interface {
-	InserLike(ctx context.Context, user_id, card_id, is_liked int, UserLiked, Userdisliked bool) (m messages.Messages)
+type LikesRepository interface {
+	InserLike(ctx context.Context, user_id, card_id int, is_liked bool) (m messages.Messages)
 	GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds
 	GetLikes(ctx context.Context, card_id int) int
 	DeletLike(ctx context.Context, user_id, card_id int)
@@ -22,7 +22,7 @@ type likeRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewLikesRepository(db *sql.DB) likesRepository {
+func NewLikesRepository(db *sql.DB) LikesRepository {
 	return &likeRepositoryImpl{db: db}
 }
 
@@ -69,18 +69,20 @@ func (l *likeRepositoryImpl) DeletLike(ctx context.Context, user_id int, card_id
 }
 
 // inserLike implements likesRepository.
-func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id int, is_liked int, UserLiked bool, Userdisliked bool) (m messages.Messages) {
+func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id int, is_liked bool) (m messages.Messages) {
 	if l.LikeExists(ctx, user_id, card_id) {
 		query := `DELETE FROM likes WHERE user_id = ? AND card_id = ?`
 		_, err := l.db.ExecContext(ctx, query, user_id, card_id)
 		if err != nil {
 			fmt.Println(err.Error())
+			return
 		}
 	}
-	query := "INSERT INTO likes(user_id, card_id, is_like, UserLiked, Userdisliked) VALUES(?,?,?,?,?);"
-	_, err := l.db.ExecContext(ctx, query, user_id, card_id, is_liked, UserLiked, Userdisliked)
+	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,?, );"
+	_, err := l.db.ExecContext(ctx, query, user_id, card_id, is_liked)
 	if err != nil {
 		fmt.Println(err.Error())
+		return
 	}
 	m.MessageSucc = "is liked"
 	return m
