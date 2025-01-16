@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"real-time-froum/messages"
 	"real-time-froum/models"
 	"real-time-froum/services"
 )
@@ -53,31 +54,34 @@ func (cn *CommentController) Handler_AddComment(res http.ResponseWriter, req *ht
 		JsoneResponse(res, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	statusCode := cn.addComment(req)
-	if statusCode == -1 {
-		JsoneResponse(res, "comment Infos are wrongs!! ", http.StatusUnauthorized)
+	ms := cn.addComment(req)
+	if ms.MessageError != "" {
+		JsoneResponse(res, "comment Infos are wrongs!! ", http.StatusBadRequest)
 		return
 	}
-	if statusCode == http.StatusOK {
-		JsoneResponse(res, "comment added succesfuly", http.StatusCreated)
-		return
-	}
+
+	JsoneResponse(res, "comment added succesfuly", http.StatusCreated)
 }
 
-func (cn *CommentController) addComment(req *http.Request) int {
+func (cn *CommentController) addComment(req *http.Request) (m messages.Messages) {
 	iduser := cn.userController.GetUserId(req)
 	comment := models.Comment{}
 	comment.User_Id = iduser
 	if comment.User_Id == 0 {
-		return -1
+		m.MessageError = "Invalid User ID"
+		return m
 	}
 
 	decoder := DecodeJson(req)
 	err := decoder.Decode(&comment)
 	if err != nil {
-		return http.StatusBadRequest
+		m.MessageError = err.Error()
+		return m
 	}
 
-	cn.commentService.AddComment(req.Context(), &comment)
-	return http.StatusOK
+	ms := cn.commentService.AddComment(req.Context(), &comment)
+	if ms.MessageError != "" {
+		return ms
+	}
+	return messages.Messages{}
 }
