@@ -30,18 +30,18 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		// user := models.User{}
 		if err != nil || cookies == nil {
 			if err == http.ErrNoCookie {
-				controllers.JsoneResponse(w, r, "Unauthorized: Cookie not presen", http.StatusUnauthorized)
+				controllers.JsoneResponse(w, "Unauthorized: Cookie not presen", http.StatusUnauthorized)
 				return
 			}
 		}
 		if cookies.Value == "" {
 
-			controllers.JsoneResponse(w, r, "Unauthorized", http.StatusUnauthorized)
+			controllers.JsoneResponse(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		messages, expire := m.userService.AuthenticatLogin(r.Context(), cookies.Value)
 		if messages.MessageError != "" {
-			controllers.JsoneResponse(w, r, messages.MessageError, http.StatusUnauthorized)
+			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
 		if !time.Now().Before(expire) {
@@ -55,4 +55,3 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		}
 	})
 }
-

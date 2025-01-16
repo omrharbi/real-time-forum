@@ -26,7 +26,7 @@ func (c *categoryController) HandelCategory(w http.ResponseWriter, r *http.Reque
 	decode := DecodeJson(r)
 	err := decode.Decode(&categoryStruct)
 	if err != nil {
-		JsoneResponse(w, r, err.Error(), http.StatusBadRequest)
+		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)

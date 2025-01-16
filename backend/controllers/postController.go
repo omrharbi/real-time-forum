@@ -29,7 +29,7 @@ func NewpostController(service services.PostService, userController *UserControl
 
 func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		JsoneResponse(w, r, "Status Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(w, "Status Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	// user:={}
@@ -38,24 +38,24 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	decode := DecodeJson(r)
 	err := decode.Decode(&post)
 	if err != nil {
-		JsoneResponse(w, r, err.Error(), http.StatusBadRequest)
+		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if checkdeblicat(post.Name_Category) {
-		JsoneResponse(w, r, "Duplicate category: The category already exists", http.StatusConflict)
+		JsoneResponse(w, "Duplicate category: The category already exists", http.StatusConflict)
 		return
 	}
 	if len(post.Content) > 1000 {
-		JsoneResponse(w, r, "Your content is long", http.StatusBadRequest)
+		JsoneResponse(w, "Your content is long", http.StatusBadRequest)
 		return
 	}
 	if post.Content == "" {
-		JsoneResponse(w, r, "Your content is emty", http.StatusBadRequest)
+		JsoneResponse(w, "Your content is emty", http.StatusBadRequest)
 		return
 	}
 	for _, n := range post.Name_Category {
 		if !checkGategory(n) {
-			JsoneResponse(w, r, "Your category is incorrect", http.StatusBadRequest)
+			JsoneResponse(w, "Your category is incorrect", http.StatusBadRequest)
 			return
 		}
 	}
@@ -65,7 +65,7 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 
 	p.postService.Add(r.Context(), post)
 
-	JsoneResponse(w, r, "create post Seccessfuly", http.StatusCreated)
+	JsoneResponse(w, "create post Seccessfuly", http.StatusCreated)
 }
 
 func checkdeblicat(cat []string) bool {

@@ -26,7 +26,6 @@ type UserService interface {
 	hashPassword(password string) string
 	AuthenticatLogin(ctx context.Context, UUID string) (m messages.Messages, expire time.Time)
 	UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID)
-	generatUUID(ctx context.Context) string
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 }
 
@@ -41,16 +40,14 @@ func NewUserService(repo repo.UserRepository) UserService {
 }
 
 func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time) {
+	if uuid == "" {
+		return false, time.Time{}
+	}
 	return u.userRepo.CheckAuthenticat(ctx, uuid)
 }
 
 // Getuuid implements UserService.
 func (u *userServiceImpl) Getuuid(ctx context.Context, uuid string) {
-	panic("unimplemented")
-}
-
-// generatUUID implements UserService.
-func (u *userServiceImpl) generatUUID(ctx context.Context) string {
 	panic("unimplemented")
 }
 
@@ -61,6 +58,7 @@ func (u *userServiceImpl) AuthenticatLogin(ctx context.Context, UUID string) (m 
 	exists, expire := u.userRepo.CheckAuthenticat(ctx, UUID)
 	if !exists {
 		m.MessageError = "Unauthorized token"
+		return m, time.Time{}
 	}
 
 	return m, expire
@@ -79,13 +77,14 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 
 		user := u.userRepo.SelectUser(ctx, log)
 		if u.checkPasswordHash(user.Password, log.Password) {
-			uuid, err := uuid.NewV4()
+			uuids, err := uuid.NewV4()
 			if err != nil {
 				fmt.Println("Error to Generate uuid", err)
+				return models.ResponceUser{}, message, uuid.UUID{}
 			}
 			loged := models.ResponceUser{
 				Id:        user.Id,
-				UUID:      uuid.String(),
+				UUID:      uuids.String(),
 				Nickname:  user.Nickname,
 				Age:       user.Age,
 				Gender:    user.Gender,
@@ -93,12 +92,14 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				Firstname: user.Firstname,
 				Lastname:  user.Lastname,
 			}
-			err = u.userRepo.UpdateUUIDUser(ctx, uuid.String(), user.Id, time)
+			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), user.Id, time)
 			if err != nil {
+				message.MessageError = "Error to Update"
 				fmt.Println("Error to Update")
+				return models.ResponceUser{}, message, uuid.UUID{}
 			}
 
-			return loged, messages.Messages{}, uuid
+			return loged, messages.Messages{}, uuids
 		} else {
 			message.MessageError = "Email or password incorrect."
 			return models.ResponceUser{}, message, uuid.UUID{}
@@ -213,6 +214,7 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		err = u.userRepo.UpdateUUIDUser(ctx, uuid, user_id, timeex)
 		if err != nil {
 			fmt.Println("Error to Update")
+			return models.ResponceUser{}, message, ""
 		}
 		message.MessageSucc = "User Created Successfully."
 	}
@@ -223,7 +225,7 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 // validateUser implements UserService.
 func (u *userServiceImpl) validateUser(users *models.User) messages.Messages {
 	message := messages.Messages{}
-	nameRegex := regexp.MustCompile(`^[a-z]{2,}$`)
+	nameRegex := regexp.MustCompile(`^[A-Za-z]{2,}$`)
 	if !nameRegex.MatchString(strings.TrimSpace(users.Firstname)) {
 		message.MessageError = "Invalid First name"
 		return message

@@ -37,14 +37,14 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 	Password := html.EscapeString(password)
 	Nickname := html.EscapeString(users.Nickname)
 	Gender := html.EscapeString(users.Gender)
- 	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password) VALUES(?,?,?,?,?,?,?)"
+	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password) VALUES(?,?,?,?,?,?,?)"
 	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password)
 	return row, err
 }
 
 // selectUser implements UserRepository.
 func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) *models.User {
-	user := models.User{}
+	user := &models.User{}
 	email := strings.ToLower(log.Email)
 	username := strings.ToLower(log.Nickname)
 
@@ -54,7 +54,7 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 	if err != nil {
 		fmt.Println("error to select user", err)
 	}
-	return &user
+	return user
 }
 
 // CheckAuthenticat implements UserRepository.
@@ -67,7 +67,8 @@ func (u *userRepositoryImpl) CheckAuthenticat(ctx context.Context, uuid string) 
 
 	err := u.db.QueryRowContext(ctx, stm, uuid, uuid).Scan(&exists, &expires)
 	if err != nil {
-		fmt.Println(err, "here")
+		fmt.Println(err, "in User Repo")
+		return exists, time.Time{}
 	}
 	if !expires.Valid {
 		return exists, time.Time{}
@@ -84,7 +85,8 @@ func (u *userRepositoryImpl) CheckUser(ctx context.Context, id int) bool {
 	var exists bool
 	err := u.db.QueryRowContext(ctx, stm, id, id).Scan(&exists)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, " in check user")
+		return false
 	}
 	return exists
 }
@@ -98,6 +100,7 @@ func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nick
 	err := u.db.QueryRowContext(ctx, query, email, nickname).Scan(&exists)
 	if err != nil {
 		fmt.Println("Error to EXISTS this Email", err)
+		return false
 	}
 	return exists
 }

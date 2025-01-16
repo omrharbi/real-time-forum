@@ -26,12 +26,12 @@ func NewCommentController(comment services.CommentService, userController *UserC
 func (cn *CommentController) Handel_GetCommet(res http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	if req.Method != http.MethodGet {
-		JsoneResponse(res, req, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(res, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	id, err := strconv.Atoi(req.FormValue("target_id"))
 	if err != nil {
-		JsoneResponse(res, req, "Status Bad Request", http.StatusBadRequest)
+		JsoneResponse(res, "Status Bad Request", http.StatusBadRequest)
 		return
 	}
 	ctx, cancel := context.WithTimeout(req.Context(), 2*time.Second)
@@ -41,7 +41,7 @@ func (cn *CommentController) Handel_GetCommet(res http.ResponseWriter, req *http
 		return
 	}
 	if comments == nil {
-		JsoneResponse(res, req, "Status Not Found", http.StatusNotFound)
+		JsoneResponse(res, "Status Not Found", http.StatusNotFound)
 		return
 	}
 	json.NewEncoder(res).Encode(comments)
@@ -50,16 +50,16 @@ func (cn *CommentController) Handel_GetCommet(res http.ResponseWriter, req *http
 func (cn *CommentController) Handler_AddComment(res http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
 	if req.Method != http.MethodPost {
-		JsoneResponse(res, req, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(res, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	statusCode := cn.addComment(req)
 	if statusCode == -1 {
-		JsoneResponse(res, req, "comment Infos are wrongs!! ", http.StatusUnauthorized)
+		JsoneResponse(res, "comment Infos are wrongs!! ", http.StatusUnauthorized)
 		return
 	}
 	if statusCode == http.StatusOK {
-		JsoneResponse(res, req, "comment added succesfuly", http.StatusCreated)
+		JsoneResponse(res, "comment added succesfuly", http.StatusCreated)
 		return
 	}
 }

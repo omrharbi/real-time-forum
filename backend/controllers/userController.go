@@ -23,7 +23,7 @@ func NewUserController(service services.UserService) *UserController {
 
 func (uc *UserController) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		JsoneResponse(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	defer r.Body.Close()
@@ -32,7 +32,7 @@ func (uc *UserController) HandleRegister(w http.ResponseWriter, r *http.Request)
 	decode.DisallowUnknownFields()
 	err := decode.Decode(&user)
 	if err != nil {
-		JsoneResponse(w, r, err.Error(), http.StatusBadRequest)
+		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -41,17 +41,17 @@ func (uc *UserController) HandleRegister(w http.ResponseWriter, r *http.Request)
 	timeex := time.Now().Add(5 * time.Hour).UTC()
 	userRegiseter, message, uuid := uc.userService.Register(ctx, timeex, &user)
 	if message.MessageError != "" {
-		JsoneResponse(w, r, message.MessageError, http.StatusBadRequest)
+		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
 
 	SetCookie(w, "token", uuid, timeex)
-	JsoneResponse(w, r, userRegiseter, http.StatusOK)
+	JsoneResponse(w, userRegiseter, http.StatusOK)
 }
 
 func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		JsoneResponse(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	decode := DecodeJson(r)
 	err := decode.Decode(&user)
 	if err != nil {
-		JsoneResponse(w, r, err.Error(), http.StatusBadRequest)
+		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
@@ -71,26 +71,26 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	loged, message, uuid := uc.userService.Authentication(ctx, timeex, &user)
 
 	if message.MessageError != "" {
-		JsoneResponse(w, r, message.MessageError, http.StatusBadRequest)
+		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
 
 	SetCookie(w, "token", uuid.String(), timeex)
-	JsoneResponse(w, r, loged, http.StatusOK)
+	JsoneResponse(w, loged, http.StatusOK)
 }
 
 func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		JsoneResponse(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	defer r.Body.Close()
 	var logout models.Logout
 	decode := DecodeJson(r)
-
+	decode.DisallowUnknownFields()
 	err := decode.Decode(&logout)
 	if err != nil {
-		JsoneResponse(w, r, "Invalid request format", http.StatusBadRequest)
+		JsoneResponse(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
 	logout.Id = int64(uc.GetUserId(r))
@@ -99,12 +99,12 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	message, uuid := uc.userService.UUiduser(ctx, logout.Uuid)
 	if message.MessageError != "" {
-		JsoneResponse(w, r, "Missing or invalid Uuid", http.StatusBadRequest)
+		JsoneResponse(w, "Missing or invalid Uuid", http.StatusBadRequest)
 		return
 	}
 	message = uc.userService.LogOut(ctx, uuid)
 	if message.MessageError != "" {
-		JsoneResponse(w, r, message.MessageError, http.StatusBadRequest)
+		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
 	clearCookies(w)
@@ -143,12 +143,12 @@ func clearCookies(w http.ResponseWriter) {
 
 func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		JsoneResponse(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	cookies, err := r.Cookie("token")
 	if err != nil {
-		JsoneResponse(w, r, err.Error(), http.StatusUnauthorized)
+		JsoneResponse(w, err.Error(), http.StatusUnauthorized)
 		fmt.Println(err)
 		return
 	}
