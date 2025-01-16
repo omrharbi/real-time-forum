@@ -4,10 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"html"
+
+	"real-time-froum/messages"
 )
 
 type CategoryRepository interface {
-	PostCategory(ctx context.Context, postId int, category string) error
+	PostCategory(ctx context.Context, postId int, category string) (m messages.Messages)
 	GetCategoryId(ctx context.Context, category string) (int, error)
 	GetPostsByCategor(categoryName string) string
 }
@@ -58,17 +61,28 @@ func (c *CategoryRepositoryImpl) GetCategoryId(ctx context.Context, category str
 }
 
 // postCategory implements CategoryRepository.
-func (c *CategoryRepositoryImpl) PostCategory(ctx context.Context, postId int, category string) error {
-	categoryId, err := c.GetCategoryId(ctx, category)
+func (c *CategoryRepositoryImpl) PostCategory(ctx context.Context, postId int, category string) (m messages.Messages) {
+	categories := html.EscapeString(category)
+	if categories == "" {
+		fmt.Println("Your Category Is Null")
+		m.MessageError = "Your Category Is Null"
+		return m
+	}
+	categoryId, err := c.GetCategoryId(ctx, categories)
 	if err != nil {
-		return err
+		fmt.Println("Error to post Category")
+		m.MessageError = err.Error()
+		return m
 	}
 	query := "INSERT INTO post_category (post_id, category_id) VALUES(?,?)"
 	_, err = c.db.ExecContext(ctx, query, postId, categoryId)
 	if err != nil {
-		return err
+		fmt.Println("Error to post Category")
+		m.MessageError = err.Error()
+		return m
 	}
-	return nil
+	return messages.Messages{}
 }
 
+	
 // getCategoryId implements CategoryRepository.

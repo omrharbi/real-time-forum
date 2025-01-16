@@ -3,12 +3,13 @@ package services
 import (
 	"context"
 
+	"real-time-froum/messages"
 	"real-time-froum/models"
 	"real-time-froum/repo"
 )
 
 type CategoryService interface {
-	AddCategory(ctx context.Context, post_id int, category string) error
+	AddCategory(ctx context.Context, post_id int, category string) (m messages.Messages)
 	GetPostsByCategoryId(ctx context.Context, ategoryName string) []models.PostResponde
 }
 
@@ -22,12 +23,12 @@ func NewcategorysService(repo repo.CategoryRepository, postRepo repo.PostReposit
 }
 
 // AddCategory implements CategoryService.
-func (c *CategoryserviceImpl) AddCategory(ctx context.Context, post_id int, category string) error {
-	err := c.catRepo.PostCategory(ctx, post_id, category)
-	if err != nil {
-		return err
+func (c *CategoryserviceImpl) AddCategory(ctx context.Context, post_id int, category string) (m messages.Messages) {
+	m = c.catRepo.PostCategory(ctx, post_id, category)
+	if m.MessageError != "" {
+		return m
 	}
-	return nil
+	return messages.Messages{}
 }
 
 // GetPostsByCategoryId implements CategoryService.
