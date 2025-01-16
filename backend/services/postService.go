@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"html"
+	"strings"
 
 	"real-time-froum/messages"
 	"real-time-froum/models"
@@ -31,8 +32,8 @@ func NewPostService(postRepo repo.PostRepository, caredRepo repo.CardRepository,
 // Add implements postService.
 func (ps *PstService) Add(ctx context.Context, p *models.Post) (m messages.Messages) {
 	content := html.EscapeString(p.Content)
-	if content == "" {
-		m.MessageError = "Content Is Null"
+	if strings.TrimSpace(content) == "" {
+		m.MessageError = "Content Is Empty"
 		return m
 	}
 	if len(p.Name_Category) == 0 {

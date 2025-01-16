@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"html"
+	"strings"
 
 	"real-time-froum/messages"
 )
@@ -63,9 +64,9 @@ func (c *CategoryRepositoryImpl) GetCategoryId(ctx context.Context, category str
 // postCategory implements CategoryRepository.
 func (c *CategoryRepositoryImpl) PostCategory(ctx context.Context, postId int, category string) (m messages.Messages) {
 	categories := html.EscapeString(category)
-	if categories == "" {
-		fmt.Println("Your Category Is Null")
-		m.MessageError = "Your Category Is Null"
+	if strings.TrimSpace(categories) == "" {
+		fmt.Println("Your Category Is Empty")
+		m.MessageError = "Your Category Is Empty"
 		return m
 	}
 	categoryId, err := c.GetCategoryId(ctx, categories)
@@ -83,6 +84,5 @@ func (c *CategoryRepositoryImpl) PostCategory(ctx context.Context, postId int, c
 	}
 	return messages.Messages{}
 }
-
 
 // getCategoryId implements CategoryRepository.
