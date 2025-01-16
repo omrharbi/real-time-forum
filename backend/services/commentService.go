@@ -2,14 +2,17 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"html"
+	"strings"
 
+	"real-time-froum/messages"
 	"real-time-froum/models"
 	"real-time-froum/repo"
 )
 
 type CommentService interface {
-	AddComment(ctx context.Context, cm *models.Comment)
+	AddComment(ctx context.Context, cm *models.Comment) (m messages.Messages)
 	// GetComment(ctx context.Context, id int) *models.Comment
 	GetAllCommentsbyTarget(ctx context.Context, target int) []models.Comment_View
 }
@@ -23,14 +26,32 @@ func NewCommentService(repo repo.CommentRepository, caredRepo repo.CardRepositor
 	return &commentServiceImpl{CommentRepo: repo, caredRepo: caredRepo}
 }
 
- 
-
 // AddComment implements CommentService.
-func (c *commentServiceImpl) AddComment(ctx context.Context, cm *models.Comment) {
+func (c *commentServiceImpl) AddComment(ctx context.Context, cm *models.Comment) (m messages.Messages) {
 	content := html.EscapeString(cm.Content)
-	cards := c.caredRepo.InsertCard(ctx, cm.User_Id, content)
+
+	if strings.TrimSpace(content) == "" {
+		m.MessageError = "Content is empty or only contains whitespace"
+		return m
+	}
+
+	if len(content) > 1000 {
+		m.MessageError = "Content exceeds the maximum allowed length of 1000 characters"
+		return m
+	}
+
+	cards, err := c.caredRepo.InsertCard(ctx, cm.User_Id, content)
+	if err != nil {
+		fmt.Println(err)
+		m.MessageError = err.Error()
+		return m
+	}
 	cm.Card_Id = cards
-	cm.ID = c.CommentRepo.InsertComment(ctx, cm.Card_Id, cm.Target_Id)
+	m = c.CommentRepo.InsertComment(ctx, cm.Card_Id, cm.Target_Id)
+	if m.MessageError != "" {
+		return m
+	}
+	return messages.Messages{}
 }
 
 // GetAllCommentsbyTarget implements CommentService.

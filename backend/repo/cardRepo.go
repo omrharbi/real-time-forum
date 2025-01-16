@@ -12,7 +12,7 @@ type CardRepository interface {
 	GetAllCardsForPages(ctx context.Context, page int, postsPerPage int) ([]models.Card_View, int)
 	GetCard(ctx context.Context, targetID int) *models.Card_View
 	GetCardById(ctx context.Context, id int) *models.Card
-	InsertCard(ctx context.Context, user_id int, content string) int
+	InsertCard(ctx context.Context, user_id int, content string) (int, error)
 }
 
 type cardRepositoryImpl struct {
@@ -112,12 +112,12 @@ func (c *cardRepositoryImpl) GetCardById(ctx context.Context, id int) *models.Ca
 }
 
 // insertCard implements cardRepository.
-func (c *cardRepositoryImpl) InsertCard(ctx context.Context, user_id int, content string) int {
+func (c *cardRepositoryImpl) InsertCard(ctx context.Context, user_id int, content string) (int, error) {
 	query := "INSERT INTO card(user_id,content) VALUES(?,?)"
 	resl, _ := c.db.ExecContext(ctx, query, user_id, content)
 	id, err := resl.LastInsertId()
 	if err != nil {
-		return -1
+		return 0, err
 	}
-	return int(id)
+	return int(id), nil
 }

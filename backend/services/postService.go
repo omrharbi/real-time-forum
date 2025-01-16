@@ -60,7 +60,11 @@ func (ps *PstService) Add(ctx context.Context, p *models.Post) (m messages.Messa
 		}
 	}
 
-	cards := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
+	cards, err := ps.caredRepo.InsertCard(ctx, p.User_Id, content)
+	if err != nil {
+		m.MessageError = err.Error()
+		return
+	}
 	p.Card_Id = cards
 	id_posr := ps.postRepo.InserPost(ctx, p.Card_Id)
 	for _, name := range p.Name_Category {

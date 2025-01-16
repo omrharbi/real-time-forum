@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 
+	"real-time-froum/messages"
 	"real-time-froum/models"
 )
 
 type CommentRepository interface {
-	InsertComment(ctx context.Context, card_id, target_id int) int
+	InsertComment(ctx context.Context, card_id, target_id int) (m messages.Messages)
 	// GetCommentById(ctx context.Context, id int) *models.Comment
 	GetAllCommentsbyTargetId(ctx context.Context, target int) []models.Comment_View
 }
@@ -50,12 +51,11 @@ func (c *commentRepositoryImpl) GetAllCommentsbyTargetId(ctx context.Context, ta
 }
 
 // insertComment implements CommentRepository.
-func (c *commentRepositoryImpl) InsertComment(ctx context.Context, card_id int, target_id int) int {
+func (c *commentRepositoryImpl) InsertComment(ctx context.Context, card_id int, target_id int) (m messages.Messages) {
 	query := "INSERT INTO comment(card_id,target_id) VALUES(?,?);"
-	resl, _ := c.db.ExecContext(ctx, query, card_id, target_id)
-	id, err := resl.LastInsertId()
+	_, err := c.db.ExecContext(ctx, query, card_id, target_id)
 	if err != nil {
-		return -1
+		m.MessageError = err.Error()
 	}
-	return int(id)
+	return messages.Messages{}
 }

@@ -74,12 +74,10 @@ func (cn *CommentController) addComment(req *http.Request) int {
 
 	decoder := DecodeJson(req)
 	err := decoder.Decode(&comment)
-	if err != nil || (comment.Content == "") {
+	if err != nil {
 		return http.StatusBadRequest
 	}
-	if comment.Content == "" || len(comment.Content) > 1000 {
-		return http.StatusBadRequest
-	}
+
 	cn.commentService.AddComment(req.Context(), &comment)
 	return http.StatusOK
 }
