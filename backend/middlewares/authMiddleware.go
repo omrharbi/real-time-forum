@@ -10,9 +10,6 @@ import (
 	"real-time-froum/services"
 )
 
-type Response struct {
-	context map[string][]string
-}
 type MeddlewireController struct {
 	userService services.UserService
 }
@@ -26,14 +23,10 @@ func NewMeddlewireController(service services.UserService) *MeddlewireController
 func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookies, err := r.Cookie("token")
-		rs := &Response{}
-		rs.context["token"] = []string{
-			cookies.Value,
-		}
+
 		// user := models.User{}
 		if err != nil || cookies == nil {
 			if err == http.ErrNoCookie {
-				fmt.Println(rs)
 				controllers.JsoneResponse(w, "Unauthorized: Cookie not presen", http.StatusUnauthorized)
 				return
 			}
