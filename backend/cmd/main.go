@@ -23,7 +23,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	ctx := context.Background()
-	SetupAPIRoutes(mux,ctx)
+	SetupAPIRoutes(mux, ctx)
 	// route.SetupPageRoutes(mux)
 
 	serverAddr := ":3333"
@@ -53,7 +53,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	// userService := services.NewUserService(userRepo)
 
 	// 4. Initialize the controller
-	userController := controllers.NewUserController(userService)
+	userController := controllers.NewUserController(userService, ctx)
 	homeController := controllers.NewHomeController(cardService)
 	categoryController := controllers.NewcategoryController(categoryService)
 	commentController := controllers.NewCommentController(commentService, userController)

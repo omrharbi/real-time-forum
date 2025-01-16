@@ -13,11 +13,13 @@ import (
 
 type UserController struct {
 	userService services.UserService
+	ctx         context.Context
 }
 
-func NewUserController(service services.UserService) *UserController {
+func NewUserController(service services.UserService, ctx context.Context) *UserController {
 	return &UserController{
 		userService: service,
+		ctx:         ctx,
 	}
 }
 
@@ -36,7 +38,7 @@ func (uc *UserController) HandleRegister(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(uc.ctx, 2*time.Second)
 	defer cancel()
 	timeex := time.Now().Add(5 * time.Hour).UTC()
 	userRegiseter, message, uuid := uc.userService.Register(ctx, timeex, &user)
@@ -65,13 +67,12 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	timeex := time.Now().Add(8 * time.Second).UTC()
-	loged, message, uuid := uc.userService.Authentication(r.Context(), timeex, &user)
+	loged, message, uuid := uc.userService.Authentication(uc.ctx, timeex, &user)
 
 	if message.MessageError != "" {
 		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
-	
 
 	SetCookie(w, "token", uuid.String(), timeex)
 	JsoneResponse(w, loged, http.StatusOK)

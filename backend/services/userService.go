@@ -24,9 +24,10 @@ type UserService interface {
 	LogOut(ctx context.Context, uuid models.UUID) (m messages.Messages)
 	checkPasswordHash(hash, password string) bool
 	hashPassword(password string) string
-	AuthenticatLogin(ctx context.Context, UUID string) (m messages.Messages, expire time.Time)
+	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time)
 	UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
+	GetContext(ctx context.Context, token string) any
 }
 
 type userServiceImpl struct {
@@ -43,7 +44,7 @@ func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, tim
 	if uuid == "" {
 		return false, time.Time{}
 	}
-	return u.userRepo.CheckAuthenticat(ctx, uuid)
+	return u.userRepo.CheckAuthenticat(uuid)
 }
 
 // Getuuid implements UserService.
@@ -54,8 +55,8 @@ func (u *userServiceImpl) Getuuid(ctx context.Context, uuid string) {
 // NewUserService creates a new UserService
 
 // AuthenticatLogin implements UserService.
-func (u *userServiceImpl) AuthenticatLogin(ctx context.Context, UUID string) (m messages.Messages, expire time.Time) {
-	exists, expire := u.userRepo.CheckAuthenticat(ctx, UUID)
+func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time) {
+	exists, expire := u.userRepo.CheckAuthenticat(UUID)
 	if !exists {
 		m.MessageError = "Unauthorized token"
 		return m, time.Time{}
@@ -92,7 +93,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				Firstname: user.Firstname,
 				Lastname:  user.Lastname,
 			}
-			
+
 			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), "online", user.Id, time)
 			if err != nil {
 				message.MessageError = "Error to Update"
@@ -261,6 +262,6 @@ func saveContext(ctx context.Context, token string, val string) context.Context 
 	return context.WithValue(ctx, token, val)
 }
 
-func GetContext(ctx context.Context, token string, val string) any {
+func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
 	return ctx.Value(token)
 }
