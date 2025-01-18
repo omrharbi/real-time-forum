@@ -2,72 +2,50 @@ package services
 
 import "github.com/gorilla/websocket"
 
-type Clients struct {
+type Client struct {
 	Conn     *websocket.Conn
-	Messages chan *Messages
+	Messages chan *Message
 	Id       string `json:"id_user"`
 	UserName string `json:"username"`
-	RoomID   string `json:"roomid"`
 }
 
-type Room struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Clients map[string]*Clients
-}
-type Messages struct {
-	UserName string `json:"username"`
-	Message  string `json:"message"`
-	RoomID   string `json:"roomid"`
+type Message struct {
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	Content  string `json:"content"`
 }
 
 type Hub struct {
-	Room       map[string]*Room
-	Register   chan *Clients
-	Unregister chan *Clients
-	Broadcast  chan *Messages
+	Clients    map[string]*Client
+	Register   chan *Client
+	Unregister chan *Client
+	Broadcast  chan *Message
 }
 
 func NewHub() *Hub {
 	return &Hub{
-		Room:       make(map[string]*Room),
-		Register:   make(chan *Clients),
-		Unregister: make(chan *Clients),
-		Broadcast:  make(chan *Messages, 5),
+		Clients:    make(map[string]*Client),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Broadcast:  make(chan *Message, 5),
 	}
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
-		case cl := <-h.Register:
-			if _, ok := h.Room[cl.RoomID]; ok {
-				r := h.Room[cl.Id]
-				if _, ok := r.Clients[cl.Id]; ok {
-					r.Clients[cl.Id] = cl
-				}
-			}
-		case cl := <-h.Unregister:
-			if _, ok := h.Room[cl.RoomID]; ok {
-				if _, ok := h.Room[cl.RoomID].Clients[cl.Id]; ok {
+		case client := <-h.Register:
+			h.Clients[client.UserName] = client
 
-					if len(h.Room[cl.RoomID].Clients) != 0 {
-						h.Broadcast <- &Messages{
-							Message:  "user Left the chat",
-							RoomID:   cl.RoomID,
-							UserName: cl.UserName,
-						}
-					}
-
-					delete(h.Room[cl.RoomID].Clients, cl.Id)
-					close(cl.Messages)
-				}
+		case client := <-h.Unregister:
+			if _, ok := h.Clients[client.UserName]; ok {
+				close(client.Messages)
+				delete(h.Clients, client.UserName)
 			}
-		case m := <-h.Broadcast:
-			if _, ok := h.Room[m.RoomID]; ok {
-				for _, cl := range h.Room[m.RoomID].Clients {
-					cl.Messages <- m
-				}
+
+		case message := <-h.Broadcast:
+			if recipient, ok := h.Clients[message.Receiver]; ok {
+				recipient.Messages <- message
 			}
 		}
 	}

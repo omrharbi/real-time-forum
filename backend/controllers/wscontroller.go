@@ -36,11 +36,11 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 		log.Println("err", err)
 	}
 	defer conn.Close()
-	var room services.Room
+	var room services.Client
 	err = conn.ReadJSON(&room)
 	if err != nil {
 		log.Println("Error reading JSON:", err)
 		return
 	}
-	fmt.Println(room)
+	fmt.Println(room.Messages)
 }
