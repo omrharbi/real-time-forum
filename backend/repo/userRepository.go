@@ -18,7 +18,7 @@ type UserRepository interface {
 	SelectUser(ctx context.Context, log *models.Login) *models.User
 	CheckAuthenticat(uuid string) (bool, time.Time)
 	CheckUser(ctx context.Context, id int) bool
-	GetUserIdWithUUID(ctx context.Context, uuid string) (string, error)
+	GetUserIdWithUUID(uuid string) (string, string, string, error)
 }
 
 type userRepositoryImpl struct {
@@ -106,14 +106,14 @@ func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nick
 }
 
 // getUserIdWithUUID implements UserRepository.
-func (u *userRepositoryImpl) GetUserIdWithUUID(ctx context.Context, uuid string) (string, error) {
-	stm := `SELECT id FROM user WHERE UUID=? `
-	var uuiduser string
-	err := u.db.QueryRowContext(ctx, stm, uuid).Scan(&uuiduser)
+func (u *userRepositoryImpl) GetUserIdWithUUID(uuid string) (string, string, string, error) {
+	stm := `SELECT id , nickame, firstname FROM user WHERE UUID=? `
+	var id_user, nickame, firstname string
+	err := u.db.QueryRow( stm, uuid).Scan(&id_user, &nickame, &firstname)
 	if err != nil {
-		return "", err
+		return "", "", "", err
 	}
-	return uuiduser, nil
+	return id_user, nickame, firstname, nil
 }
 
 // updateUUIDUser implements UserRepository.

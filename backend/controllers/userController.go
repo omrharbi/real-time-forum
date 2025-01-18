@@ -66,7 +66,7 @@ func (uc *UserController) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	timeex := time.Now().Add(10 * time.Second).UTC()
+	timeex := time.Now().Add(80 * time.Second).UTC()
 	loged, message, uuid := uc.userService.Authentication(uc.ctx, timeex, &user)
 
 	if message.MessageError != "" {
@@ -96,7 +96,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
-	message, uuid := uc.userService.UUiduser(ctx, logout.Uuid)
+	message, uuid := uc.userService.UUiduser(logout.Uuid)
 	if message.MessageError != "" {
 		JsoneResponse(w, "Missing or invalid Uuid", http.StatusBadRequest)
 		return
@@ -125,9 +125,9 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 	if err != nil {
 		return 0
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
-	defer cancel()
-	m, uuid := uc.userService.UUiduser(ctx, cookie.Value)
+	// ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+	// defer cancel()
+	m, uuid := uc.userService.UUiduser(cookie.Value)
 	if m.MessageError != "" {
 		fmt.Println(m.MessageError)
 	}
@@ -154,7 +154,7 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	is, expire := uc.userService.CheckAuth(r.Context(), cookies.Value)
 	if !time.Now().Before(expire) {
 		u := models.UUID{}
-		uc.userService.UUiduser(r.Context(), cookies.Value)
+		uc.userService.UUiduser(cookies.Value)
 		uc.userService.LogOut(r.Context(), u)
 		fmt.Println("Log out")
 		return

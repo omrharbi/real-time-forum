@@ -43,7 +43,7 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		}
 		if !time.Now().Before(expire) {
 			u := models.UUID{}
-			m.userService.UUiduser(r.Context(), cookies.Value)
+			m.userService.UUiduser(cookies.Value)
 			m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return

@@ -25,7 +25,7 @@ type UserService interface {
 	checkPasswordHash(hash, password string) bool
 	hashPassword(password string) string
 	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time)
-	UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID)
+	UUiduser( uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 	GetContext(ctx context.Context, token string) any
 }
@@ -126,8 +126,8 @@ func (u *userServiceImpl) LogOut(ctx context.Context, uuid models.UUID) (m messa
 }
 
 // UUiduser implements UserService.
-func (u *userServiceImpl) UUiduser(ctx context.Context, uuid string) (m messages.Messages, us models.UUID) {
-	id, err := u.userRepo.GetUserIdWithUUID(ctx, uuid)
+func (u *userServiceImpl) UUiduser(uuid string) (m messages.Messages, us models.UUID) {
+	id, nickame, firstname, err := u.userRepo.GetUserIdWithUUID(uuid)
 	if err != nil {
 		m.MessageError = "Unauthorized token"
 		return m, models.UUID{}
@@ -138,6 +138,8 @@ func (u *userServiceImpl) UUiduser(ctx context.Context, uuid string) (m messages
 		return m, models.UUID{}
 	}
 	us.Iduser = id_user
+	us.Nickname = nickame
+	us.Firstname = firstname
 
 	return m, us
 }

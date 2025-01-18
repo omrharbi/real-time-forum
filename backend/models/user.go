@@ -37,7 +37,9 @@ type Login struct {
 	Password string `json:"password"`
 }
 type UUID struct {
-	Iduser int
+	Iduser    int
+	Nickname  string `json:"nickname"`
+	Firstname string `json:"firstname"`
 }
 type Logout struct {
 	Id   int64  `json:"id"`
