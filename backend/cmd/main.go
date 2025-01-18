@@ -25,7 +25,7 @@ func main() {
 	ctx := context.Background()
 	SetupAPIRoutes(mux, ctx)
 	// route.SetupPageRoutes(mux)
-
+	go services.NewHub().Run()
 	serverAddr := ":3333"
 	log.Printf("Server running at http://localhost%s/home\n", serverAddr)
 	err = http.ListenAndServe(serverAddr, mux)
@@ -52,6 +52,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	commentService := services.NewCommentService(commentRepo, cardRepo)
 	postService := services.NewPostService(postRepo, cardRepo, categoryRepo)
 	categoryService := services.NewcategorysService(categoryRepo, postRepo)
+	hubService := services.NewHub()
 	// userService := services.NewUserService(userRepo)
 
 	// 4. Initialize the controller
@@ -63,12 +64,13 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	postController := controllers.NewpostController(postService, userController)
 	profileController := controllers.NewprofileController(profileService, userController)
 	middlewareController := middlewares.NewMeddlewireController(userService) //.NewMeddlewireController(userService)
+	hubController := controllers.NewHubController(hubService)                //.NewMeddlewireController(userService)
 	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister) // done
 	mux.HandleFunc("/api/login", userController.HandleLogin)
 	mux.HandleFunc("/api/isLogged", userController.HandleIsLogged)
 	// done
-	newWs := controllers.NewManager(userController)
+	// newWs := controllers.NewManager(userController)
 	mux.Handle("/api/post", middlewareController.AuthenticateMiddleware(http.HandlerFunc(postController.HandlePost)))
 	mux.Handle("/api/home", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.HomeHandle)))
 	mux.Handle("/api/card", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.GetCard_handler)))
@@ -81,6 +83,6 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/likescheked", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.LikesCheckedHandle))) /// this get user liked card
 	mux.Handle("/api/addlike", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleAddLike)))
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
-	//mux.Handle("/ws", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
-	mux.Handle("/ws", http.HandlerFunc(newWs.ServWs))
+	//	mux.Handle("/ws", middlewareController.AuthenticateMiddleware(http.HandlerFunc(newWs.ServWs)))
+	mux.Handle("/ws", http.HandlerFunc(hubController.Messages))
 }

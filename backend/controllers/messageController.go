@@ -9,6 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type ClientList map[*Client]bool
+
 var websocketUpgrade = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -24,13 +26,11 @@ type Client struct {
 	Manager    *Manager
 	egress     chan []byte
 	Name_user  string
-	send       string
 }
 
 type Manager struct {
-	Client map[*Client]bool
+	Client ClientList
 	sync.RWMutex
-	user *UserController
 }
 
 func NewClient(conn *websocket.Conn, man *Manager) *Client {
@@ -43,8 +43,7 @@ func NewClient(conn *websocket.Conn, man *Manager) *Client {
 
 func NewManager(user *UserController) *Manager {
 	return &Manager{
-		Client: make(Client),
-		user:   user,
+		Client: make(ClientList),
 	}
 }
 
@@ -55,7 +54,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("Err", err)
 		return
 	}
-	defer conn.Close()
+	fmt.Println("Add", conn.RemoteAddr())
 	// coock, err := r.Cookie("token")
 	// if err != nil {
 	// 	fmt.Println("Err", err)
@@ -66,9 +65,9 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println(mes.MessageError)
 	// }
 	client := NewClient(conn, m)
-	// client.Name_user = uuid.Nickname
+	client.Name_user = "omar"
+	fmt.Println(client)
 	m.addClient(client)
-	/// start Messages
 	go client.ReadMess()
 	go client.WriteMess()
 }
