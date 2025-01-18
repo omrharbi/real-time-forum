@@ -46,7 +46,4 @@ func JsoneResponseError(w http.ResponseWriter, r *http.Request, message any, cod
 	}
 }
 
-func NewEncoderJsone(w http.ResponseWriter) *json.Encoder {
-	decode := json.NewEncoder(w)
-	return decode
-}
+ 
