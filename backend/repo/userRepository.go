@@ -107,9 +107,9 @@ func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nick
 
 // getUserIdWithUUID implements UserRepository.
 func (u *userRepositoryImpl) GetUserIdWithUUID(uuid string) (string, string, string, error) {
-	stm := `SELECT id , nickame, firstname FROM user WHERE UUID=? `
+	stm := `SELECT id , nickname, firstname FROM user WHERE UUID=? `
 	var id_user, nickame, firstname string
-	err := u.db.QueryRow( stm, uuid).Scan(&id_user, &nickame, &firstname)
+	err := u.db.QueryRow(stm, uuid).Scan(&id_user, &nickame, &firstname)
 	if err != nil {
 		return "", "", "", err
 	}

@@ -16,11 +16,11 @@ var websocketUpgrade = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-type Message struct {
+type Messages struct {
 	Sender   int    `json:"sender_user"`
 	Receiver int    `json:"receiver"`
 	UserName string `json:"userName"`
-	Message  string `json:"message"`
+	Content  string `json:"content"`
 }
 
 type Client struct {
@@ -28,12 +28,13 @@ type Client struct {
 	Manager    *Manager
 	egress     chan []byte
 	Name_user  string
+	id_user    chan int
 }
 
 type Manager struct {
 	Client ClientList
-	user   *UserController
 	sync.RWMutex
+	user *UserController
 }
 
 func NewClient(conn *websocket.Conn, man *Manager) *Client {
@@ -59,30 +60,31 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("Add", conn.RemoteAddr())
-	// coock, err := r.Cookie("token")
-	// if err != nil {
-	// 	fmt.Println("Err", err)
-	// 	return
-	// }
-	uuid := m.user.GetUserId(r)
-	fmt.Println(uuid)
-	// if mes.MessageError != "" {
-	// 	fmt.Println(mes.MessageError)
-	// }
+	coock, err := r.Cookie("token")
+	if err != nil {
+		fmt.Println("Err", err)
+		return
+	}
+	mes, uuid := m.user.userService.UUiduser(coock.Value)
+	if mes.MessageError != "" {
+		fmt.Println(mes.MessageError)
+	}
+
 	client := NewClient(conn, m)
-	client.Name_user = "omar"
-	fmt.Println(client)
+	client.Name_user = uuid.Nickname
+	client.id_user <- uuid.Iduser
+	fmt.Println()
 	m.addClient(client)
-	go client.ReadMess()
+	go client.ReadMess(uuid.Iduser)
 	go client.WriteMess()
 }
 
-func (c *Client) ReadMess() {
+func (c *Client) ReadMess(Iduser int) {
 	defer func() {
 		c.Manager.removeClient(c)
 	}()
 	for {
-		var m Message
+		var m Messages
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -92,10 +94,11 @@ func (c *Client) ReadMess() {
 		}
 		for wsClient := range c.Manager.Client {
 			if wsClient.connection != c.connection {
-				wsClient.egress <- []byte(m.Message)
+				wsClient.egress <- []byte(m.Content)
+				wsClient.id_user <- Iduser
 			}
 		}
-
+		fmt.Println(m)
 	}
 }
 
@@ -122,7 +125,6 @@ func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	m.Client[client] = true // connected client
-	fmt.Println(m.Client)
 }
 
 func (m *Manager) removeClient(client *Client) {
