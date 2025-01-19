@@ -40,7 +40,7 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	uuid := h.userController.GetUserId(r)
-
+	fmt.Println(uuid)
 	cl := &services.Clients{
 		Conn:     conn,
 		Messages: make(chan *services.Message, 10),

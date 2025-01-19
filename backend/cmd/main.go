@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"real-time-froum/config"
 	"real-time-froum/controllers"
@@ -23,7 +24,9 @@ func main() {
 
 	mux := http.NewServeMux()
 	ctx := context.Background()
-	SetupAPIRoutes(mux, ctx) 
+	SetupPageRoutes(mux)
+	SetupAPIRoutes(mux, ctx)
+
 	serverAddr := ":3333"
 	log.Printf("Server running at http://localhost%s/home\n", serverAddr)
 	err = http.ListenAndServe(serverAddr, mux)
@@ -83,4 +86,47 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
 	//	mux.Handle("/ws", middlewareController.AuthenticateMiddleware(http.HandlerFunc(newWs.ServWs)))
 	mux.Handle("/ws", http.HandlerFunc(hubController.Messages))
+}
+
+func SetupPageRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			fmt.Println("Errorororororo")
+			return
+		}
+
+		suffix := r.URL.Path[len("/static/"):]
+
+		if strings.Contains(suffix, ".css/") || strings.Contains(suffix, ".js/") || strings.Contains(suffix, ".png/") {
+			fmt.Println("Errorororororo")
+			return
+		}
+
+		if strings.Contains(suffix, ".js") {
+			http.ServeFile(w, r, "../../frontend/static/"+suffix)
+			return
+		}
+
+		allowedFiles := map[string]bool{
+			"css/alert.css":       true,
+			"css/styles.css":      true,
+			"imgs/logo.png":       true,
+			"imgs/profilePic.png": true,
+		}
+
+		if !allowedFiles[suffix] {
+			fmt.Println("Errorororororo")
+			return
+		}
+		http.ServeFile(w, r, "../../frontend/static/"+suffix)
+	})
+
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		cookies, err := r.Cookie("token")
+		if err != nil || cookies == nil {
+			http.ServeFile(w, r, "../../frontend/templates/login.html")
+		} else {
+			http.Redirect(w, r, "/home", http.StatusSeeOther)
+		}
+	})
 }
