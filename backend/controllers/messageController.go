@@ -14,6 +14,7 @@ type ClientList map[*Client]bool
 var websocketUpgrade = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 type Messages struct {
@@ -28,27 +29,29 @@ type Client struct {
 	Manager    *Manager
 	egress     chan []byte
 	Name_user  string
-	id_user    chan int
+	id_user    int
 }
 
 type Manager struct {
-	Client ClientList
+	Clients map[int]*Client // Map user ID to their Client object
 	sync.RWMutex
 	user *UserController
 }
 
-func NewClient(conn *websocket.Conn, man *Manager) *Client {
+func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
 	return &Client{
 		connection: conn,
 		Manager:    man,
 		egress:     make(chan []byte),
+		Name_user:  name,
+		id_user:    id,
 	}
 }
 
 func NewManager(user *UserController) *Manager {
 	return &Manager{
-		Client: make(ClientList),
-		user:   user,
+		Clients: make(map[int]*Client),
+		user:    user,
 	}
 }
 
@@ -70,16 +73,13 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(mes.MessageError)
 	}
 
-	client := NewClient(conn, m)
-	client.Name_user = uuid.Nickname
-	client.id_user <- uuid.Iduser
-	fmt.Println()
+	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
-	go client.ReadMess(uuid.Iduser)
+	go client.ReadMess()
 	go client.WriteMess()
 }
 
-func (c *Client) ReadMess(Iduser int) {
+func (c *Client) ReadMess() {
 	defer func() {
 		c.Manager.removeClient(c)
 	}()
@@ -92,13 +92,16 @@ func (c *Client) ReadMess(Iduser int) {
 			}
 			break
 		}
-		for wsClient := range c.Manager.Client {
-			if wsClient.connection != c.connection {
-				wsClient.egress <- []byte(m.Content)
-				wsClient.id_user <- Iduser
-			}
+		c.Manager.Lock()
+		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
+			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
+			receiverClient.egress <- []byte(message)
+		} else {
+			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
-		fmt.Println(m)
+		c.Manager.Unlock()
+		fmt.Println("Message from", c.id_user, "to", m.Receiver, ":", m.Content)
+
 	}
 }
 
@@ -124,14 +127,16 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	m.Client[client] = true // connected client
+	m.Clients[client.id_user] = client // Add the client to the map using their user ID
+	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 
 func (m *Manager) removeClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	if _, ok := m.Client[client]; ok {
+	if _, ok := m.Clients[client.id_user]; ok {
 		client.connection.Close()
-		delete(m.Client, client)
+		delete(m.Clients, client.id_user) // Remove the client from the map
+		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
 	}
 }

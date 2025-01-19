@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type your message here..." />
+        <button id="sendButton">Send</button>
+    </div>
+    <div id="log"></div>
+
+    <!-- <script>
+        // Establish WebSocket connection
+      const ws = new WebSocket('ws://localhost:3333/ws');
+
+        // Log container
+        const log = document.getElementById('log');
+
+        // Add event listener for WebSocket open
+        ws.onopen = () => {
+            logMessage('WebSocket connection established.');
+        };
+
+        // Add event listener for incoming messages
+        ws.onmessage = (event) => {
+            logMessage('Message received: ' + event.data);
+        };
+
+        // Add event listener for errors
+        ws.onerror = (error) => {
+            logMessage('WebSocket error: ' + error.message);
+        };
+
+        // Add event listener for connection close
+        ws.onclose = () => {
+            logMessage('WebSocket connection closed.');
+        };
+
+        // Send message on button click
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const input = document.getElementById('messageInput');
+            const message = input.value;
+
+            if (message.trim() === '') {
+                logMessage('Cannot send an empty message.');
+                return;
+            }
+
+            // Send JSON message
+            ws.send(JSON.stringify({
+                receiver: 4,
+                userName: "omar",
+                content: message
+            }));
+
+            logMessage('Message sent: ' + message);
+            input.value = ''; // Clear input
+        });
+
+        //Function to append a log message
+        function logMessage(message) {
+            const logItem = document.createElement('div');
+            logItem.textContent = message;
+            log.appendChild(logItem);
+            log.scrollTop = log.scrollHeight; // Auto-scroll
+        }
+    </script> -->
+</body>
+</html>

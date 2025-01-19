@@ -129,4 +129,11 @@ func SetupPageRoutes(mux *http.ServeMux) {
 			http.Redirect(w, r, "/home", http.StatusSeeOther)
 		}
 	})
+
+	mux.HandleFunc("/message", func(w http.ResponseWriter, r *http.Request) {
+		cookies, err := r.Cookie("token")
+		if err != nil || cookies == nil {
+			http.ServeFile(w, r, "../../frontend/templates/message.html")
+		} 
+	})
 }
