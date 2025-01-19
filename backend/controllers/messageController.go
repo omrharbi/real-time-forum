@@ -74,9 +74,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-	m.Lock()
 	m.addClient(client)
-	m.Unlock()
 	go client.ReadMess()
 	go client.WriteMess()
 }
@@ -85,39 +83,30 @@ func (c *Client) ReadMess() {
 	defer func() {
 		c.Manager.removeClient(c)
 	}()
+
 	for {
 		var m Messages
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Println("error Reading Message", err)
+				log.Println("Error reading message:", err)
 			}
 			break
 		}
-		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
+
+		c.Manager.RLock()
+		receiverClient, ok := c.Manager.Clients[m.Receiver]
+		c.Manager.RUnlock()
+
+		if ok {
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
-
 		} else {
 			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
-		// c.Manager.Unlock()
-		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
 
+		log.Printf("Message from %s to %d: %s\n", c.Name_user, m.Receiver, m.Content)
 	}
-}
-
-func (m *Client) sendMessageToClient(msg Messages) {
-	m.Lock()
-	receiverConn, exists := ClientList[msg.Receiver]
-	m.Unlock()
-
-	if !exists {
-		// log.Printf("User %s is offline", msg.Receiver)
-		return
-	}
- 
-	receiverConn.WriteJSON(msg)
 }
 
 func (c *Client) WriteMess() {

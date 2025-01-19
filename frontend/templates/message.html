@@ -55,6 +55,9 @@
             display: flex;
             align-items: center;
             padding: 8px;
+            cursor: pointer;
+            padding: 18px;
+
             border-bottom: 1px solid #eee;
         }
 
@@ -155,11 +158,19 @@
                 logMessage('Cannot send an empty message.');
                 return;
             }
+            const queryString = window.location.search;
+
+            // Parse the query string into an object using URLSearchParams
+            const urlParams = new URLSearchParams(queryString);
+
+            // Access individual parameters
+            const sender = urlParams.get('sender');
+            const receiver = urlParams.get('receiver');
 
             // Send JSON message
             ws.send(JSON.stringify({
-                type: 'chat-message',
-                receiver: 4,
+                sender_user:sender,
+                receiver:receiver,
                 userName: "omar",
                 content: message
             }));
@@ -178,16 +189,33 @@
 
         // Function to add a user to the connection list
         function addUser(userId, userName) {
+            const a = document.createElement('a');
             const userItem = document.createElement('li');
             userItem.setAttribute("data-id", userId)
             userItem.className = 'user-item';
+            userItem.id = "iduser"
             userItem.innerHTML = `
                 <div class="user-icon">${userName[0].toUpperCase()}</div>
                 <div class="user-name">${userName}</div>
             `;
             userList.appendChild(userItem);
-        }
 
+            let users = document.querySelectorAll("#iduser")
+
+            Array.from(users).forEach((cli) => {
+                cli.addEventListener("click", (e) => {
+                    e.preventDefault()
+                    const userId = cli.getAttribute("data-id");
+                    const userName = cli.querySelector(".user-name").textContent;
+                    const senderId = 5;
+
+                    const url = `messages?sender=${senderId}&receiver=${userId}`;
+                    history.pushState({}, '', url);
+                    location.href = url;
+                });
+            });
+        }
+ 
 
 
         async function getuserConnect() {
@@ -197,13 +225,12 @@
             if (response.ok) {
                 let data = await response.json()
                 data.forEach(user => {
-                    console.log(`ID: ${user.Iduser}, Nickname: ${user.nickname}, First Name: ${user.firstname}`);
-                    // You can call your addUser function here
                     addUser(user.Iduser, user.nickname);
                 });
             }
         }
         getuserConnect()
+
     </script>
 </body>
 
