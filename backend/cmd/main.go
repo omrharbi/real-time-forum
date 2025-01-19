@@ -23,9 +23,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	ctx := context.Background()
-	SetupAPIRoutes(mux, ctx)
-	// route.SetupPageRoutes(mux)
-	go services.NewHub().Run()
+	SetupAPIRoutes(mux, ctx) 
 	serverAddr := ":3333"
 	log.Printf("Server running at http://localhost%s/home\n", serverAddr)
 	err = http.ListenAndServe(serverAddr, mux)
@@ -63,8 +61,8 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController)
 	profileController := controllers.NewprofileController(profileService, userController)
-	middlewareController := middlewares.NewMeddlewireController(userService) //.NewMeddlewireController(userService)
-	hubController := controllers.NewHubController(hubService)                //.NewMeddlewireController(userService)
+	middlewareController := middlewares.NewMeddlewireController(userService)  //.NewMeddlewireController(userService)
+	hubController := controllers.NewHubController(hubService, userController) //.NewMeddlewireController(userService)
 	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister) // done
 	mux.HandleFunc("/api/login", userController.HandleLogin)

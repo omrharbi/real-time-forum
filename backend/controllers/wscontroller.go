@@ -46,7 +46,7 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 		Messages: make(chan *services.Message, 10),
 		Id:       uuid,
 	}
-	h.hub.Run(uuid)
+	go h.hub.Run(uuid)
 	// h.hub.Register <- cl
 	// h.hub.Broadcast <- ms
 	go cl.WriteMessage()
