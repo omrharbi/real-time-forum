@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"log"
 	"sync"
 
@@ -69,7 +68,6 @@ func (c *Clients) WriteMessage() {
 		if !ok {
 			return
 		}
-		fmt.Println(mess)
 		c.Conn.WriteJSON(mess)
 	}
 }

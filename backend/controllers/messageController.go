@@ -32,6 +32,7 @@ type Client struct {
 
 type Manager struct {
 	Client ClientList
+	user   *UserController
 	sync.RWMutex
 }
 
@@ -46,6 +47,7 @@ func NewClient(conn *websocket.Conn, man *Manager) *Client {
 func NewManager(user *UserController) *Manager {
 	return &Manager{
 		Client: make(ClientList),
+		user:   user,
 	}
 }
 
@@ -62,13 +64,15 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Println("Err", err)
 	// 	return
 	// }
-	// mes, uuid := m.user.userService.UUiduser(coock.Value)
+	uuid := m.user.GetUserId(r)
+	fmt.Println(uuid)
 	// if mes.MessageError != "" {
 	// 	fmt.Println(mes.MessageError)
 	// }
 	client := NewClient(conn, m)
 	client.Name_user = "omar"
- 
+	fmt.Println(client)
+	m.addClient(client)
 	go client.ReadMess()
 	go client.WriteMess()
 }

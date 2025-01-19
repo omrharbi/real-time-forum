@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -39,18 +38,22 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	uuid := h.userController.GetUserId(r)
-	fmt.Println(uuid)
+	// uuid := h.userController.GetUserId(r)
+	// fmt.Println(uuid)
 	cl := &services.Clients{
 		Conn:     conn,
 		Messages: make(chan *services.Message, 10),
-		Id:       uuid,
 	}
-	go h.hub.Run(uuid)
+	// go h.hub.Run(uuid)
 	// h.hub.Register <- cl
 	// h.hub.Broadcast <- ms
 	go cl.WriteMessage()
 	go cl.ReadMessage(h.hub)
-
-	fmt.Println(cl)
 }
+
+// func (h *HandlerHub)  addClients(client *Client) {
+// 	h.hub.Clients.
+// 	defer m.Unlock()
+// 	m.Client[client] = true // connected client
+// 	fmt.Println(m.Client)
+// }
