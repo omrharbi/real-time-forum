@@ -36,11 +36,25 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 		log.Println("err", err)
 	}
 	defer conn.Close()
-	var room services.Client
-	err = conn.ReadJSON(&room)
+	var ms *services.Message
+	// cl.Conn = conn
+
+	err = conn.ReadJSON(&ms)
 	if err != nil {
 		log.Println("Error reading JSON:", err)
 		return
 	}
-	fmt.Println(room.Messages)
+	cl := &services.Clients{
+		Conn:     conn,
+		Messages: make(chan *services.Message, 10),
+		Id:       ms.Sender,
+		UserName: ms.UserName,
+	}
+
+	h.hub.Register <- cl
+	h.hub.Broadcast <- ms
+	go cl.WriteMessage()
+	go cl.ReadMessage(h.hub)
+
+	fmt.Println(cl)
 }

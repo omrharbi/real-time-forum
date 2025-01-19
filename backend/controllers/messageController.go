@@ -17,8 +17,10 @@ var websocketUpgrade = websocket.Upgrader{
 }
 
 type Message struct {
-	Id      int    `json:"id_user"`
-	Message string `json:"message"`
+	Sender   int    `json:"sender_user"`
+	Receiver int    `json:"receiver"`
+	UserName string `json:"userName"`
+	Message  string `json:"message"`
 }
 
 type Client struct {
@@ -66,8 +68,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	// }
 	client := NewClient(conn, m)
 	client.Name_user = "omar"
-	fmt.Println(client)
-	m.addClient(client)
+ 
 	go client.ReadMess()
 	go client.WriteMess()
 }
