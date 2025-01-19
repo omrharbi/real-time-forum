@@ -158,19 +158,11 @@
                 logMessage('Cannot send an empty message.');
                 return;
             }
-            const queryString = window.location.search;
-
-            // Parse the query string into an object using URLSearchParams
-            const urlParams = new URLSearchParams(queryString);
-
-            // Access individual parameters
-            const sender = urlParams.get('sender');
-            const receiver = urlParams.get('receiver');
 
             // Send JSON message
             ws.send(JSON.stringify({
-                sender_user:sender,
-                receiver:receiver,
+                sender_user: 4,
+                receiver:5,
                 userName: "omar",
                 content: message
             }));
@@ -204,18 +196,19 @@
 
             Array.from(users).forEach((cli) => {
                 cli.addEventListener("click", (e) => {
-                    e.preventDefault()
+                    // Access the user ID from the data-id attribute
                     const userId = cli.getAttribute("data-id");
                     const userName = cli.querySelector(".user-name").textContent;
-                    const senderId = 5;
-
-                    const url = `messages?sender=${senderId}&receiver=${userId}`;
-                    history.pushState({}, '', url);
-                    location.href = url;
+                    const senderId = "omar"; // Replace this with the actual sender ID
+ 
+                    const url = `messages?sender=${senderId}&receiver=${userName}`;
+                    // Update the browser's location and history
+                    history.pushState({}, '', url); // Append URL without reloading the page
+                    location.href = url; // Navigate to the new URL
                 });
             });
         }
- 
+
 
 
         async function getuserConnect() {

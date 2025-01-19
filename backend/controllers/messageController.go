@@ -83,29 +83,28 @@ func (c *Client) ReadMess() {
 	defer func() {
 		c.Manager.removeClient(c)
 	}()
-
 	for {
 		var m Messages
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Println("Error reading message:", err)
+				log.Println("error Reading Message", err)
 			}
 			break
 		}
+		// c.Manager.Lock()
+		fmt.Println(m.Receiver)
+		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
 
-		c.Manager.RLock()
-		receiverClient, ok := c.Manager.Clients[m.Receiver]
-		c.Manager.RUnlock()
-
-		if ok {
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
+
 		} else {
 			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
+		// c.Manager.Unlock()
+		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
 
-		log.Printf("Message from %s to %d: %s\n", c.Name_user, m.Receiver, m.Content)
 	}
 }
 
