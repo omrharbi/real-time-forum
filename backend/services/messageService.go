@@ -1,32 +1,27 @@
 package services
 
-import "real-time-froum/repo"
+import (
+	"real-time-froum/models"
+	"real-time-froum/repo"
+
+	"github.com/gorilla/websocket"
+)
 
 type MessageService interface {
-	AddMessages()
-	GetMeessages()
-	DeleteMessages()
+	AddMessages(msg string, senderID int, receiverID int) error
+	GetMessages(senderID int, receiverID int) ([]string, error)
+	DeleteMessages(msgID int) error
 }
 
 type MessageServiceImpl struct {
 	mess repo.MessageRepository
 }
 
-func NewMessageService(mess repo.MessageRepository) MessageService {
-	return &MessageServiceImpl{mess: mess}
-}
-
-// AddMessages implements MessageService.
-func (m *MessageServiceImpl) AddMessages() {
-	panic("unimplemented")
-}
-
-// DeleteMessages implements MessageService.
-func (m *MessageServiceImpl) DeleteMessages() {
-	panic("unimplemented")
-}
-
-// GetMeessages implements MessageService.
-func (m *MessageServiceImpl) GetMeessages() {
-	panic("unimplemented")
+func NewClient(conn *websocket.Conn, id int, name string) *models.Client {
+	return &models.Client{
+		Connection: conn,
+		Egress:     make(chan []byte),
+		Name_user:  name,
+		Id_user:    id,
+	}
 }

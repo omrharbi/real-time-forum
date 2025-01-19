@@ -75,8 +75,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
-	go client.ReadMess()
 	go client.WriteMess()
+	go client.ReadMess()
 }
 
 func (c *Client) ReadMess() {
@@ -92,10 +92,9 @@ func (c *Client) ReadMess() {
 			}
 			break
 		}
-		// c.Manager.Lock()
-		fmt.Println(m.Receiver)
-		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
 
+		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
+			fmt.Println(receiverClient, m.Sender)
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
 

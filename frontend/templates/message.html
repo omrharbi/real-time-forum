@@ -57,7 +57,6 @@
             padding: 8px;
             cursor: pointer;
             padding: 18px;
-
             border-bottom: 1px solid #eee;
         }
 
@@ -117,26 +116,11 @@
         ws.onmessage = (event) => {
             const receivedData = event.data;
 
-            // Attempt Base64 decoding
-            let decodedMessage;
-            try {
-                decodedMessage = atob(receivedData); // Base64 decode
-            } catch (e) {
-                decodedMessage = receivedData; // If not Base64, use the raw message
-            }
 
-            // Check if the message contains user info or chat message
-            try {
-                const parsed = JSON.parse(decodedMessage);
-                if (parsed.type === 'user-connected') {
-                    // Add new user to the list
-                    addUser(parsed.userId, parsed.userName);
-                } else if (parsed.type === 'chat-message') {
-                    logMessage('Message received: ' + parsed.content);
-                }
-            } catch {
-                logMessage('Message received: ' + decodedMessage);
-            }
+            const parsed = JSON.parse(receivedData);
+       
+            logMessage('Message received: ' + atob(parsed));
+
         };
 
         // Add event listener for errors
@@ -161,14 +145,14 @@
 
             // Send JSON message
             ws.send(JSON.stringify({
-                sender_user: 4,
-                receiver:5,
+                sender_user: 6,
+                receiver: 4,
                 userName: "omar",
                 content: message
             }));
 
             logMessage('Message sent: ' + message);
-            input.value = ''; // Clear input
+            input.value = '';
         });
 
         // Function to append a log message
@@ -181,48 +165,38 @@
 
         // Function to add a user to the connection list
         function addUser(userId, userName) {
-            const a = document.createElement('a');
             const userItem = document.createElement('li');
-            userItem.setAttribute("data-id", userId)
+            userItem.setAttribute("data-id", userId);
             userItem.className = 'user-item';
-            userItem.id = "iduser"
             userItem.innerHTML = `
                 <div class="user-icon">${userName[0].toUpperCase()}</div>
                 <div class="user-name">${userName}</div>
             `;
             userList.appendChild(userItem);
 
-            let users = document.querySelectorAll("#iduser")
+            userItem.addEventListener("click", () => {
+                const senderId = "omar"; // Replace this with the actual sender ID
 
-            Array.from(users).forEach((cli) => {
-                cli.addEventListener("click", (e) => {
-                    // Access the user ID from the data-id attribute
-                    const userId = cli.getAttribute("data-id");
-                    const userName = cli.querySelector(".user-name").textContent;
-                    const senderId = "omar"; // Replace this with the actual sender ID
- 
-                    const url = `messages?sender=${senderId}&receiver=${userName}`;
-                    // Update the browser's location and history
-                    history.pushState({}, '', url); // Append URL without reloading the page
-                    location.href = url; // Navigate to the new URL
-                });
+                const url = `messages?sender=${senderId}&receiver=${userName}`;
+                // Update the browser's location and history
+                history.pushState({}, '', url); // Append URL without reloading the page
+                location.href = url; // Navigate to the new URL
             });
         }
-
-
 
         async function getuserConnect() {
             const response = await fetch(`/api/connected`, {
                 method: "GET",
             });
             if (response.ok) {
-                let data = await response.json()
+                let data = await response.json();
                 data.forEach(user => {
                     addUser(user.Iduser, user.nickname);
                 });
             }
         }
-        getuserConnect()
+
+        getuserConnect();
 
     </script>
 </body>
