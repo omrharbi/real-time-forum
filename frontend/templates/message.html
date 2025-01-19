@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         #log {
             margin-top: 20px;
             padding: 10px;
@@ -17,29 +19,91 @@
             overflow-y: auto;
             background: #f9f9f9;
         }
+
         input {
             width: 80%;
             padding: 10px;
         }
+
         button {
             padding: 10px;
         }
+
+        .connec {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #ffffff;
+            width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .connec h2 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-size: 1rem;
+            color: #333;
+        }
     </style>
 </head>
+
 <body>
     <h1>WebSocket Test</h1>
+    <div class="connec">
+        <h2>Connected Users</h2>
+        <ul class="user-list" id="userList">
+            <!-- User items will be added dynamically -->
+        </ul>
+    </div>
     <div>
         <input type="text" id="messageInput" placeholder="Type your message here..." />
         <button id="sendButton">Send</button>
     </div>
     <div id="log"></div>
 
-    <!-- <script>
+    <script>
         // Establish WebSocket connection
-      const ws = new WebSocket('ws://localhost:3333/ws');
+        const ws = new WebSocket('ws://localhost:3333/ws');
 
         // Log container
         const log = document.getElementById('log');
+        const userList = document.getElementById('userList');
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
@@ -48,7 +112,28 @@
 
         // Add event listener for incoming messages
         ws.onmessage = (event) => {
-            logMessage('Message received: ' + event.data);
+            const receivedData = event.data;
+
+            // Attempt Base64 decoding
+            let decodedMessage;
+            try {
+                decodedMessage = atob(receivedData); // Base64 decode
+            } catch (e) {
+                decodedMessage = receivedData; // If not Base64, use the raw message
+            }
+
+            // Check if the message contains user info or chat message
+            try {
+                const parsed = JSON.parse(decodedMessage);
+                if (parsed.type === 'user-connected') {
+                    // Add new user to the list
+                    addUser(parsed.userId, parsed.userName);
+                } else if (parsed.type === 'chat-message') {
+                    logMessage('Message received: ' + parsed.content);
+                }
+            } catch {
+                logMessage('Message received: ' + decodedMessage);
+            }
         };
 
         // Add event listener for errors
@@ -73,6 +158,7 @@
 
             // Send JSON message
             ws.send(JSON.stringify({
+                type: 'chat-message',
                 receiver: 4,
                 userName: "omar",
                 content: message
@@ -82,13 +168,43 @@
             input.value = ''; // Clear input
         });
 
-        //Function to append a log message
+        // Function to append a log message
         function logMessage(message) {
             const logItem = document.createElement('div');
             logItem.textContent = message;
             log.appendChild(logItem);
             log.scrollTop = log.scrollHeight; // Auto-scroll
         }
-    </script> -->
+
+        // Function to add a user to the connection list
+        function addUser(userId, userName) {
+            const userItem = document.createElement('li');
+            userItem.setAttribute("data-id", userId)
+            userItem.className = 'user-item';
+            userItem.innerHTML = `
+                <div class="user-icon">${userName[0].toUpperCase()}</div>
+                <div class="user-name">${userName}</div>
+            `;
+            userList.appendChild(userItem);
+        }
+
+
+
+        async function getuserConnect() {
+            const response = await fetch(`/api/connected`, {
+                method: "GET",
+            });
+            if (response.ok) {
+                let data = await response.json()
+                data.forEach(user => {
+                    console.log(`ID: ${user.Iduser}, Nickname: ${user.nickname}, First Name: ${user.firstname}`);
+                    // You can call your addUser function here
+                    addUser(user.Iduser, user.nickname);
+                });
+            }
+        }
+        getuserConnect()
+    </script>
 </body>
+
 </html>

@@ -19,10 +19,28 @@ type UserRepository interface {
 	CheckAuthenticat(uuid string) (bool, time.Time)
 	CheckUser(ctx context.Context, id int) bool
 	GetUserIdWithUUID(uuid string) (string, string, string, error)
+	UserConnect() []models.UUID
 }
 
 type userRepositoryImpl struct {
 	db *sql.DB
+}
+
+// UserConnect implements UserRepository.
+func (u *userRepositoryImpl) UserConnect() []models.UUID {
+	status := "online"
+	query := "select id  , nickname  FROM user where status=?"
+	rows, err := u.db.Query(query, status)
+	us := []models.UUID{}
+	for rows.Next() {
+		ussr := models.UUID{}
+		rows.Scan(&ussr.Iduser, &ussr.Nickname)
+		us = append(us, ussr)
+	}
+	if err != nil {
+		fmt.Println("error to select user", err)
+	}
+	return us
 }
 
 func NewUserRepository(db *sql.DB) UserRepository {

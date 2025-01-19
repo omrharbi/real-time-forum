@@ -81,6 +81,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/profile/posts", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfilePosts)))
 	mux.Handle("/api/profile/likes", middlewareController.AuthenticateMiddleware(http.HandlerFunc(profileController.HandleProfileLikes)))
 	mux.Handle("/api/logout", middlewareController.AuthenticateMiddleware(http.HandlerFunc(userController.HandleLogOut)))
+	mux.Handle("/api/connected", middlewareController.AuthenticateMiddleware(http.HandlerFunc(userController.HandleUserConnected)))
 	mux.Handle("/api/likescheked", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.LikesCheckedHandle))) /// this get user liked card
 	mux.Handle("/api/addlike", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleAddLike)))
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
@@ -130,10 +131,7 @@ func SetupPageRoutes(mux *http.ServeMux) {
 		}
 	})
 
-	mux.HandleFunc("/message", func(w http.ResponseWriter, r *http.Request) {
-		cookies, err := r.Cookie("token")
-		if err != nil || cookies == nil {
-			http.ServeFile(w, r, "../../frontend/templates/message.html")
-		} 
+	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../../frontend/templates/message.html")
 	})
 }

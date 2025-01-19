@@ -25,9 +25,10 @@ type UserService interface {
 	checkPasswordHash(hash, password string) bool
 	hashPassword(password string) string
 	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time)
-	UUiduser( uuid string) (m messages.Messages, us models.UUID)
+	UUiduser(uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 	GetContext(ctx context.Context, token string) any
+	UserConnect() []models.UUID
 }
 
 type userServiceImpl struct {
@@ -266,4 +267,8 @@ func saveContext(ctx context.Context, token string, val string) context.Context 
 
 func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
 	return ctx.Value(token)
+}
+
+func (u *userServiceImpl) UserConnect() []models.UUID {
+	return u.userRepo.UserConnect()
 }

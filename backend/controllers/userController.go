@@ -162,3 +162,12 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 		json.NewEncoder(w).Encode(is)
 	}
 }
+
+func (uc *UserController) HandleUserConnected(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	id_usr := uc.userService.UserConnect()
+	json.NewEncoder(w).Encode(id_usr)
+}

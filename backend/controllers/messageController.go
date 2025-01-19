@@ -74,7 +74,9 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
+	m.Lock()
 	m.addClient(client)
+	m.Unlock()
 	go client.ReadMess()
 	go client.WriteMess()
 }
@@ -92,17 +94,30 @@ func (c *Client) ReadMess() {
 			}
 			break
 		}
-		c.Manager.Lock()
 		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
+
 		} else {
 			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
-		c.Manager.Unlock()
-		fmt.Println("Message from", c.id_user, "to", m.Receiver, ":", m.Content)
+		// c.Manager.Unlock()
+		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
 
 	}
+}
+
+func (m *Client) sendMessageToClient(msg Messages) {
+	m.Lock()
+	receiverConn, exists := ClientList[msg.Receiver]
+	m.Unlock()
+
+	if !exists {
+		// log.Printf("User %s is offline", msg.Receiver)
+		return
+	}
+ 
+	receiverConn.WriteJSON(msg)
 }
 
 func (c *Client) WriteMess() {
