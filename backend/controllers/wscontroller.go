@@ -11,12 +11,14 @@ import (
 )
 
 type HandlerHub struct {
-	hub *services.Hub
+	hub            *services.Hub
+	userController *UserController
 }
 
-func NewHubController(hub *services.Hub) *HandlerHub {
+func NewHubController(hub *services.Hub, user *UserController) *HandlerHub {
 	return &HandlerHub{
-		hub: hub,
+		hub:            hub,
+		userController: user,
 	}
 }
 
@@ -36,23 +38,17 @@ func (h *HandlerHub) Messages(w http.ResponseWriter, r *http.Request) {
 		log.Println("err", err)
 	}
 	defer conn.Close()
-	var ms *services.Message
-	// cl.Conn = conn
 
-	err = conn.ReadJSON(&ms)
-	if err != nil {
-		log.Println("Error reading JSON:", err)
-		return
-	}
+	uuid := h.userController.GetUserId(r)
+
 	cl := &services.Clients{
 		Conn:     conn,
 		Messages: make(chan *services.Message, 10),
-		Id:       ms.Sender,
-		UserName: ms.UserName,
+		Id:       uuid,
 	}
-
-	h.hub.Register <- cl
-	h.hub.Broadcast <- ms
+	h.hub.Run(uuid)
+	// h.hub.Register <- cl
+	// h.hub.Broadcast <- ms
 	go cl.WriteMessage()
 	go cl.ReadMessage(h.hub)
 

@@ -38,17 +38,17 @@ func NewHub() *Hub {
 	}
 }
 
-func (h *Hub) Run() {
+func (h *Hub) Run(id_user int) {
 	for {
 		select {
 		case client := <-h.Register:
 
-			h.Clients[client.Id] = client
+			h.Clients[id_user] = client
 
 		case client := <-h.Unregister:
-			if _, ok := h.Clients[client.Id]; ok {
+			if _, ok := h.Clients[id_user]; ok {
 				close(client.Messages)
-				delete(h.Clients, client.Id)
+				delete(h.Clients, id_user)
 			}
 
 		case message := <-h.Broadcast:
