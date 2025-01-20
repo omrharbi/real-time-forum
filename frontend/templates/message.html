@@ -85,7 +85,7 @@
 
         spam.status {
             margin-left: 148px;
-            background: green;
+
             width: 10px;
             height: 10px;
             border-radius: 10px;
@@ -117,14 +117,18 @@
 
         function addUser(userId, userName) {
             const userItem = document.createElement('li');
+            const spam = document.createElement('spam');
+            spam.className = "status"
             userItem.setAttribute("data-id", userId);
             userItem.setAttribute("data-name", userName);
             userItem.className = 'user-item';
             userItem.innerHTML = `
                 <div class="user-icon">${userName[0].toUpperCase()}</div>
                 <div class="user-name">${userName}</div>
-                <spam class="status"></spam>
+                
             `;
+            userItem.appendChild(spam)
+
             const nameuser = document.createElement('span');
             nameuser.textContent = parsedData.firstname
             document.body.appendChild(nameuser)
@@ -145,9 +149,12 @@
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
-            ws.send(JSON.stringify({
-                type: "online"
-            }));
+            let statues_user = document.querySelector(".status")
+            if (status === "online") {
+                spam.style.background = "green"
+            } else {
+                spam.style.background = "red"
+            }
             logMessage('WebSocket connection established.');
             messages()
         };
@@ -170,10 +177,10 @@
 
         // Add event listener for connection close
         ws.onclose = () => {
-            
+
             logMessage('WebSocket connection closed.');
         };
-  
+
         document.getElementById('sendButton').addEventListener('click', () => {
             const input = document.getElementById('messageInput');
             const message = input.value;
@@ -219,7 +226,7 @@
 
                 data.forEach(user => {
                     if (parsedData.firstname !== user.username)
-                        addUser(user.Iduser, user.username);
+                        addUser(user.Iduser, user.username, user.status);
                 });
             }
         }

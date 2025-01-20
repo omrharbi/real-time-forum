@@ -151,7 +151,7 @@ func (m *Manager) addClient(client *Client) {
 		existingClient.connection.Close()
 		delete(m.Clients, client.id_user)
 	}
-	err := m.userSer.UpdateStatus("online")
+	err := m.userSer.UpdateStatus("online", client.id_user)
 	fmt.Println(err, "Error")
 	m.Clients[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
@@ -161,7 +161,7 @@ func (m *Manager) removeClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	if _, ok := m.Clients[client.id_user]; ok {
-		err := m.userSer.UpdateStatus("offline")
+		err := m.userSer.UpdateStatus("offline", client.id_user)
 		fmt.Println(err, "Error to offline")
 		client.connection.Close()
 		delete(m.Clients, client.id_user)
