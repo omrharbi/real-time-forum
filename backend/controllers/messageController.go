@@ -91,10 +91,9 @@ func (c *Client) ReadMess(ms *Manager) {
 		}
 		c.Manager.Lock()
 		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
-			fmt.Println(receiverClient, m.Sender)
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
-			ms.MessageS.AddMessages(m)
+			ms.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
 			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
@@ -126,6 +125,11 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
+	if existingClient, ok := m.Clients[client.id_user]; ok {
+        // Close the old connection gracefully before adding the new one
+        existingClient.connection.Close()
+        delete(m.Clients, client.id_user)
+    }
 	m.Clients[client.id_user] = client // Add the client to the map using their user ID
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }

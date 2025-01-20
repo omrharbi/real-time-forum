@@ -1,4 +1,4 @@
-import { alertPopup } from "./alert.js"
+//import { alertPopup } from "./alert.js"
  
 let login = document.querySelector("#login")
 
@@ -22,16 +22,21 @@ login.addEventListener('submit', async (e) => {
     if (response.ok) {
         const data = await response.json();
         const userData = {
+            uuid: data.message.uuid,
+            id: data.message.id,
             firstname: data.message.firstname,
             lastname: data.message.lastname,
-            email: data.message.email
+            email: data.message.email,
         };
-        localStorage.setItem("data", JSON.stringify(userData));
-        location.href = "/home"
+        localStorage.setItem("data", JSON.stringify(userData));    
+        console.log(localStorage);
+        
+       // location.href = "/home"
     }  else if ( response.status === 400) {
         const data = await response.json();
- 
-        alertPopup(data)
+        console.log(data);
+        
+ //       alertPopup(data)
     } else {
         const errorData = await response.json();
         console.error("Error:", errorData);

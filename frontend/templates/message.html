@@ -100,8 +100,35 @@
     <div id="log"></div>
 
     <script>
+        const cookies = document.cookie.split("token=")[1];
+        const urlParams = new URLSearchParams(window.location.search);
+        const receiver = urlParams.get("receiver");
+        const storedData = localStorage.getItem("data");
+        const parsedData = JSON.parse(storedData);
+        console.log(parsedData,receiver);
+        
+        function addUser(userId, userName) {
+            const userItem = document.createElement('li');
+            userItem.setAttribute("data-id", userId);
+            userItem.setAttribute("data-name", userName);
+            userItem.className = 'user-item';
+            userItem.innerHTML = `
+                <div class="user-icon">${userName[0].toUpperCase()}</div>
+                <div class="user-name">${userName}</div>
+            `;
+            const nameuser = document.createElement('span');
+            nameuser.textContent = parsedData.firstname
+            // document.body.appendChild(nameuser)
+            userList.appendChild(userItem);
+
+            userItem.addEventListener("click", (e) => {
+                const senderId = userItem.getAttribute("data-id")// Replace this with the actual sender ID
+                const url = `messages?&receiver=${senderId}`;
+                location.href = url;
+            });
+        }
         // Establish WebSocket connection
-        const ws = new WebSocket('ws://localhost:3333/ws');
+        const ws = new WebSocket('ws://localhost:8080/ws');
 
         // Log container
         const log = document.getElementById('log');
@@ -115,10 +142,7 @@
         // Add event listener for incoming messages
         ws.onmessage = (event) => {
             const receivedData = event.data;
-
-
             const parsed = JSON.parse(receivedData);
-       
             logMessage('Message received: ' + atob(parsed));
 
         };
@@ -143,16 +167,28 @@
                 return;
             }
 
-            // Send JSON message
-            ws.send(JSON.stringify({
-                sender_user: 6,
-                receiver: 4,
-                userName: "omar",
-                content: message
-            }));
 
-            logMessage('Message sent: ' + message);
-            input.value = '';
+
+
+            if (storedData) {
+
+
+
+                if (parsedData.uuid === cookies) {
+                    console.log(parsedData.id,);
+
+                    ws.send(JSON.stringify({
+                        sender: parsedData.id,
+                        receiver: +receiver,
+                        content: message
+                    }));
+
+                    logMessage('Message sent: ' + message);
+                    input.value = '';
+                }
+
+                // Send JSON message
+            }
         });
 
         // Function to append a log message
@@ -164,25 +200,7 @@
         }
 
         // Function to add a user to the connection list
-        function addUser(userId, userName) {
-            const userItem = document.createElement('li');
-            userItem.setAttribute("data-id", userId);
-            userItem.className = 'user-item';
-            userItem.innerHTML = `
-                <div class="user-icon">${userName[0].toUpperCase()}</div>
-                <div class="user-name">${userName}</div>
-            `;
-            userList.appendChild(userItem);
 
-            userItem.addEventListener("click", () => {
-                const senderId = "omar"; // Replace this with the actual sender ID
-
-                const url = `messages?sender=${senderId}&receiver=${userName}`;
-                // Update the browser's location and history
-                history.pushState({}, '', url); // Append URL without reloading the page
-                location.href = url; // Navigate to the new URL
-            });
-        }
 
         async function getuserConnect() {
             const response = await fetch(`/api/connected`, {
@@ -191,10 +209,12 @@
             if (response.ok) {
                 let data = await response.json();
                 data.forEach(user => {
-                    addUser(user.Iduser, user.nickname);
+                    addUser(user.Iduser, user.username);
                 });
             }
         }
+
+
 
         getuserConnect();
 

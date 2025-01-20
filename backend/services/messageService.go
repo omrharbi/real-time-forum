@@ -2,12 +2,11 @@ package services
 
 import (
 	"real-time-froum/messages"
-	"real-time-froum/models"
 	"real-time-froum/repo"
 )
 
 type MessageService interface {
-	AddMessages(m models.Messages) (mss messages.Messages)
+	AddMessages(Sender, Receiver int, Content string) (mss messages.Messages)
 	GetMessages(senderID int, receiverID int) ([]string, error)
 	DeleteMessages(msgID int) error
 }
@@ -21,8 +20,8 @@ func NewMessageService(ms repo.MessageRepository) MessageService {
 }
 
 // AddMessages implements MessageService.
-func (m *MessageServiceImpl) AddMessages(ms models.Messages) (mss messages.Messages) {
-	err := m.mess.AddMessage(ms)
+func (m *MessageServiceImpl) AddMessages(Sender, Receiver int, Content string) (mss messages.Messages) {
+	err := m.mess.AddMessage(Sender, Receiver  , Content )
 	if err.MessageError != "" {
 		return err
 	}

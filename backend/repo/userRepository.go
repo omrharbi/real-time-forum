@@ -67,7 +67,7 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 	username := strings.ToLower(log.Nickname)
 
 	password := strings.ToLower(log.Password)
-	query := "select id,email,password, firstname ,lastname FROM user where email=? or nickname=?"
+	query := "select id,email,password, firstname ,lastname FROM user where email=? or username=?"
 	err := u.db.QueryRowContext(ctx, query, email, username, password).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname)
 	if err != nil {
 		fmt.Println("error to select user", err)

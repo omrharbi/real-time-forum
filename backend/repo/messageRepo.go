@@ -4,11 +4,10 @@ import (
 	"database/sql"
 
 	"real-time-froum/messages"
-	"real-time-froum/models"
 )
 
 type MessageRepository interface {
-	AddMessage(m models.Messages) (mss messages.Messages)
+	AddMessage(Sender, Receiver int, Content string) (mss messages.Messages)
 	GetMeessage()
 	DeleteMessage()
 }
@@ -17,10 +16,10 @@ type MessageRepositoryImpl struct {
 	db *sql.DB
 }
 
-// AddMessage implements MessageRepository.
-func (m *MessageRepositoryImpl) AddMessage(ms models.Messages) (mss messages.Messages) {
+// AddMessage implements MessageRepository.m
+func (m *MessageRepositoryImpl) AddMessage(Sender, Receiver int, Content string) (mss messages.Messages) {
 	qury := "INSERT INTO messages (sender,receiver,content) VALUES(?,?,?)"
-	_, err := m.db.Exec(qury, ms.Sender, ms.Receiver, ms.Content)
+	_, err := m.db.Exec(qury, Sender, Receiver, Content)
 	if err != nil {
 		mss.MessageError = err.Error()
 		return mss

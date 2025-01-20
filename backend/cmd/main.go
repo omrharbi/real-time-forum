@@ -27,7 +27,7 @@ func main() {
 	SetupPageRoutes(mux)
 	SetupAPIRoutes(mux, ctx)
 
-	serverAddr := ":3333"
+	serverAddr := ":8080"
 	log.Printf("Server running at http://localhost%s/home\n", serverAddr)
 	err = http.ListenAndServe(serverAddr, mux)
 	if err != nil {
@@ -125,12 +125,7 @@ func SetupPageRoutes(mux *http.ServeMux) {
 	})
 
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		cookies, err := r.Cookie("token")
-		if err != nil || cookies == nil {
-			http.ServeFile(w, r, "../../frontend/templates/login.html")
-		} else {
-			http.Redirect(w, r, "/home", http.StatusSeeOther)
-		}
+		http.ServeFile(w, r, "../../frontend/templates/login.html")
 	})
 
 	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
