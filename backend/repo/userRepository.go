@@ -29,7 +29,7 @@ type userRepositoryImpl struct {
 // UserConnect implements UserRepository.
 func (u *userRepositoryImpl) UserConnect() []models.UUID {
 	status := "online"
-	query := "select id  , nickname  FROM user where status=?"
+	query := "select id  , username  FROM user where status=?"
 	rows, err := u.db.Query(query, status)
 	us := []models.UUID{}
 	for rows.Next() {
@@ -55,7 +55,7 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 	Password := html.EscapeString(password)
 	Nickname := html.EscapeString(users.Nickname)
 	Gender := html.EscapeString(users.Gender)
-	stm := "INSERT INTO user (nickname,firstname,lastname, Age ,gender ,email,password,status) VALUES(?,?,?,?,?,?,?,?)"
+	stm := "INSERT INTO user (username,firstname,lastname, Age ,gender ,email,password,status) VALUES(?,?,?,?,?,?,?,?)"
 	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password, "online")
 	return row, err
 }
@@ -113,7 +113,7 @@ func (u *userRepositoryImpl) CheckUser(ctx context.Context, id int) bool {
 func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nickname string) bool {
 	var exists bool
 
-	query := "SELECT EXISTS (select email from user where email=? OR nickname= ?)"
+	query := "SELECT EXISTS (select email from user where email=? OR username= ?)"
 
 	err := u.db.QueryRowContext(ctx, query, email, nickname).Scan(&exists)
 	if err != nil {
@@ -125,7 +125,7 @@ func (u *userRepositoryImpl) EmailExists(ctx context.Context, email string, nick
 
 // getUserIdWithUUID implements UserRepository.
 func (u *userRepositoryImpl) GetUserIdWithUUID(uuid string) (string, string, string, error) {
-	stm := `SELECT id , nickname, firstname FROM user WHERE UUID=? `
+	stm := `SELECT id , username, firstname FROM user WHERE UUID=? `
 	var id_user, nickame, firstname string
 	err := u.db.QueryRow(stm, uuid).Scan(&id_user, &nickame, &firstname)
 	if err != nil {

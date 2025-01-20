@@ -2,7 +2,7 @@
 
 CREATE TABLE user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nickname text   not NULL,
+    username text   not NULL UNIQUE,
     firstname text   not NULL,
     lastname text not NULL,
     Age INTEGER not NULL,
@@ -50,6 +50,18 @@ CREATE TABLE comment (
     FOREIGN KEY (card_id) REFERENCES card(id),
     FOREIGN KEY (target_id) REFERENCES card(id)
 );
+
+CREATE TABLE messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender INTEGER,
+    receiver INTEGER,
+    content TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver) REFERENCES user(id) ON DELETE CASCADE
+);
+
+
 
 CREATE TABLE likes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

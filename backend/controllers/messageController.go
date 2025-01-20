@@ -6,22 +6,16 @@ import (
 	"net/http"
 	"sync"
 
+	"real-time-froum/models"
+	"real-time-froum/services"
+
 	"github.com/gorilla/websocket"
 )
-
-type ClientList map[*Client]bool
 
 var websocketUpgrade = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
-type Messages struct {
-	Sender   int    `json:"sender_user"`
-	Receiver int    `json:"receiver"`
-	UserName string `json:"userName"`
-	Content  string `json:"content"`
 }
 
 type Client struct {
@@ -35,7 +29,8 @@ type Client struct {
 type Manager struct {
 	Clients map[int]*Client // Map user ID to their Client object
 	sync.RWMutex
-	user *UserController
+	user     *UserController
+	MessageS services.MessageService
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -48,10 +43,11 @@ func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client 
 	}
 }
 
-func NewManager(user *UserController) *Manager {
+func NewManager(user *UserController, messageS services.MessageService) *Manager {
 	return &Manager{
-		Clients: make(map[int]*Client),
-		user:    user,
+		Clients:  make(map[int]*Client),
+		user:     user,
+		messageS: messageS,
 	}
 }
 
@@ -76,15 +72,16 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
 	go client.WriteMess()
-	go client.ReadMess()
+
+	go client.ReadMess(m)
 }
 
-func (c *Client) ReadMess() {
+func (c *Client) ReadMess(ms *Manager) {
 	defer func() {
 		c.Manager.removeClient(c)
 	}()
 	for {
-		var m Messages
+		var m models.Messages
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -92,16 +89,16 @@ func (c *Client) ReadMess() {
 			}
 			break
 		}
-
+		c.Manager.Lock()
 		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
 			fmt.Println(receiverClient, m.Sender)
 			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- []byte(message)
-
+			ms.MessageS.AddMessages(m)
 		} else {
 			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
 		}
-		// c.Manager.Unlock()
+		c.Manager.Unlock()
 		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
 
 	}

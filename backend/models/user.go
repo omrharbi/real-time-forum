@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	Id        int64     `json:"id"`
-	Nickname  string    `json:"nickname"`
+	Nickname  string    `json:"username"`
 	Firstname string    `json:"firstname"`
 	Lastname  string    `json:"lastname"`
 	Email     string    `json:"email"`
@@ -21,7 +21,7 @@ type User struct {
 }
 type ResponceUser struct {
 	Id        int64  `json:"id"`
-	Nickname  string `json:"nickname"`
+	Nickname  string `json:"username"`
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Age       int    `json:"age"`
@@ -32,13 +32,13 @@ type ResponceUser struct {
 type Login struct {
 	Id       int64  `json:"id"`
 	Email    string `json:"email"`
-	Nickname string `json:"nickname"`
+	Nickname string `json:"username"`
 	UUID     string `json:"uuid"`
 	Password string `json:"password"`
 }
 type UUID struct {
 	Iduser    int
-	Nickname  string `json:"nickname"`
+	Nickname  string `json:"username"`
 	Firstname string `json:"firstname"`
 }
 type Logout struct {

@@ -1,9 +1,14 @@
 package repo
 
-import "database/sql"
+import (
+	"database/sql"
+
+	"real-time-froum/messages"
+	"real-time-froum/models"
+)
 
 type MessageRepository interface {
-	AddMessage()
+	AddMessage(m models.Messages) (mss messages.Messages)
 	GetMeessage()
 	DeleteMessage()
 }
@@ -13,8 +18,14 @@ type MessageRepositoryImpl struct {
 }
 
 // AddMessage implements MessageRepository.
-func (m *MessageRepositoryImpl) AddMessage() {
-	panic("unimplemented")
+func (m *MessageRepositoryImpl) AddMessage(ms models.Messages) (mss messages.Messages) {
+	qury := "INSERT INTO messages (sender,receiver,content) VALUES(?,?,?)"
+	_, err := m.db.Exec(qury, ms.Sender, ms.Receiver, ms.Content)
+	if err != nil {
+		mss.MessageError = err.Error()
+		return mss
+	}
+	return messages.Messages{}
 }
 
 // DeleteMessage implements MessageRepository.
