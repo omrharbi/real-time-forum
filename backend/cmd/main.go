@@ -44,6 +44,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	commentRepo := repo.NewCommentRepository(db.Connection)
 	profiletRepo := repo.NewProfileRepository(db.Connection)
 	likesRepo := repo.NewLikesRepository(db.Connection)
+	messageRepo := repo.NewMessageRepository(db.Connection)
 
 	// serveses
 	userService := services.NewUserService(userRepo)
@@ -53,6 +54,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	commentService := services.NewCommentService(commentRepo, cardRepo)
 	postService := services.NewPostService(postRepo, cardRepo, categoryRepo)
 	categoryService := services.NewcategorysService(categoryRepo, postRepo)
+	messService := services.NewMessageService(messageRepo)
 	// hubService := services.NewHub()
 	// userService := services.NewUserService(userRepo)
 
@@ -71,7 +73,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.HandleFunc("/api/login", userController.HandleLogin)
 	mux.HandleFunc("/api/isLogged", userController.HandleIsLogged)
 	// done
-	newWs := controllers.NewManager(userController)
+	newWs := controllers.NewManager(userController, messService)
 	mux.Handle("/api/post", middlewareController.AuthenticateMiddleware(http.HandlerFunc(postController.HandlePost)))
 	mux.Handle("/api/home", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.HomeHandle)))
 	mux.Handle("/api/card", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.GetCard_handler)))

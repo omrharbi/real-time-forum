@@ -47,7 +47,7 @@ func NewManager(user *UserController, messageS services.MessageService) *Manager
 	return &Manager{
 		Clients:  make(map[int]*Client),
 		user:     user,
-		messageS: messageS,
+		MessageS: messageS,
 	}
 }
 
