@@ -28,9 +28,21 @@ type userRepositoryImpl struct {
 
 // UserConnect implements UserRepository.
 func (u *userRepositoryImpl) UserConnect() []models.UUID {
-	status := "online"
-	query := "select id  , username  FROM user where status=?"
-	rows, err := u.db.Query(query, status)
+	query := `SELECT 
+            id,
+            username,
+            firstname,
+            lastname,
+            email,
+            status
+        FROM user
+        ORDER BY 
+            CASE 
+                WHEN status = 'online' THEN 1
+                ELSE 2
+            END,
+            username ASC`
+	rows, err := u.db.Query(query)
 	us := []models.UUID{}
 	for rows.Next() {
 		ussr := models.UUID{}

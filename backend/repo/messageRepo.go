@@ -45,7 +45,7 @@ func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []m
             OR
             (sender = $2 AND receiver = $1)
 
-		ORDER BY created_at DESC;`
+		ORDER BY created_at ASC;`
 
 	row, err := m.db.Query(qury, senderID, receiverID)
 	if err != nil {

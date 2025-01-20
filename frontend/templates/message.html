@@ -82,6 +82,13 @@
             font-size: 1rem;
             color: #333;
         }
+        spam.status {
+    margin-left: 148px;
+    background: green;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+}
     </style>
 </head>
 
@@ -115,6 +122,7 @@
             userItem.innerHTML = `
                 <div class="user-icon">${userName[0].toUpperCase()}</div>
                 <div class="user-name">${userName}</div>
+                <spam class="status"></spam>
             `;
             const nameuser = document.createElement('span');
             nameuser.textContent = parsedData.firstname
@@ -168,14 +176,7 @@
                 logMessage('Cannot send an empty message.');
                 return;
             }
-
-
-
-
             if (storedData) {
-
-
-
                 if (parsedData.uuid === cookies) {
                     console.log(parsedData.id,);
 
