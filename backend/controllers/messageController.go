@@ -145,8 +145,17 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
+	var ms models.Messages
+
+	err := client.connection.ReadJSON(&ms)
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			log.Println("error Reading Message", err)
+		}
+		return
+	}
+	fmt.Println(ms.Type)
 	if existingClient, ok := m.Clients[client.id_user]; ok {
-		// Close the old connection gracefully before adding the new one
 		existingClient.connection.Close()
 		delete(m.Clients, client.id_user)
 	}

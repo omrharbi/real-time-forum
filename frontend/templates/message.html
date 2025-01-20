@@ -82,13 +82,14 @@
             font-size: 1rem;
             color: #333;
         }
+
         spam.status {
-    margin-left: 148px;
-    background: green;
-    width: 10px;
-    height: 10px;
-    border-radius: 10px;
-}
+            margin-left: 148px;
+            background: green;
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
@@ -126,7 +127,7 @@
             `;
             const nameuser = document.createElement('span');
             nameuser.textContent = parsedData.firstname
-           document.body.appendChild(nameuser)
+            document.body.appendChild(nameuser)
             userList.appendChild(userItem);
 
             userItem.addEventListener("click", (e) => {
@@ -144,6 +145,9 @@
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
+            ws.send(JSON.stringify({
+                type: "online"
+            }));
             logMessage('WebSocket connection established.');
             messages()
         };
@@ -152,10 +156,10 @@
         ws.onmessage = (event) => {
             const receivedData = event.data;
             console.log(receivedData);
-            
+
             const parsed = JSON.parse(receivedData);
             logMessage('Message received: ' + atob(parsed));
-            
+
 
         };
 
@@ -213,7 +217,7 @@
             if (response.ok) {
                 let data = await response.json();
                 console.log(data);
-                
+
                 data.forEach(user => {
                     if (parsedData.firstname !== user.username)
                         addUser(user.Iduser, user.username);
@@ -235,13 +239,13 @@
             });
             if (response.ok) {
                 let data = await response.json();
-                
+
                 data.forEach(user => {
-                    logMessage(user.content) 
+                    logMessage(user.content)
                 });
             }
         }
-        
+
 
 
 
