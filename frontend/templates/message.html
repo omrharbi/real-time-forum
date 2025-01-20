@@ -212,6 +212,8 @@
             });
             if (response.ok) {
                 let data = await response.json();
+                console.log(data);
+                
                 data.forEach(user => {
                     if (parsedData.firstname !== user.username)
                         addUser(user.Iduser, user.username);

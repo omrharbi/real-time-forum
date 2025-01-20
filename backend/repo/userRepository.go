@@ -33,7 +33,6 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
             username,
             firstname,
             lastname,
-            email,
             status
         FROM user
         ORDER BY 
@@ -49,9 +48,10 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
 	us := []models.UUID{}
 	for rows.Next() {
 		ussr := models.UUID{}
-		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Status)
+		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status)
 		us = append(us, ussr)
 	}
+	fmt.Println(us)
 	if err != nil {
 		fmt.Println("error to select user", err)
 	}
