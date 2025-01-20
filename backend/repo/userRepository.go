@@ -70,6 +70,7 @@ func (u *userRepositoryImpl) UpdateStatus(status string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(status)
 	return nil
 }
 

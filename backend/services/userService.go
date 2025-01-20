@@ -275,5 +275,6 @@ func (u *userServiceImpl) UserConnect() []models.UUID {
 }
 
 func (u *userServiceImpl) UpdateStatus(status string) error {
+	fmt.Println("")
 	return u.userRepo.UpdateStatus(status)
 }
