@@ -105,8 +105,8 @@
         const receiver = urlParams.get("receiver");
         const storedData = localStorage.getItem("data");
         const parsedData = JSON.parse(storedData);
-        console.log(parsedData,receiver);
-        
+        console.log(parsedData, receiver);
+
         function addUser(userId, userName) {
             const userItem = document.createElement('li');
             userItem.setAttribute("data-id", userId);
@@ -118,7 +118,7 @@
             `;
             const nameuser = document.createElement('span');
             nameuser.textContent = parsedData.firstname
-            // document.body.appendChild(nameuser)
+           document.body.appendChild(nameuser)
             userList.appendChild(userItem);
 
             userItem.addEventListener("click", (e) => {
@@ -136,8 +136,8 @@
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
-
             logMessage('WebSocket connection established.');
+            messages()
         };
 
         // Add event listener for incoming messages
@@ -145,6 +145,7 @@
             const receivedData = event.data;
             const parsed = JSON.parse(receivedData);
             logMessage('Message received: ' + atob(parsed));
+            
 
         };
 
@@ -200,7 +201,6 @@
             log.scrollTop = log.scrollHeight; // Auto-scroll
         }
 
-        // Function to add a user to the connection list
 
 
         async function getuserConnect() {
@@ -210,11 +210,33 @@
             if (response.ok) {
                 let data = await response.json();
                 data.forEach(user => {
-                    if(parsedData.firstname!==user.username)
-                     addUser(user.Iduser, user.username);
+                    if (parsedData.firstname !== user.username)
+                        addUser(user.Iduser, user.username);
                 });
             }
         }
+
+        async function messages() {
+            const response = await fetch(`/api/messages`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    sender: parsedData.id,
+                    receiver: +receiver
+                })
+            });
+            if (response.ok) {
+                let data = await response.json();
+                
+                data.forEach(user => {
+                    logMessage(user.content) 
+                });
+            }
+        }
+        
 
 
 

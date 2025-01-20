@@ -40,9 +40,12 @@ func (m *MessageRepositoryImpl) DeleteMessage() {
 // GetMeessage implements MessageRepository.
 func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages) {
 	qury := `SELECT sender, receiver ,content  FROM messages
-		WHERE sender=? AND receiver=?
+		WHERE
+            (sender = $1 AND receiver = $2)
+            OR
+            (sender = $2 AND receiver = $1)
 
-		ORDER BY content DESC;`
+		ORDER BY created_at DESC;`
 
 	row, err := m.db.Query(qury, senderID, receiverID)
 	if err != nil {
@@ -51,8 +54,9 @@ func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []m
 	}
 	for row.Next() {
 		message := models.Messages{}
-		row.Scan(message.Sender, message.Receiver, message.Content)
+		row.Scan(&message.Sender, &message.Receiver, &message.Content)
 		s = append(s, message)
+
 	}
 	return s, messages.Messages{}
 }
