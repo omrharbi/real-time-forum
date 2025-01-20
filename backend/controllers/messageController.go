@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -76,6 +77,25 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	go client.ReadMess(m)
 }
 
+func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	u_ms := models.Messages{}
+	des := json.NewDecoder(r.Body)
+	des.DisallowUnknownFields()
+	err := des.Decode(&u_ms)
+	if err != nil {
+	}
+	mes, mesErr := m.MessageS.GetMessages(u_ms.Sender, u_ms.Receiver)
+	if mesErr.MessageError != "" {
+		JsoneResponse(w, mesErr.MessageError, http.StatusNotFound)
+		return
+	}
+	json.NewEncoder(w).Encode(mes)
+}
+
 func (c *Client) ReadMess(ms *Manager) {
 	defer func() {
 		c.Manager.removeClient(c)
@@ -126,10 +146,10 @@ func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	if existingClient, ok := m.Clients[client.id_user]; ok {
-        // Close the old connection gracefully before adding the new one
-        existingClient.connection.Close()
-        delete(m.Clients, client.id_user)
-    }
+		// Close the old connection gracefully before adding the new one
+		existingClient.connection.Close()
+		delete(m.Clients, client.id_user)
+	}
 	m.Clients[client.id_user] = client // Add the client to the map using their user ID
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }

@@ -4,16 +4,21 @@ import (
 	"database/sql"
 
 	"real-time-froum/messages"
+	"real-time-froum/models"
 )
 
 type MessageRepository interface {
 	AddMessage(Sender, Receiver int, Content string) (mss messages.Messages)
-	GetMeessage()
+	GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages)
 	DeleteMessage()
 }
 
 type MessageRepositoryImpl struct {
 	db *sql.DB
+}
+
+func NewMessageRepository(db *sql.DB) MessageRepository {
+	return &MessageRepositoryImpl{db: db}
 }
 
 // AddMessage implements MessageRepository.m
@@ -33,10 +38,21 @@ func (m *MessageRepositoryImpl) DeleteMessage() {
 }
 
 // GetMeessage implements MessageRepository.
-func (m *MessageRepositoryImpl) GetMeessage() {
-	panic("unimplemented")
-}
+func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages) {
+	qury := `SELECT sender, receiver ,content  FROM messages
+		WHERE sender=? AND receiver=?
 
-func NewMessageRepository(db *sql.DB) MessageRepository {
-	return &MessageRepositoryImpl{db: db}
+		ORDER BY content DESC;`
+
+	row, err := m.db.Query(qury, senderID, receiverID)
+	if err != nil {
+		mss.MessageError = err.Error()
+		return []models.Messages{}, mss
+	}
+	for row.Next() {
+		message := models.Messages{}
+		row.Scan(message.Sender, message.Receiver, message.Content)
+		s = append(s, message)
+	}
+	return s, messages.Messages{}
 }

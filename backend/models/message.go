@@ -5,3 +5,4 @@ type Messages struct {
 	Receiver int    `json:"receiver"`
 	Content  string `json:"content"`
 }
+ 

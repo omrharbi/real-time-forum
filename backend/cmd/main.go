@@ -88,6 +88,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/addlike", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleAddLike)))
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
 	mux.Handle("/ws", http.HandlerFunc(newWs.ServWs))
+	mux.Handle("/api/messages", http.HandlerFunc(newWs.HandleGetMessages))
 	// mux.Handle("/ws", http.HandlerFunc(hubController.Messages))
 }
 

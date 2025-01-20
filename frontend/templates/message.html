@@ -136,6 +136,7 @@
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
+
             logMessage('WebSocket connection established.');
         };
 
@@ -209,7 +210,8 @@
             if (response.ok) {
                 let data = await response.json();
                 data.forEach(user => {
-                    addUser(user.Iduser, user.username);
+                    if(parsedData.firstname!==user.username)
+                     addUser(user.Iduser, user.username);
                 });
             }
         }
