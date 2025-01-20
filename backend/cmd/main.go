@@ -73,7 +73,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.HandleFunc("/api/login", userController.HandleLogin)
 	mux.HandleFunc("/api/isLogged", userController.HandleIsLogged)
 	// done
-	newWs := controllers.NewManager(userController, messService)
+	newWs := controllers.NewManager(userController, messService, userService)
 	mux.Handle("/api/post", middlewareController.AuthenticateMiddleware(http.HandlerFunc(postController.HandlePost)))
 	mux.Handle("/api/home", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.HomeHandle)))
 	mux.Handle("/api/card", middlewareController.AuthenticateMiddleware(http.HandlerFunc(homeController.GetCard_handler)))

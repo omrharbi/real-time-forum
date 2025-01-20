@@ -20,10 +20,17 @@ type UserRepository interface {
 	CheckUser(ctx context.Context, id int) bool
 	GetUserIdWithUUID(uuid string) (string, string, string, error)
 	UserConnect() []models.UUID
+	UpdateStatus(status string) error
 }
 
 type userRepositoryImpl struct {
 	db *sql.DB
+}
+
+// UpdateStatus implements UserRepository.
+
+func NewUserRepository(db *sql.DB) UserRepository {
+	return &userRepositoryImpl{db: db}
 }
 
 // UserConnect implements UserRepository.
@@ -51,15 +58,19 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
 		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status)
 		us = append(us, ussr)
 	}
-	fmt.Println(us)
 	if err != nil {
 		fmt.Println("error to select user", err)
 	}
 	return us
 }
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepositoryImpl{db: db}
+func (u *userRepositoryImpl) UpdateStatus(status string) error {
+	qury := "UPDATE user SET   status=?  WHERE id=?"
+	_, err := u.db.Exec(qury)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // insertUser implements UserRepository.

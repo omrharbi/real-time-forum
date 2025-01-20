@@ -29,6 +29,7 @@ type UserService interface {
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 	GetContext(ctx context.Context, token string) any
 	UserConnect() []models.UUID
+	UpdateStatus(status string) error
 }
 
 type userServiceImpl struct {
@@ -271,4 +272,8 @@ func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
 
 func (u *userServiceImpl) UserConnect() []models.UUID {
 	return u.userRepo.UserConnect()
+}
+
+func (u *userServiceImpl) UpdateStatus(status string) error {
+	return u.userRepo.UpdateStatus(status)
 }

@@ -32,6 +32,7 @@ type Manager struct {
 	sync.RWMutex
 	user     *UserController
 	MessageS services.MessageService
+	userSer  services.UserService
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -44,11 +45,12 @@ func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client 
 	}
 }
 
-func NewManager(user *UserController, messageS services.MessageService) *Manager {
+func NewManager(user *UserController, messageS services.MessageService, userSer services.UserService) *Manager {
 	return &Manager{
 		Clients:  make(map[int]*Client),
 		user:     user,
 		MessageS: messageS,
+		userSer:  userSer,
 	}
 }
 
@@ -145,30 +147,23 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	var ms models.Messages
-
-	err := client.connection.ReadJSON(&ms)
-	if err != nil {
-		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-			log.Println("error Reading Message", err)
-		}
-		return
-	}
-	fmt.Println(ms.Type)
 	if existingClient, ok := m.Clients[client.id_user]; ok {
 		existingClient.connection.Close()
 		delete(m.Clients, client.id_user)
 	}
-	m.Clients[client.id_user] = client // Add the client to the map using their user ID
+	m.userSer.UpdateStatus("online")
+	m.Clients[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 
 func (m *Manager) removeClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
+
 	if _, ok := m.Clients[client.id_user]; ok {
+		m.userSer.UpdateStatus("online")
 		client.connection.Close()
-		delete(m.Clients, client.id_user) // Remove the client from the map
+		delete(m.Clients, client.id_user)
 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
 	}
 }
