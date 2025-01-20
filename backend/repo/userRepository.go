@@ -43,10 +43,13 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
             END,
             username ASC`
 	rows, err := u.db.Query(query)
+	if err != nil {
+		fmt.Println(err)
+	}
 	us := []models.UUID{}
 	for rows.Next() {
 		ussr := models.UUID{}
-		rows.Scan(&ussr.Iduser, &ussr.Nickname)
+		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Status)
 		us = append(us, ussr)
 	}
 	if err != nil {
