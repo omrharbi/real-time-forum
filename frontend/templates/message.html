@@ -113,7 +113,11 @@
         const receiver = urlParams.get("receiver");
         const storedData = localStorage.getItem("data");
         const parsedData = JSON.parse(storedData);
-        console.log(parsedData, receiver);
+        let isConnected = false; // Track WebSocket connection state
+        let connectionTimeout; // Timeout to detect disconnection
+        const log = document.getElementById('log');
+        const userList = document.getElementById('userList');
+
 
         function addUser(userId, userName, status) {
             const userItem = document.createElement('li');
@@ -147,21 +151,14 @@
             });
         }
         // Establish WebSocket connection
+
+
         const ws = new WebSocket('ws://localhost:8080/ws');
-        window.addEventListener("unload", () => {
-            if (!isPageReload) {
-                ws.send(JSON.stringify({
-                    type: "offline",
-                }));
-            }
-        });
 
-        // Log container
-        const log = document.getElementById('log');
-        const userList = document.getElementById('userList');
-
-        // Add event listener for WebSocket open
         ws.onopen = () => {
+            console.log("WebSocket connected.");
+            isConnected = true; // Update connection status
+            clearTimeout(connectionTimeout); // Clear any disconnection timeout
             ws.send(JSON.stringify({
                 type: "online"
             }));
@@ -185,10 +182,25 @@
 
         // Add event listener for connection close
         ws.onclose = () => {
-
+            ws.send(JSON.stringify({
+                type: "offline",
+            }));
+            console.log("WebSocket connection closed.");
+            isConnected = false;
+            monitorConnection(); // Start monitoring for reconnection
             logMessage('WebSocket connection closed.');
         };
 
+        function monitorConnection() {
+            if (!isConnected) {
+                console.log("WebSocket disconnected. Attempting to reconnect in 10 seconds...");
+                connectionTimeout = setTimeout(() => {
+                    console.log("Reconnecting...");
+                    
+                }, 10000); // Wait 10 seconds before reconnecting
+            }
+        }
+ 
         document.getElementById('sendButton').addEventListener('click', () => {
             const input = document.getElementById('messageInput');
             const message = input.value;

@@ -80,8 +80,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 			log.Println("error Reading Message", err)
 		}
- 	}
-	fmt.Println(ms.Type)
+	}
+	fmt.Println(ms.Type , "type user")
 	m.addClient(client)
 	go client.WriteMess()
 
@@ -108,9 +108,9 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) ReadMess(ms *Manager) {
-	defer func() {
-		c.Manager.removeClient(c)
-	}()
+	// defer func() {
+	// 	c.Manager.removeClient(c)
+	// }()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
@@ -135,9 +135,9 @@ func (c *Client) ReadMess(ms *Manager) {
 }
 
 func (c *Client) WriteMess() {
-	defer func() {
-		c.Manager.removeClient(c)
-	}()
+	// defer func() {
+	// 	c.Manager.removeClient(c)
+	// }()
 	for msg := range c.egress {
 
 		if err := c.connection.WriteJSON(websocket.CloseMessage); err != nil {
