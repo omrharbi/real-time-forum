@@ -115,7 +115,7 @@
         const parsedData = JSON.parse(storedData);
         console.log(parsedData, receiver);
 
-        function addUser(userId, userName) {
+        function addUser(userId, userName, status) {
             const userItem = document.createElement('li');
             const spam = document.createElement('spam');
             spam.className = "status"
@@ -128,7 +128,13 @@
                 
             `;
             userItem.appendChild(spam)
-
+            let statues_user = document.querySelector(".status")
+            if (status === "online") {
+                // background: green;
+                spam.style.background = "green"
+            } else {
+                spam.style.background = "red"
+            }
             const nameuser = document.createElement('span');
             nameuser.textContent = parsedData.firstname
             document.body.appendChild(nameuser)
@@ -137,11 +143,18 @@
             userItem.addEventListener("click", (e) => {
                 const senderId = userItem.getAttribute("data-id")// Replace this with the actual sender ID
                 const url = `messages?&receiver=${senderId}`;
-                location.href = url;
+                window.history.pushState({}, '', url);
             });
         }
         // Establish WebSocket connection
         const ws = new WebSocket('ws://localhost:8080/ws');
+        window.addEventListener("unload", () => {
+            if (!isPageReload) {
+                ws.send(JSON.stringify({
+                    type: "offline",
+                }));
+            }
+        });
 
         // Log container
         const log = document.getElementById('log');
@@ -149,12 +162,9 @@
 
         // Add event listener for WebSocket open
         ws.onopen = () => {
-            let statues_user = document.querySelector(".status")
-            if (status === "online") {
-                spam.style.background = "green"
-            } else {
-                spam.style.background = "red"
-            }
+            ws.send(JSON.stringify({
+                type: "online"
+            }));
             logMessage('WebSocket connection established.');
             messages()
         };
@@ -162,11 +172,9 @@
         // Add event listener for incoming messages
         ws.onmessage = (event) => {
             const receivedData = event.data;
-            console.log(receivedData);
-
+            console.log(receivedData, "helloooooo");
             const parsed = JSON.parse(receivedData);
             logMessage('Message received: ' + atob(parsed));
-
 
         };
 
@@ -214,21 +222,30 @@
             log.scrollTop = log.scrollHeight; // Auto-scroll
         }
 
-
-
         async function getuserConnect() {
             const response = await fetch(`/api/connected`, {
                 method: "GET",
             });
-            if (response.ok) {
-                let data = await response.json();
-                console.log(data);
 
-                data.forEach(user => {
-                    if (parsedData.firstname !== user.username)
-                        addUser(user.Iduser, user.username, user.status);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Connected users:", data);
+                // Update the user status in the DOM
+                data.forEach((user) => {
+                    addUser(user.id, user.username, user.status);
+                    const statusElement = document.querySelector(
+                        `[data-id="${user.id}"] .status`
+                    );
+
+                    if (statusElement) {
+                        statusElement.style.background =
+                            user.status === "online" ? "green" : "red";
+                    }
                 });
             }
+
+
         }
 
         async function messages() {
@@ -251,9 +268,6 @@
                 });
             }
         }
-
-
-
 
         getuserConnect();
 

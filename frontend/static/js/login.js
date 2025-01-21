@@ -31,7 +31,7 @@ login.addEventListener('submit', async (e) => {
         localStorage.setItem("data", JSON.stringify(userData));    
         console.log(localStorage);
         
-       // location.href = "/home"
+      location.href = "/messages"
     }  else if ( response.status === 400) {
         const data = await response.json();
         console.log(data);

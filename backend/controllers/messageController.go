@@ -67,12 +67,21 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Err", err)
 		return
 	}
+
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError)
 	}
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
+	var ms models.Messages
+	err = client.connection.ReadJSON(&ms)
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			log.Println("error Reading Message", err)
+		}
+ 	}
+	fmt.Println(ms.Type)
 	m.addClient(client)
 	go client.WriteMess()
 
