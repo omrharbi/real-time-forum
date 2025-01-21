@@ -72,16 +72,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError)
 	}
-
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-	var ms models.Messages
-	err = client.connection.ReadJSON(&ms)
-	if err != nil {
-		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-			log.Println("error Reading Message", err)
-		}
-	}
-	fmt.Println(ms.Type , "type user")
+	m.broadcastOnlineUserList(client)
 	m.addClient(client)
 	go client.WriteMess()
 
@@ -98,6 +90,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	des.DisallowUnknownFields()
 	err := des.Decode(&u_ms)
 	if err != nil {
+		fmt.Println(err)
 	}
 	mes, mesErr := m.MessageS.GetMessages(u_ms.Sender, u_ms.Receiver)
 	if mesErr.MessageError != "" {
@@ -108,9 +101,9 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) ReadMess(ms *Manager) {
-	// defer func() {
-	// 	c.Manager.removeClient(c)
-	// }()
+	defer func() {
+		c.Manager.removeClient(c)
+	}()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
@@ -126,7 +119,10 @@ func (c *Client) ReadMess(ms *Manager) {
 			receiverClient.egress <- []byte(message)
 			ms.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-			log.Printf("Recipient with ID %d not connected\n", m.Receiver)
+
+			err := ms.userSer.UpdateStatus("online", m.Sender)
+			fmt.Println(err, "Error")
+			log.Printf("Recipient with ID %d not connected\n %v %v %v", m.Receiver, m.Type, "offline", c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
 		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
@@ -135,9 +131,9 @@ func (c *Client) ReadMess(ms *Manager) {
 }
 
 func (c *Client) WriteMess() {
-	// defer func() {
-	// 	c.Manager.removeClient(c)
-	// }()
+	defer func() {
+		c.Manager.removeClient(c)
+	}()
 	for msg := range c.egress {
 
 		if err := c.connection.WriteJSON(websocket.CloseMessage); err != nil {
@@ -170,10 +166,67 @@ func (m *Manager) removeClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	if _, ok := m.Clients[client.id_user]; ok {
-		err := m.userSer.UpdateStatus("offline", client.id_user)
-		fmt.Println(err, "Error to offline")
 		client.connection.Close()
 		delete(m.Clients, client.id_user)
 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
 	}
 }
+
+func (mu *Manager) broadcastOnlineUserList(client *Client) {
+	mu.Lock()
+	defer mu.Unlock()
+	connectedIDs := make([]int, 0, len(mu.Clients))
+	for id := range mu.Clients {
+		connectedIDs = append(connectedIDs, id)
+	}
+	fmt.Println(connectedIDs)
+
+	// Broadcast to all connections
+	for userID, connection := range mu.Clients {
+		// Marshal the filtered list into JSON format and send it to the current connection
+		var m models.Messages
+		err := client.connection.ReadJSON(&m)
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Println("error Reading Message", err)
+			}
+			break
+		}
+
+		if err != nil {
+			// if there was an error it means that the user is disconnected
+			connection.connection.Close()
+			delete(mu.Clients, userID)
+		}
+	}
+}
+
+// func broadcastOnlineUserList() {
+//     mu.Lock()
+//     defer mu.Unlock()
+//     connectedIDs := make([]int, 0, len(ConnectedUsers))
+//     for id := range ConnectedUsers {
+//         connectedIDs = append(connectedIDs, id)
+//     }
+
+//     // Broadcast to all connections
+//     for userID, connection := range ConnectedUsers {
+//         // Marshal the filtered list into JSON format and send it to the current connection
+//         data := map[string]interface{}{
+//             "type":  "users-status",
+//             "users": connectedIDs,
+//         }
+//         message, err := json.Marshal(data)
+//         if err != nil {
+//             log.Printf("Error marshalling user list for user %d: %v\n", userID, err)
+//             continue
+//         }
+
+//         err = connection.WriteMessage(websocket.TextMessage, message)
+//         if err != nil {
+//             // if there was an error it means that the user is disconnected
+//             connection.Close()
+//             delete(ConnectedUsers, userID)
+//         }
+//     }
+// }

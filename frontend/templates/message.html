@@ -113,8 +113,7 @@
         const receiver = urlParams.get("receiver");
         const storedData = localStorage.getItem("data");
         const parsedData = JSON.parse(storedData);
-        let isConnected = false; // Track WebSocket connection state
-        let connectionTimeout; // Timeout to detect disconnection
+
         const log = document.getElementById('log');
         const userList = document.getElementById('userList');
 
@@ -150,15 +149,31 @@
                 window.history.pushState({}, '', url);
             });
         }
-        // Establish WebSocket connection
-
 
         const ws = new WebSocket('ws://localhost:8080/ws');
+        window.addEventListener('beforeunload', (event) => {
+            if (ws.readyState === WebSocket.OPEN) {
 
+                ws.send(JSON.stringify({
+                    type: "offline"
+                }));
+            }
+            ws.send(JSON.stringify({
+                type: "offline"
+            }));
+        });
+
+        window.addEventListener('unload', (event) => {
+            if (ws.readyState === WebSocket.OPEN) {
+                // If WebSocket is open, send the "offline" message
+                ws.send(JSON.stringify({
+                    type: "offline"
+                }));
+            }
+        });
         ws.onopen = () => {
             console.log("WebSocket connected.");
             isConnected = true; // Update connection status
-            clearTimeout(connectionTimeout); // Clear any disconnection timeout
             ws.send(JSON.stringify({
                 type: "online"
             }));
@@ -169,14 +184,15 @@
         // Add event listener for incoming messages
         ws.onmessage = (event) => {
             const receivedData = event.data;
-            console.log(receivedData, "helloooooo");
             const parsed = JSON.parse(receivedData);
             logMessage('Message received: ' + atob(parsed));
-
         };
 
         // Add event listener for errors
         ws.onerror = (error) => {
+            ws.send(JSON.stringify({
+                type: "online"
+            }));
             logMessage('WebSocket error: ' + error.message);
         };
 
@@ -186,21 +202,10 @@
                 type: "offline",
             }));
             console.log("WebSocket connection closed.");
-            isConnected = false;
-            monitorConnection(); // Start monitoring for reconnection
             logMessage('WebSocket connection closed.');
         };
 
-        function monitorConnection() {
-            if (!isConnected) {
-                console.log("WebSocket disconnected. Attempting to reconnect in 10 seconds...");
-                connectionTimeout = setTimeout(() => {
-                    console.log("Reconnecting...");
-                    
-                }, 10000); // Wait 10 seconds before reconnecting
-            }
-        }
- 
+
         document.getElementById('sendButton').addEventListener('click', () => {
             const input = document.getElementById('messageInput');
             const message = input.value;
