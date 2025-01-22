@@ -65,7 +65,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	coock, err := r.Cookie("token")
 	if err != nil {
 		fmt.Println("Err", err)
-		m.broadcastOnlineUserList("offline")
 		return
 	}
 
@@ -73,11 +72,12 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError)
 	}
+
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
-	m.broadcastOnlineUserList("online")
+	m.broadcastOnlineUserList("online", uuid.Iduser)
 	go client.WriteMess()
-	go client.ReadMess()
+	go client.ReadMess(m)
 }
 
 func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +102,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mes)
 }
 
-func (c *Client) ReadMess() {
+func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
 		c.connection.Close()
 		delete(c.Manager.Clients, c.id_user)
@@ -112,6 +112,8 @@ func (c *Client) ReadMess() {
 
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
+			mg.broadcastOnlineUserList("offline", c.id_user)
+			// err := mg.userSer.UpdateStatus("offline", m.Sender)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Println("error Reading Message", err)
 			}
@@ -120,9 +122,8 @@ func (c *Client) ReadMess() {
 
 		c.Manager.Lock()
 		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
-			// message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
 			receiverClient.egress <- m
-			// ms.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
+			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
 			// err := ms.userSer.UpdateStatus("online", m.Sender)
 
@@ -168,35 +169,26 @@ func (m *Manager) removeClient(client *Client) {
 		client.connection.Close()
 		delete(m.Clients, client.id_user)
 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
-		m.broadcastOnlineUserList("offline")
+		// m.broadcastOnlineUserList("offline", client.id_user)
 	}
 }
 
-func (mu *Manager) broadcastOnlineUserList(typ string) {
+func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	// Collect all connected client IDs
-	connectedIDs := make([]int, 0, len(mu.Clients))
-	for id := range mu.Clients {
-		connectedIDs = append(connectedIDs, id)
-	}
-	fmt.Println("Broadcasting online users:", connectedIDs)
-
 	message := models.OnlineUser{
 		Type:        typ,
-		OnlineUsers: connectedIDs,
+		OnlineUsers: id_user,
 	}
 
 	// Broadcast the message to all connected clients
 	for _, connection := range mu.Clients {
-		err := connection.connection.WriteJSON(&message)
-		if err != nil {
-			log.Println("Error broadcasting online list:", err)
-
-			// Safely remove the client if there is an error
-			connection.connection.Close()
-			delete(mu.Clients, connection.id_user)
-		}
+		connection.connection.WriteJSON(&message)
+		// if err != nil {
+		// 	log.Println("Error broadcasting online list:", err)
+		// 	connection.connection.Close()
+		// 	delete(mu.Clients, connection.id_user)
+		// }
 	}
 }

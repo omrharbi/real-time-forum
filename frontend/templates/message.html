@@ -119,10 +119,9 @@
         const parsedData = JSON.parse(storedData);
         let receiver = new URLSearchParams(location.search).get("receiver")
         document.addEventListener("DOMContentLoaded", (c) => {
-            sendMessage(receiver),
-            status_user
+            sendMessage(receiver)
         })
-         ws.onopen = () => {
+        ws.onopen = async () => {
             console.log("WebSocket connected.");
             ws.send(
                 JSON.stringify({
@@ -130,22 +129,26 @@
                     content: "online",
                 })
             );
-            fetchConnectedUsers();
+            await fetchConnectedUsers(null);
         };
 
-        ws.onmessage = (event) => {
+        ws.onmessage = async (event) => {
             const message = JSON.parse(event.data);
             switch (message.type) {
                 case "online":
                     console.log(message.online_users);
                     updateUserList(message);
-                  status_user()
+                    await fetchConnectedUsers(message);
                     break;
                 case "broadcast":
                     displayMessage(message.sender, message);
                     break;
                 case "typing":
                     showTypingNotification(message.userId);
+                    break;
+                case "offline":
+                    await fetchConnectedUsers(message);
+                    // showTypingNotification(message.userId);
                     break;
                 default:
                     console.warn("Unhandled message type:", message.type);
@@ -161,13 +164,19 @@
             console.error("WebSocket error:", error);
         };
 
-        async function fetchConnectedUsers() {
-            const response = await fetch("/api/connected");
-            if (response.ok) {
-                const users = await response.json();
-                users.forEach((user) => {
-                    addUser(user.id, user.username, user.status)
-                })
+        async function fetchConnectedUsers(status) {
+            if (status === null) {
+
+                const response = await fetch("/api/connected");
+                if (response.ok) {
+                    const users = await response.json();
+                    users.forEach((user) => {
+                        addUser(user.id, user.username, user.status)
+                    })
+
+                }
+            } else {
+                await status_user(status)
             }
         }
 
@@ -183,10 +192,13 @@
 
 
         function addUser(userId, userName, status) {
+            console.log("477");
+
             const userItem = document.createElement("li");
             userItem.className = "user-item";
+            userItem.id = userId;
             userItem.dataset.id = userId
-       
+
             const userIcon = document.createElement("div");
             userIcon.className = "user-icon";
             userIcon.textContent = userName[0].toUpperCase();
@@ -202,19 +214,31 @@
             userItem.append(userIcon, userNameDiv, statusDot);
 
             userList.appendChild(userItem);
-             
         }
-        
-        function status_user() {
-            const user = document.querySelectorAll(".user-item")
-            console.log(user);
-            
-            for (let d of user) {
-                console.log(d);
-            }
+
+        function status_user(message) {
+            console.log(47, message);
+            const user = document.getElementsByClassName("user-item");
+
+            // for (let d of user) {
+            //     if (message.online_users === d.id) {
+            //         console.log(d);
+  
+            //     } else {
+            //         d.style.background = "red"
+
+            //     }
+
+            // }
+
+
+            // for (let d of user) {
+            //     console.log(d);     
+            // }
             //  statusDot.style.background = status === "online" ? "green" : "red";
         }
-        
+
+
         function displayMessage(sender, content, isOwnMessage = false) {
             const messageDiv = document.createElement("div");
             messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
@@ -267,7 +291,7 @@
                 }
             });
         }
-        
+
     </script>
 </body>
 

@@ -9,5 +9,5 @@ type Messages struct {
 
 type OnlineUser struct {
 	Type        string `json:"type"`
-	OnlineUsers []int  `json:"online_users"`
+	OnlineUsers int    `json:"online_users"`
 }
