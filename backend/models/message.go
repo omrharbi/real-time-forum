@@ -6,3 +6,8 @@ type Messages struct {
 	Receiver int    `json:"receiver"`
 	Content  string `json:"content"`
 }
+
+type OnlineUser struct {
+	Type        string `json:"type"`
+	OnlineUsers []int  `json:"online_users"`
+}

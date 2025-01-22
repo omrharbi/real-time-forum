@@ -83,12 +83,11 @@
             color: #333;
         }
 
-        spam.status {
-            margin-left: 148px;
-
+        .status {
+            margin-left: auto;
             width: 10px;
             height: 10px;
-            border-radius: 10px;
+            border-radius: 50%;
         }
     </style>
 </head>
@@ -106,187 +105,136 @@
         <button id="sendButton">Send</button>
     </div>
     <div id="log"></div>
-
     <script>
-        const cookies = document.cookie.split("token=")[1];
-        const urlParams = new URLSearchParams(window.location.search);
-        const receiver = urlParams.get("receiver");
-        const storedData = localStorage.getItem("data");
-        const parsedData = JSON.parse(storedData);
+        document.addEventListener("DOMContentLoaded", () => {
+            const ws = new WebSocket("ws://localhost:8080/ws");
+            const userList = document.getElementById("userList");
+            const log = document.getElementById("log");
+            const messageInput = document.getElementById("messageInput");
+            const sendButton = document.getElementById("sendButton");
 
-        const log = document.getElementById('log');
-        const userList = document.getElementById('userList');
+            const cookies = document.cookie.split("token=")[1];
+            const storedData = localStorage.getItem("data");
+            const parsedData = JSON.parse(storedData);
+            const receiver = new URLSearchParams(window.location.search).get("receiver");
 
+            ws.onopen = () => {
+                console.log("WebSocket connected.");
+                ws.send(
+                    JSON.stringify({
+                        type: "status",
+                        content: "online",
+                    })
+                );
+                fetchConnectedUsers();
+            };
 
-        function addUser(userId, userName, status) {
-            const userItem = document.createElement('li');
-            const spam = document.createElement('spam');
-            spam.className = "status"
-            userItem.setAttribute("data-id", userId);
-            userItem.setAttribute("data-name", userName);
-            userItem.className = 'user-item';
-            userItem.innerHTML = `
-                <div class="user-icon">${userName[0].toUpperCase()}</div>
-                <div class="user-name">${userName}</div>
-                
-            `;
-            userItem.appendChild(spam)
-            let statues_user = document.querySelector(".status")
-            if (status === "online") {
-                // background: green;
-                spam.style.background = "green"
-            } else {
-                spam.style.background = "red"
-            }
-            const nameuser = document.createElement('span');
-            nameuser.textContent = parsedData.firstname
-            document.body.appendChild(nameuser)
-            userList.appendChild(userItem);
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
 
-            userItem.addEventListener("click", (e) => {
-                const senderId = userItem.getAttribute("data-id")// Replace this with the actual sender ID
-                const url = `messages?&receiver=${senderId}`;
-                window.history.pushState({}, '', url);
-            });
-        }
-
-        const ws = new WebSocket('ws://localhost:8080/ws');
-        window.addEventListener('beforeunload', (event) => {
-            if (ws.readyState === WebSocket.OPEN) {
-
-                ws.send(JSON.stringify({
-                    type: "offline"
-                }));
-            }
-            ws.send(JSON.stringify({
-                type: "offline"
-            }));
-        });
-
-        window.addEventListener('unload', (event) => {
-            if (ws.readyState === WebSocket.OPEN) {
-                // If WebSocket is open, send the "offline" message
-                ws.send(JSON.stringify({
-                    type: "offline"
-                }));
-            }
-        });
-        ws.onopen = () => {
-            console.log("WebSocket connected.");
-            isConnected = true; // Update connection status
-            ws.send(JSON.stringify({
-                type: "online"
-            }));
-            logMessage('WebSocket connection established.');
-            messages()
-        };
-
-        // Add event listener for incoming messages
-        ws.onmessage = (event) => {
-            const receivedData = event.data;
-            const parsed = JSON.parse(receivedData);
-            logMessage('Message received: ' + atob(parsed));
-        };
-
-        // Add event listener for errors
-        ws.onerror = (error) => {
-            ws.send(JSON.stringify({
-                type: "online"
-            }));
-            logMessage('WebSocket error: ' + error.message);
-        };
-
-        // Add event listener for connection close
-        ws.onclose = () => {
-            ws.send(JSON.stringify({
-                type: "offline",
-            }));
-            console.log("WebSocket connection closed.");
-            logMessage('WebSocket connection closed.');
-        };
-
-
-        document.getElementById('sendButton').addEventListener('click', () => {
-            const input = document.getElementById('messageInput');
-            const message = input.value;
-
-            if (message.trim() === '') {
-                logMessage('Cannot send an empty message.');
-                return;
-            }
-            if (storedData) {
-                if (parsedData.uuid === cookies) {
-                    console.log(parsedData.id,);
-
-                    ws.send(JSON.stringify({
-                        sender: parsedData.id,
-                        receiver: +receiver,
-                        content: message
-                    }));
-
-                    logMessage('Message sent: ' + message);
-                    input.value = '';
+                switch (message.type) {
+                    case "online_list":
+                        console.log();
+                        updateUserList(message.online_users);
+                        break;
+                    case "message":
+                        displayMessage(message.sender, message.content);
+                        break;
+                    case "typing":
+                        showTypingNotification(message.userId);
+                        break;
+                    default:
+                        console.warn("Unhandled message type:", message.type);
                 }
+            };
 
-                // Send JSON message
+            ws.onclose = () => {
+                console.log("WebSocket connection closed.");
+                logMessage("WebSocket disconnected.");
+            };
+
+            ws.onerror = (error) => {
+                console.error("WebSocket error:", error);
+            };
+
+            sendButton.addEventListener("click", () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    ws.send(
+                        JSON.stringify({
+                            type: "message",
+                            content: message,
+                            sender: parsedData.id,
+                            receiver: +receiver,
+                        })
+                    );
+                    messageInput.value = "";
+                    displayMessage(parsedData.id, message, true);
+                }
+            });
+
+            async function fetchConnectedUsers() {
+                const response = await fetch("/api/connected");
+                if (response.ok) {
+                    const users = await response.json();
+                    updateUserList(users);
+                }
+            }
+
+            function updateUserList(users) {
+                 users.forEach((user) => {
+                    addUser(user.id, user.username, user.status);
+                });
+            }
+
+            function addUser(userId, userName, status) {
+                const userItem = document.createElement("li");
+                userItem.className = "user-item";
+                userItem.setAttribute("data-id", userId);
+
+                const userIcon = document.createElement("div");
+                userIcon.className = "user-icon";
+                userIcon.textContent = userName[0].toUpperCase();
+
+                const userNameDiv = document.createElement("div");
+                userNameDiv.className = "user-name";
+                userNameDiv.textContent = userName;
+
+                const statusDot = document.createElement("span");
+                statusDot.className = "status";
+                statusDot.style.background = status === "online" ? "green" : "red";
+
+                userItem.append(userIcon, userNameDiv, statusDot);
+
+                userItem.addEventListener("click", () => {
+                    window.history.pushState({}, "", `messages?receiver=${userId}`);
+                });
+
+                userList.appendChild(userItem);
+            }
+
+            function displayMessage(sender, content, isOwnMessage = false) {
+                const messageDiv = document.createElement("div");
+                messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
+                log.appendChild(messageDiv);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function logMessage(message) {
+                const logDiv = document.createElement("div");
+                logDiv.textContent = message;
+                log.appendChild(logDiv);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function showTypingNotification(userId) {
+                logMessage(`User ${userId} is typing...`);
+                setTimeout(() => {
+                    logMessage("");
+                }, 3000);
             }
         });
-        // Function to append a log message
-        function logMessage(message) {
-            const logItem = document.createElement('div');
-            logItem.textContent = message;
-            log.appendChild(logItem);
-            log.scrollTop = log.scrollHeight; // Auto-scroll
-        }
 
-        async function getuserConnect() {
-            const response = await fetch(`/api/connected`, {
-                method: "GET",
-            });
-
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Connected users:", data);
-                // Update the user status in the DOM
-                data.forEach((user) => {
-                    addUser(user.id, user.username, user.status);
-                    const statusElement = document.querySelector(
-                        `[data-id="${user.id}"] .status`
-                    );
-
-                    if (statusElement) {
-                        statusElement.style.background =
-                            user.status === "online" ? "green" : "red";
-                    }
-                });
-            }
-
-
-        }
-
-        async function messages() {
-            const response = await fetch(`/api/messages`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    sender: parsedData.id,
-                    receiver: +receiver
-                })
-            });
-            if (response.ok) {
-                let data = await response.json();
-
-                data.forEach(user => {
-                    logMessage(user.content)
-                });
-            }
-        }
-
-        getuserConnect();
 
     </script>
 </body>

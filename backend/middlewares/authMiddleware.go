@@ -36,6 +36,8 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			return
 		}
 
+		// Add a user value to the context
+
 		messages, expire := m.userService.AuthenticatLogin(cookies.Value)
 		if messages.MessageError != "" {
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
