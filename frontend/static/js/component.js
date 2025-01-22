@@ -1,5 +1,22 @@
-const section = document.querySelector("section");
+import { Change } from "./home.js";
 
+const section = document.querySelector("section");
+const main = /*html*/ `
+      <main>
+        <div class="alert"></div>
+        <div class="headMian">
+          <img class="logo" src="../static/imgs/logo.png" alt="logo" />
+        </div>
+        <article class="main content_post"></article>
+      </main>
+
+      <div id="side-right"></div>
+      <aside class="aside-right">
+        <input class="search" type="text" placeholder="Search.." data-search />
+        <div class="link-list">
+          <a href="/about">about</a>·<a href="/contact">contact</a>
+        </div>
+      </aside>`;
 const nav_item = [
   {
     id: "settings",
@@ -34,8 +51,7 @@ const categories = [
 ];
 
 function rightSide() {
-  const aside = document.createElement("aside");
-  aside.className = "aside-right";
+  const aside = section.querySelector(".aside-right");
   aside.innerHTML = /*html*/ `
        <input class="search" type="text" placeholder="Search.." data-search />
           <div class="header-nav">
@@ -53,54 +69,60 @@ function rightSide() {
 }
 
 function leftside() {
+  section.innerHTML = main;
+
   const aside = document.createElement("aside");
   aside.className = "aside-left";
   aside.innerHTML = /*html*/ `
-  <div class="aside-nav">
-        <div class="logo-user">
-          <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
-        </div>
-        <nav>
-          
-          <button class="newPost-popup">
-            <ion-icon name="duplicate"></ion-icon>
-            <h1>New Post</h1>
-          </button>
-
-          <div id="creatPost-popup" class="add_post">
-            <div class="newPost">
-              <div class="newPost-header">
-                <button class="cancel-btn post-close">Cancel</button>
-                <button class="post-btn create-post create-comment">Post</button>
-              </div>
-              <div class="newPost-content">
-                <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
-                <textarea maxlength="1000" placeholder="What's up?" id="content" required></textarea>
-              </div>
-              <div class="openCategories" id="choice-categories">
-                <h1>Categories</h1>
+    <div class="aside-nav">
+          <div class="logo-user">
+            <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
+          </div>
+          <nav>
+            
+            <button class="newPost-popup">
+              <ion-icon name="duplicate"></ion-icon>
+              <h1>New Post</h1>
+            </button>
+  
+            <div id="creatPost-popup" class="add_post">
+              <div class="newPost">
+                <div class="newPost-header">
+                  <button class="cancel-btn post-close">Cancel</button>
+                  <button class="post-btn create-post create-comment">Post</button>
+                </div>
+                <div class="newPost-content">
+                  <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
+                  <textarea maxlength="1000" placeholder="What's up?" id="content" required></textarea>
+                </div>
+                <div class="openCategories" id="choice-categories">
+                  <h1>Categories</h1>
+                </div>
               </div>
             </div>
-          </div>
-          <div id="categories-popup">
-            <div class="newPost">
-              <div class="newPost-header">
-                <button class="cancel-btn category">Cancel</button>
-                <h1>Choice you are categories:</h1>
-                <button class="post-btn done-post">Done</button>
-              </div>
-              <div class="categories-content">
-                <div class="categories-list">
-              </div>
-          </div>
-        </nav>
-      </div>
-    `;
+            <div id="categories-popup">
+              <div class="newPost">
+                <div class="newPost-header">
+                  <button class="cancel-btn category">Cancel</button>
+                  <h1>Choice you are categories:</h1>
+                  <button class="post-btn done-post">Done</button>
+                </div>
+                <div class="categories-content">
+                  <div class="categories-list">
+                </div>
+            </div>
+          </nav>
+        </div>
+      `;
   const nav = aside.querySelector("nav");
   const div = aside.querySelector(".categories-list");
   SetIcon(nav);
   Setcategories(div);
   section.prepend(aside);
+  Change();
+  if (window.location.pathname === "/categories") {
+    rightSide();
+  }
 }
 
 function SetcategoriesOption(nav) {

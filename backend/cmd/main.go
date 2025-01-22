@@ -88,7 +88,6 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
 	mux.Handle("/ws", http.HandlerFunc(newWs.ServWs))
 
-	
 	mux.Handle("/api/comment", middlewareController.AuthenticateMiddleware(http.HandlerFunc(commentController.Handel_GetCommet)))
 	mux.Handle("/api/messages", http.HandlerFunc(newWs.HandleGetMessages))
 	// mux.Handle("/ws", http.HandlerFunc(hubController.Messages))
@@ -97,14 +96,14 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 func SetupPageRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
-			fmt.Println("Errorororororo")
+			// handlers.JsoneResponseError(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		suffix := r.URL.Path[len("/static/"):]
 
 		if strings.Contains(suffix, ".css/") || strings.Contains(suffix, ".js/") || strings.Contains(suffix, ".png/") {
-			fmt.Println("Errorororororo")
+			// handlers.JsoneResponseError(w, r, "Not Found", http.StatusNotFound)
 			return
 		}
 
@@ -121,17 +120,114 @@ func SetupPageRoutes(mux *http.ServeMux) {
 		}
 
 		if !allowedFiles[suffix] {
-			fmt.Println("Errorororororo")
+			// handlers.JsoneResponseError(w, r, "Access Forbidden", http.StatusForbidden)
 			return
 		}
 		http.ServeFile(w, r, "../../frontend/static/"+suffix)
 	})
 
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../frontend/templates/login.html")
+	// mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+	// 	cookies, err := r.Cookie("token")
+	// 	if err != nil || cookies == nil {
+	// 		http.ServeFile(w, r, "../../frontend/templates/register.html")
+	// 	} else {
+	// 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	// 	}
+	// })
+	// mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+	// 	cookies, err := r.Cookie("token")
+	// 	if err != nil || cookies == nil {
+	// 		http.ServeFile(w, r, "../../frontend/templates/login.html")
+	// 	} else {
+	// 		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	// 	}
+	// })
+	// mux.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../../frontend/templates/about.html")
+	// })
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../../frontend/templates/home.html")
 	})
-
-	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../frontend/templates/message.html")
-	})
+	// mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../../frontend/templates/home.html")
+	// })
+	// mux.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../../frontend/templates/categories.html")
+	// })
+	// mux.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../../frontend/templates/contact.html")
+	// })
+	// mux.HandleFunc("/comment", func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../../frontend/templates/comment.html")
+	// })
+	// // mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// // 	validatePath(w, r)
+	// // })
+	// mux.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {
+	// 	cookies, err := r.Cookie("token")
+	// 	if err != nil || cookies == nil {
+	// 		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// 	} else {
+	// 		http.ServeFile(w, r, "../../frontend/templates/profile.html")
+	// 	}
+	// })
+	// mux.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
+	// 	cookies, err := r.Cookie("token")
+	// 	if err != nil || cookies == nil {
+	// 		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// 	} else {
+	// 		http.ServeFile(w, r, "../../frontend/templates/settings.html")
+	// 	}
+	// })
+	// mux.HandleFunc("/err", func(w http.ResponseWriter, r *http.Request) {
+	// 	filePath := "../../frontend/templates/err.html"
+	// 	fileContent, err := os.ReadFile(filePath)
+	// 	if err != nil {
+	// 		// handlers.JsoneResponse(w, r, "Error loading the error page", http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Write(fileContent)
+	// })
 }
+
+// func SetupPageRoutes(mux *http.ServeMux) {
+// 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+// 		if r.Method != http.MethodGet {
+// 			fmt.Println("Errorororororo")
+// 			return
+// 		}
+
+// 		suffix := r.URL.Path[len("/static/"):]
+
+// 		if strings.Contains(suffix, ".css/") || strings.Contains(suffix, ".js/") || strings.Contains(suffix, ".png/") {
+// 			fmt.Println("Errorororororo")
+// 			return
+// 		}
+
+// 		if strings.Contains(suffix, ".js") {
+// 			http.ServeFile(w, r, "../../frontend/static/"+suffix)
+// 			return
+// 		}
+
+// 		allowedFiles := map[string]bool{
+// 			"css/alert.css":       true,
+// 			"css/styles.css":      true,
+// 			"imgs/logo.png":       true,
+// 			"imgs/profilePic.png": true,
+// 		}
+
+// 		if !allowedFiles[suffix] {
+// 			fmt.Println("Errorororororo")
+// 			return
+// 		}
+// 		http.ServeFile(w, r, "../../frontend/static/"+suffix)
+// 	})
+
+// 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+// 		http.ServeFile(w, r, "../../frontend/templates/login.html")
+// 	})
+
+// 	mux.HandleFunc("/messages", func(w http.ResponseWriter, r *http.Request) {
+// 		http.ServeFile(w, r, "../../frontend/templates/message.html")
+// 	})
+// }

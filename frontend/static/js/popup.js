@@ -102,4 +102,4 @@ async function classes() {
   }
 }
 
-await classes();
+export { classes };
