@@ -106,8 +106,9 @@
     </div>
     <div id="log"></div>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        // document.addEventListener("DOMContentLoaded", () => {
             const ws = new WebSocket("ws://localhost:8080/ws");
+
             const userList = document.getElementById("userList");
             const log = document.getElementById("log");
             const messageInput = document.getElementById("messageInput");
@@ -116,7 +117,7 @@
             const cookies = document.cookie.split("token=")[1];
             const storedData = localStorage.getItem("data");
             const parsedData = JSON.parse(storedData);
-            const receiver = new URLSearchParams(window.location.search).get("receiver");
+             
 
             ws.onopen = () => {
                 console.log("WebSocket connected.");
@@ -131,21 +132,25 @@
 
             ws.onmessage = (event) => {
                 const message = JSON.parse(event.data);
+                console.log(message);
 
-                switch (message.type) {
-                    case "online_list":
-                        console.log();
-                        updateUserList(message.online_users);
-                        break;
-                    case "message":
-                        displayMessage(message.sender, message.content);
-                        break;
-                    case "typing":
-                        showTypingNotification(message.userId);
-                        break;
-                    default:
-                        console.warn("Unhandled message type:", message.type);
-                }
+                displayMessage(message.sender, message);
+                // console.log(message.type);
+                // switch (message.type) {
+
+                //     case "online_list":
+                //         console.log();
+                //         updateUserList(message.online_users);
+                //         break;
+                //     case "message":
+                //         displayMessage(message.sender, message.content);
+                //         break;
+                //     case "typing":
+                //         showTypingNotification(message.userId);
+                //         break;
+                //     default:
+                //         console.warn("Unhandled message type:", message.type);
+                // }
             };
 
             ws.onclose = () => {
@@ -158,17 +163,18 @@
             };
 
             sendButton.addEventListener("click", () => {
+ 
                 const message = messageInput.value.trim();
                 if (message) {
                     ws.send(
                         JSON.stringify({
-                            type: "message",
+                            type: "broadcast",
                             content: message,
                             sender: parsedData.id,
-                            receiver: +receiver,
+                            receiver: +receiver
                         })
                     );
-                    messageInput.value = "";
+                    // messageInput.value = "";
                     displayMessage(parsedData.id, message, true);
                 }
             });
@@ -182,9 +188,10 @@
             }
 
             function updateUserList(users) {
-                 users.forEach((user) => {
+                users.forEach((user) => {
                     addUser(user.id, user.username, user.status);
                 });
+                user_item()
             }
 
             function addUser(userId, userName, status) {
@@ -206,11 +213,8 @@
 
                 userItem.append(userIcon, userNameDiv, statusDot);
 
-                userItem.addEventListener("click", () => {
-                    window.history.pushState({}, "", `messages?receiver=${userId}`);
-                });
-
                 userList.appendChild(userItem);
+                
             }
 
             function displayMessage(sender, content, isOwnMessage = false) {
@@ -233,7 +237,20 @@
                     logMessage("");
                 }, 3000);
             }
-        });
+
+            function user_item() {
+                let items=document.querySelectorAll(".user-item")
+                items.forEach((clik)=>{
+                    clik.addEventListener("click",()=>{
+                        let id=clik.getAttribute("data-id")
+                        let url=`messages?receiver=${id}`
+                        history.pushState(null,"",url)
+                    })
+                    
+                })
+                
+            }
+         
 
 
     </script>

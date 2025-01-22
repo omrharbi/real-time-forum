@@ -20,12 +20,11 @@ var websocketUpgrade = websocket.Upgrader{
 }
 
 type Client struct {
-	connection   *websocket.Conn
-	Manager      *Manager
-	egress       chan []byte
-	Name_user    string
-	id_user      int
-	Disconnected chan bool
+	connection *websocket.Conn
+	Manager    *Manager
+	egress     chan models.Messages
+	Name_user  string
+	id_user    int
 }
 
 type Manager struct {
@@ -38,12 +37,11 @@ type Manager struct {
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
 	return &Client{
-		connection:   conn,
-		Manager:      man,
-		egress:       make(chan []byte),
-		Name_user:    name,
-		id_user:      id,
-		Disconnected: make(chan bool), // Initialize channel
+		connection: conn,
+		Manager:    man,
+		egress:     make(chan models.Messages),
+		Name_user:  name,
+		id_user:    id,
 	}
 }
 
@@ -67,7 +65,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	coock, err := r.Cookie("token")
 	if err != nil {
 		fmt.Println("Err", err)
-		m.broadcastOnlineUserList()
+		m.broadcastOnlineUserList("offline")
 		return
 	}
 
@@ -77,18 +75,9 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	}
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
-	m.broadcastOnlineUserList()
+	m.broadcastOnlineUserList("online")
 	go client.WriteMess()
-	go client.ReadMess(m)
-
-	if coock.Value == "" {
-		log.Println("User disconnected:", client.id_user)
-		// Mark user as offline and clean up resources
-		m.removeClient(client)
-		m.broadcastOnlineUserList()
-		return
-	}
- 
+	go client.ReadMess()
 }
 
 func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
@@ -113,13 +102,14 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mes)
 }
 
-func (c *Client) ReadMess(ms *Manager) {
+func (c *Client) ReadMess() {
 	defer func() {
-		c.Disconnected <- true
-		close(c.Disconnected)
+		c.connection.Close()
+		delete(c.Manager.Clients, c.id_user)
 	}()
 	for {
 		var m models.Messages
+
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -127,19 +117,19 @@ func (c *Client) ReadMess(ms *Manager) {
 			}
 			break
 		}
+
 		c.Manager.Lock()
 		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
-			message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
-			receiverClient.egress <- []byte(message)
-			ms.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
+			// message := fmt.Sprintf("From %s: %s", c.Name_user, m.Content)
+			receiverClient.egress <- m
+			// ms.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-			err := ms.userSer.UpdateStatus("online", m.Sender)
-			fmt.Println(err, "Error")
+			// err := ms.userSer.UpdateStatus("online", m.Sender)
+
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
 		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
-
 	}
 }
 
@@ -148,7 +138,7 @@ func (c *Client) WriteMess() {
 		c.Manager.removeClient(c)
 	}()
 	for msg := range c.egress {
-
+		fmt.Println("msg.Receiver", msg.Receiver, "msg.Sender", msg.Sender, "msg.Type", msg.Type)
 		if err := c.connection.WriteJSON(websocket.CloseMessage); err != nil {
 			log.Println("Connection Closed ", err)
 			return
@@ -178,11 +168,11 @@ func (m *Manager) removeClient(client *Client) {
 		client.connection.Close()
 		delete(m.Clients, client.id_user)
 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
-		m.broadcastOnlineUserList()
+		m.broadcastOnlineUserList("offline")
 	}
 }
 
-func (mu *Manager) broadcastOnlineUserList() {
+func (mu *Manager) broadcastOnlineUserList(typ string) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -194,7 +184,7 @@ func (mu *Manager) broadcastOnlineUserList() {
 	fmt.Println("Broadcasting online users:", connectedIDs)
 
 	message := models.OnlineUser{
-		Type:        "online_list",
+		Type:        typ,
 		OnlineUsers: connectedIDs,
 	}
 
