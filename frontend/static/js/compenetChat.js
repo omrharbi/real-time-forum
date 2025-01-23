@@ -1,3 +1,5 @@
+import { setupWs } from "./ws.js";
+let ws = setupWs()
 
 export function messamges() {
 
@@ -6,23 +8,24 @@ export function messamges() {
     chat.innerHTML += /*html*/`
       
             <div class="chat-message">
-                  <div class="users">
-                    <h1 class="user-online">User Online:</h1>
-                    <ul class="user-list" id="userList">
-                        <!-- User items will be added dynamically -->
-                       
-                    </ul>
-                  </div>
-                  <div class="message">
-                      <h1>User Online:</h1>
-                      <div class="chat">
-
-                        </div>
-                <input class="input-chat" type="text" placeholder="chat....">
-                </div>
+                    <div class="users">
+                        <h1 class="user-online">User Online:</h1>
+                        <ul class="user-list" id="userList">
+                            <!-- User items will be added dynamically -->
+                        </ul>
+                    </div>
+                    <div class="message">
+                        <h1>User Online:</h1>
+                        <div class="chat"></div>
+                            <div>
+                                <input type="text" id="messageInput" placeholder="Type your message here..." />
+                                <button id="sendButton">Send</button>
+                            </div>
+                            <div id="log"></div>
+                    </div>
             </div>
     `;
-     console.log(chat);
+    console.log(chat);
 
 }
 
@@ -56,7 +59,8 @@ function genreteMessages() {
     let chat = document.querySelector(".chat")
 
 }
- 
+
+
 
 const log = document.getElementById("log");
 const messageInput = document.getElementById("messageInput");
@@ -66,9 +70,9 @@ const cookies = document.cookie.split("token=")[1];
 const storedData = localStorage.getItem("data");
 const parsedData = JSON.parse(storedData);
 let receiver = new URLSearchParams(location.search).get("receiver")
-document.addEventListener("DOMContentLoaded", (c) => {
-    sendMessage(receiver)
-})
+// document.addEventListener("DOMContentLoaded", (c) => {
+//     sendMessage(receiver)
+// })
 
 
 ws.onmessage = async (event) => {
@@ -115,7 +119,7 @@ async function fetchConnectedUsers(status) {
 
         }
     } else {
-          status_user(status)
+        status_user(status)
     }
 }
 
