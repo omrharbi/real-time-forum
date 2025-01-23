@@ -27,15 +27,17 @@ function loadPage() {
       section.classList.remove("sectionLogin");
       leftside();
       classes();
-       
-      messamges()
+       break;
+    case "chat":
+      section.classList.remove("sectionLogin");
+      leftside();
+       messamges()
       break;
     case "categories":
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
       classes();
-
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";
