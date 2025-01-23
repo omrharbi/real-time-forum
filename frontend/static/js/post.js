@@ -1,5 +1,5 @@
 
-import { fetchData } from './forum.js';
+// import { fetchData } from './forum.js';
  import {alertPopup} from './alert.js';
 
 async function creatPost(categoriesSelected) {
@@ -18,7 +18,7 @@ async function creatPost(categoriesSelected) {
             })
         })
         if (response.ok) {
-            await fetchData()
+            // await fetchData()
             const data = await response.json();
             console.log("Success:", data);
 

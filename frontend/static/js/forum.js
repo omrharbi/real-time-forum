@@ -1,8 +1,8 @@
-import { likes } from "./likescomment.js";
-import { cards } from "./card.js";
-import { search } from "./search.js";
+// import { likes } from "./likescomment.js";
+// import { cards } from "./card.js";
+// import { search } from "./search.js";
 
-import { alertPopup } from "./alert.js";
+// import { alertPopup } from "./alert.js";
 let content = []
 export async function fetchData(page = 1) {
   const response = await fetch(`/api/home?page=${page}`, {

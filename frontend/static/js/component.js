@@ -7,7 +7,9 @@ const main = /*html*/ `
         <div class="headMian">
           <img class="logo" src="../static/imgs/logo.png" alt="logo" />
         </div>
-        <article class="main content_post"></article>
+        <article class="main content_post">
+
+        </article>
       </main>
 
       <div id="side-right"></div>
@@ -18,6 +20,10 @@ const main = /*html*/ `
         </div>
       </aside>`;
 const nav_item = [
+  {
+    id: "chat",
+    name: "chatbubbles",
+  },
   {
     id: "settings",
     name: "settings",
@@ -34,6 +40,7 @@ const nav_item = [
     id: "home",
     name: "home",
   },
+
 ];
 
 const categories = [
@@ -70,7 +77,7 @@ function rightSide() {
 
 function leftside() {
   section.innerHTML = main;
-
+ 
   const aside = document.createElement("aside");
   aside.className = "aside-left";
   aside.innerHTML = /*html*/ `
@@ -114,7 +121,9 @@ function leftside() {
           </nav>
         </div>
       `;
+
   const nav = aside.querySelector("nav");
+
   const div = aside.querySelector(".categories-list");
   SetIcon(nav);
   Setcategories(div);
@@ -124,7 +133,7 @@ function leftside() {
     rightSide();
   }
 }
-
+ 
 function SetcategoriesOption(nav) {
   for (let obj of categories) {
     const divC = document.createElement("a");

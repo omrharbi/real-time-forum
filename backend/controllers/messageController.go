@@ -27,8 +27,9 @@ type Client struct {
 	id_user    int
 }
 
+var clientsList = make(map[int]*Client)
+
 type Manager struct {
-	Clients map[int]*Client // Map user ID to their Client object
 	sync.RWMutex
 	user     *UserController
 	MessageS services.MessageService
@@ -47,7 +48,6 @@ func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client 
 
 func NewManager(user *UserController, messageS services.MessageService, userSer services.UserService) *Manager {
 	return &Manager{
-		Clients:  make(map[int]*Client),
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
@@ -105,7 +105,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
 		c.connection.Close()
-		delete(c.Manager.Clients, c.id_user)
+		delete(clientsList, c.id_user)
 	}()
 	for {
 		var m models.Messages
@@ -121,7 +121,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		}
 
 		c.Manager.Lock()
-		if receiverClient, ok := c.Manager.Clients[m.Receiver]; ok {
+		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
@@ -136,7 +136,8 @@ func (c *Client) ReadMess(mg *Manager) {
 
 func (c *Client) WriteMess() {
 	defer func() {
-		c.Manager.removeClient(c)
+		c.connection.Close()
+		delete(clientsList, c.id_user)
 	}()
 	for msg := range c.egress {
 		fmt.Println("msg.Receiver", msg.Receiver, "msg.Sender", msg.Sender, "msg.Type", msg.Type)
@@ -158,20 +159,20 @@ func (m *Manager) addClient(client *Client) {
 	defer m.Unlock()
 	err := m.userSer.UpdateStatus("online", client.id_user)
 	fmt.Println(err, "Error")
-	m.Clients[client.id_user] = client
+	clientsList[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 
-func (m *Manager) removeClient(client *Client) {
-	m.Lock()
-	defer m.Unlock()
-	if _, ok := m.Clients[client.id_user]; ok {
-		client.connection.Close()
-		delete(m.Clients, client.id_user)
-		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
-		// m.broadcastOnlineUserList("offline", client.id_user)
-	}
-}
+// func (m *Manager) removeClient(client *Client) {
+// 	m.Lock()
+// 	defer m.Unlock()
+// 	if _, ok := clientsList[client.id_user]; ok {
+// 		client.connection.Close()
+// 		delete(clientsList, client.id_user)
+// 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
+// 		// m.broadcastOnlineUserList("offline", client.id_user)
+// 	}
+// }
 
 func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 	mu.Lock()
@@ -183,7 +184,7 @@ func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 	}
 
 	// Broadcast the message to all connected clients
-	for _, connection := range mu.Clients {
+	for _, connection := range clientsList {
 		connection.connection.WriteJSON(&message)
 		// if err != nil {
 		// 	log.Println("Error broadcasting online list:", err)

@@ -47,10 +47,10 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 	offset := (page - 1) * postsPerPage
 
-	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
               count(cm.id) comments,
-              (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
-        		(SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+              (SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
+        		(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
               FROM card c 
               JOIN post p on c.id = p.card_id 
               LEFT JOIN comment cm ON c.id = cm.target_id 
@@ -62,6 +62,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 	data_Rows, err := c.db.QueryContext(ctx, query, postsPerPage, offset)
 	if err != nil {
 		fmt.Println("Error in get all", err)
+		return []models.Card_View{}, 0
 	}
 	defer data_Rows.Close()
 
