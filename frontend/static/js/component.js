@@ -129,7 +129,6 @@ function leftside() {
     document.querySelector("input").remove();
     return;
   }
-  Inf();
 }
 
 function CommtSide() {

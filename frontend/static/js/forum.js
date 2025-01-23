@@ -1,6 +1,6 @@
-import { likes } from "./likescomment.js";
+// import { likes } from "./likescomment.js";
 import { cards } from "./card.js";
-import { search } from "./search.js";
+// import { search } from "./search.js";
 
 import { alertPopup } from "./alert.js";
 let content = [];
@@ -13,16 +13,14 @@ export async function fetchData(page = 1) {
     let path = window.location.pathname;
     if (path !== "/profile") {
       let data = await response.json();
-      // console.log(data);
-      // return;
-
       let user_info = document.querySelector(".main");
       content = cards(data.posts, user_info);
+      // console.log(data.posts);
 
-      let like = document.querySelectorAll("#likes");
-      //likes(like);
-      // search(content);
-      //renderPagination(data, user_info);
+      // let like = document.querySelectorAll("#likes");
+      // //likes(like);
+      // // search(content);
+      // //renderPagination(data, user_info);
     }
   } else if (response.status === 400) {
     const data = await response.json();

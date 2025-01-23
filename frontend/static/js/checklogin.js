@@ -30,27 +30,22 @@ export const throttle = (func, wait = 100) => {
 };
 
 export function Inf() {
-  let offset = 1;
+  fetchData();
+  let offset = 2;
   console.log(offset);
-  const main = document.querySelector("main");
-  console.log(main);
+  const main = document.querySelector(".main");
+  main.addEventListener(
+    "scroll",
+    throttle(() => {
+      const windowHeight = main.clientHeight;
+      const scrollTop = main.scrollTop;
+      const scrollHeight = main.scrollHeight;
 
-  //   main.addEventListener("scroll", () => {
-  //     console.log("ok");
-  //   });
-  main.addEventListener("scroll", () => {
-    console.log("ok");
-  });
-
-  //   window.addEventListener(
-  //     "scroll",
-  //     throttle(() => {
-  //       let windowHight = window.innerHeight;
-  //       let scrol = window.scrollY;
-  //       if (scrol + windowHight > document.body.scrollHeight - 1000) {
-  //         fetchData(offset);
-  //         offset += 20;
-  //       }
-  //     })
-  //   );
+      // Load more data when the user scrolls close to the bottom
+      if (scrollTop + windowHeight >= scrollHeight - 100) {
+        fetchData(offset);
+        offset += 1;
+      }
+    }, 500)
+  );
 }

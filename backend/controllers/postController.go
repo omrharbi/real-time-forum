@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"time"
 
 	"real-time-froum/models"
 	"real-time-froum/services"
@@ -18,12 +19,14 @@ type PaginatedResponse struct {
 type postController struct {
 	postService    services.PostService
 	userController *UserController
+	card           services.CardsService
 }
 
-func NewpostController(service services.PostService, userController *UserController) *postController {
+func NewpostController(service services.PostService, userController *UserController, card services.CardsService) *postController {
 	return &postController{
 		postService:    service,
 		userController: userController,
+		card:           card,
 	}
 }
 
@@ -33,7 +36,7 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id_user := p.userController.GetUserId(r)
-	post := &models.Post{}
+	post := models.Post{}
 	decode := DecodeJson(r)
 	err := decode.Decode(&post)
 	if err != nil {
@@ -41,12 +44,13 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	post.User_Id = id_user
-	ms := p.postService.Add(r.Context(), post)
-
+	ms := p.postService.Add(r.Context(), &post)
+	post.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	if ms.MessageError != "" {
 		JsoneResponse(w, ms.MessageError, http.StatusBadRequest)
 		return
 	}
-
-	JsoneResponse(w, "create post Seccessfuly", http.StatusCreated)
+	Card_View := p.card.GetOneCard(r.Context(), post.Card_Id)
+	// card := models.Card_View{}
+	JsoneResponse(w, Card_View, http.StatusCreated)
 }

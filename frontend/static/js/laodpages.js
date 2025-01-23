@@ -36,21 +36,19 @@ function loadPage() {
       section.classList.remove("sectionLogin");
       leftside();
       classes();
-      // Inf()
-      fetchData();
+      Inf();
       break;
     case "categories":
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
       classes();
-      fetchData();
       break;
     case "comment":
       leftside();
       fetchdata();
       classes();
-
+      Inf();
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";
