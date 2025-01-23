@@ -106,12 +106,13 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int) {
 	stm := `SELECT 
 			EXISTS (SELECT 1 FROM user WHERE UUID = ?),
-			(SELECT expires , id FROM user WHERE UUID = ? ) AS expires; `
+			(SELECT expires  FROM user WHERE UUID = ? ) AS expires
+			(SELECT id  FROM user WHERE UUID = ? ) AS expires;; `
 	var exists bool
 	var expires sql.NullTime
 	var id int
 
-	err := u.db.QueryRow(stm, uuid, uuid).Scan(&exists, &expires, &id)
+	err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
 	if err != nil {
 		fmt.Println(err, "in User Repo")
 		return exists, time.Time{}, 0
