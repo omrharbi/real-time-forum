@@ -106,12 +106,12 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
 		mg.broadcastOnlineUserList("offline", c.id_user)
-		err := mg.userSer.UpdateStatus("offline", c.id_user)
+		// err := mg.userSer.UpdateStatus("offline", c.id_user)
 		c.connection.Close()
 		delete(clientsList, c.id_user)
-		if err != nil {
-			fmt.Println("error", err)
-		}
+		// if err != nil {
+		// 	fmt.Println("error", err)
+		// }
 	}()
 	for {
 		var m models.Messages
@@ -163,8 +163,8 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	err := m.userSer.UpdateStatus("online", client.id_user)
-	fmt.Println(err, "Error")
+	// err := m.userSer.UpdateStatus("online", client.id_user)
+	// fmt.Println(err, "Error")
 	clientsList[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }

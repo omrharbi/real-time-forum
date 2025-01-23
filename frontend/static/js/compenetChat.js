@@ -1,4 +1,4 @@
- 
+
 
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
@@ -24,7 +24,7 @@ export function setupWs() {
         switch (message.type) {
             case "online":
                 console.log(message);
-                
+
                 updateUserList(message)
 
                 // updateUserList(message);
@@ -88,7 +88,7 @@ async function fetchConnectedUsers() {
         const users = await response.json();
         users.forEach((user) => {
             console.log(user);
-            
+
             addUser(user.id, user.username, user.status)
         })
         user_item()
@@ -117,11 +117,11 @@ function addUser(userId, userName, status) {
     //     statusDot.style.background ="red"
     // }\
     console.log(userName);
-    
-     userItem.append(userIcon, userNameDiv, statusDot);
+
+    userItem.append(userIcon, userNameDiv, statusDot);
     userList.appendChild(userItem);
-    
-   statusDot.style.background = status === "online" ? "green" : "red";
+
+    statusDot.style.background = status === "online" ? "green" : "red";
 
 }
 
@@ -130,16 +130,21 @@ function genreteMessages() {
 }
 
 function updateUserList(message) {
-     
+
     let id = document.getElementById(message.online_users)
-    let status= id.querySelector(".status")
-    console.log(status);
-    
-    if(id){
-        status.style.background = "green"
+    let status = id.querySelector(".status")
+    console.log(message.type);
+
+
+    if (id) {
+        if (message.type === "online") {
+            status.style.background = "green"
+        }else {
+            status.style.background = "red"
+        }
     }
     console.log(id);
- 
+
 }
 
 function displayMessage(sender, content, isOwnMessage = false) {
@@ -167,7 +172,7 @@ function showTypingNotification(userId) {
 
 export function user_item() {
     let items = document.querySelectorAll(".user-item")
-     items.forEach((clik) => {
+    items.forEach((clik) => {
         clik.addEventListener("click", () => {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
