@@ -111,6 +111,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		if err != nil {
 			fmt.Println("error", err)
 		}
+		mg.broadcastOnlineUserList("offline", c.id_user)
 	}()
 	for {
 		var m models.Messages

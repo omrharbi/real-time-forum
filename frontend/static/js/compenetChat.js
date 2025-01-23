@@ -121,7 +121,7 @@ function addUser(userId, userName, status) {
      userItem.append(userIcon, userNameDiv, statusDot);
     userList.appendChild(userItem);
     
-   // statusDot.style.background = status === "online" ? "green" : "red";
+   statusDot.style.background = status === "online" ? "green" : "red";
 
 }
 
