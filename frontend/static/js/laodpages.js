@@ -3,8 +3,7 @@ import { leftside } from "./component.js";
 import { login } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
-import { setupWs } from "./ws.js";
-import { messamges } from "./compenetChat.js";
+ import { messamges, setupWs, user_item } from "./compenetChat.js";
 
 const section = document.querySelector("section");
 
@@ -32,6 +31,7 @@ function loadPage() {
       section.classList.remove("sectionLogin");
       leftside();
        messamges()
+       user_item()
       break;
     case "categories":
       section.classList.remove("sectionLogin");

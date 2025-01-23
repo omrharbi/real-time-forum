@@ -1470,15 +1470,14 @@ button:hover {
 /* 
 user chat
 */
-ul#userList:hover {
+/* ul.user-item:hover {
   width: 242px;
   position: absolute;
   left: 9px;
   transform: translateY(47px);
-  /* box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); */
-  border-radius: 5px;
+   border-radius: 5px;
   transition: transform 0.3s ease, box-shadow 0.3s;
-}
+} */
 .user-list {
   transform: translateY(47px);
   list-style: none;
@@ -1494,7 +1493,7 @@ ul#userList:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 } 
-.user-list li:active {
+.user-item li:active {
   transition: transform 0.3s ease, box-shadow 0.3s;
   transform: translateY(2px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

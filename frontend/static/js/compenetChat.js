@@ -1,8 +1,58 @@
-import { setupWs } from "./ws.js";
-let ws = setupWs()
+
+const log = document.getElementById("log");
+const messageInput = document.getElementById("messageInput");
+const sendButton = document.getElementById("sendButton");
+
+const cookies = document.cookie.split("token=")[1];
+const storedData = localStorage.getItem("data");
+const parsedData = JSON.parse(storedData);
+let receiver = new URLSearchParams(location.search).get("receiver")
+// document.addEventListener("DOMContentLoaded", (c) => {
+//     sendMessage(receiver)
+// })
+export function setupWs() {
+    let ws = new WebSocket("ws://localhost:8080/ws");
+    ws.onopen = () => {
+        console.log("is connected");
+        fetchConnectedUsers(null)
+    };
+
+    ws.onmessage = async (event) => {
+        const message = JSON.parse(event.data);
+        switch (message.type) {
+            case "online":
+                console.log(message.online_users);
+                updateUserList(message);
+                await fetchConnectedUsers(message);
+                break;
+            case "broadcast":
+                displayMessage(message.sender, message);
+                break;
+            case "typing":
+                showTypingNotification(message.userId);
+                break;
+            case "offline":
+                await fetchConnectedUsers(message);
+                // showTypingNotification(message.userId);
+                break;
+            default:
+                console.warn("Unhandled message type:", message.type);
+        }
+    };
+
+    ws.onclose = () => {
+        console.log("WebSocket connection closed.");
+        logMessage("WebSocket disconnected.");
+    };
+
+    ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+    };
+}
 
 export function messamges() {
-
+    console.log("test");
+    
     const chat = document.querySelector(".content_post");
     chat.style.height = "100%"
     chat.innerHTML += /*html*/`
@@ -25,10 +75,26 @@ export function messamges() {
                     </div>
             </div>
     `;
-    console.log(chat);
+     let items = document.querySelectorAll(".user-item")
+    user_item(items)
 
 }
+async function fetchConnectedUsers(status) {
+    if (status === null) {
 
+        const response = await fetch("/api/connected");
+        if (response.ok) {
+            const users = await response.json();
+            users.forEach((user) => {
+                addUser(user.id, user.username, user.status)
+            })
+console.log(response);
+
+        }
+    } else {
+        status_user(status)
+    }
+}
 function addUser(userId, userName, status) {
     const userList = document.getElementById("userList");
     console.log("477");
@@ -62,66 +128,8 @@ function genreteMessages() {
 
 
 
-const log = document.getElementById("log");
-const messageInput = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
-
-const cookies = document.cookie.split("token=")[1];
-const storedData = localStorage.getItem("data");
-const parsedData = JSON.parse(storedData);
-let receiver = new URLSearchParams(location.search).get("receiver")
-// document.addEventListener("DOMContentLoaded", (c) => {
-//     sendMessage(receiver)
-// })
 
 
-ws.onmessage = async (event) => {
-    const message = JSON.parse(event.data);
-    switch (message.type) {
-        case "online":
-            console.log(message.online_users);
-            updateUserList(message);
-            await fetchConnectedUsers(message);
-            break;
-        case "broadcast":
-            displayMessage(message.sender, message);
-            break;
-        case "typing":
-            showTypingNotification(message.userId);
-            break;
-        case "offline":
-            await fetchConnectedUsers(message);
-            // showTypingNotification(message.userId);
-            break;
-        default:
-            console.warn("Unhandled message type:", message.type);
-    }
-};
-
-ws.onclose = () => {
-    console.log("WebSocket connection closed.");
-    logMessage("WebSocket disconnected.");
-};
-
-ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-};
-
-async function fetchConnectedUsers(status) {
-    if (status === null) {
-
-        const response = await fetch("/api/connected");
-        if (response.ok) {
-            const users = await response.json();
-            users.forEach((user) => {
-                addUser(user.id, user.username, user.status)
-            })
-
-        }
-    } else {
-        status_user(status)
-    }
-}
 
 function updateUserList(users) {
     //users.forEach((user) => {
@@ -130,7 +138,7 @@ function updateUserList(users) {
     //addUser(user.id, user.username, user.status);
     //  status()
     //});
-    user_item()
+    //user_item()
 }
 
 function status_user(message) {
@@ -177,8 +185,11 @@ function showTypingNotification(userId) {
     }, 3000);
 }
 
-function user_item() {
-    let items = document.querySelectorAll(".user-item")
+export function user_item(items) {
+ 
+   console.log(items);
+   
+     
     items.forEach((clik) => {
         clik.addEventListener("click", () => {
             let id = clik.getAttribute("data-id")
@@ -188,9 +199,8 @@ function user_item() {
         })
 
     })
-
 }
-
+ 
 function sendMessage(receiver) {
     sendButton.addEventListener("click", () => {
         console.log(+receiver, parsedData.id);
