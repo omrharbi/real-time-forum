@@ -27,7 +27,6 @@ type UserService interface {
 	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time, iduser int)
 	UUiduser(uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int)
-	GetContext(ctx context.Context, token string) any
 	UserConnect(user int) []models.UUID
 	UpdateStatus(status string, iduser int) error
 }
@@ -102,9 +101,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				fmt.Println("Error to Update")
 				return models.ResponceUser{}, message, uuid.UUID{}
 			}
-			ctx := saveContext(ctx, "user", loged.Email)
-			val := ctx.Value("user")
-			fmt.Println(val, "value Context")
+
 			return loged, messages.Messages{}, uuids
 		} else {
 			message.MessageError = "Email or password incorrect."
@@ -257,17 +254,6 @@ func (u *userServiceImpl) validateUser(users *models.User) messages.Messages {
 	}
 
 	return message
-}
-
-func saveContext(ctx context.Context, token string, val string) context.Context {
-	if ctx == nil {
-		ctx = context.TODO() // Use a placeholder context
-	}
-	return context.WithValue(ctx, token, val)
-}
-
-func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
-	return ctx.Value(token)
 }
 
 func (u *userServiceImpl) UserConnect(user int) []models.UUID {

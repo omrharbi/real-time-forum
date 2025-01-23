@@ -1,4 +1,4 @@
-
+ 
 
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
@@ -111,15 +111,17 @@ function addUser(userId, userName, status) {
 
     const statusDot = document.createElement("span");
     statusDot.className = "status";
-    // if (userId === status.online_users) {//online_users type
+    //  if (userId === status.online_users) {//online_users type
     //     statusDot.style.background ="green"
     // }else{
     //     statusDot.style.background ="red"
-    // }
-    statusDot.style.background = status === "online" ? "green" : "red";
-    userItem.append(userIcon, userNameDiv, statusDot);
+    // }\
+    console.log(userName);
+    
+     userItem.append(userIcon, userNameDiv, statusDot);
     userList.appendChild(userItem);
-
+    
+   // statusDot.style.background = status === "online" ? "green" : "red";
 
 }
 
@@ -130,8 +132,11 @@ function genreteMessages() {
 function updateUserList(message) {
      
     let id = document.getElementById(message.online_users)
+    let status= id.querySelector(".status")
+    console.log(status);
+    
     if(id){
-        id.style.background = "green"
+        status.style.background = "green"
     }
     console.log(id);
  

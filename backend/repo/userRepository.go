@@ -106,8 +106,8 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int) {
 	stm := `SELECT 
 			EXISTS (SELECT 1 FROM user WHERE UUID = ?),
-			(SELECT expires  FROM user WHERE UUID = ? ) AS expires
-			(SELECT id  FROM user WHERE UUID = ? ) AS expires;; `
+			(SELECT expires  FROM user WHERE UUID = ? ) AS expires,
+			(SELECT id  FROM user WHERE UUID = ? ) AS expires; `
 	var exists bool
 	var expires sql.NullTime
 	var id int
