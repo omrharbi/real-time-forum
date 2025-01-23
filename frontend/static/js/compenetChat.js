@@ -23,11 +23,7 @@ export function setupWs() {
         const message = JSON.parse(event.data);
         switch (message.type) {
             case "online":
-                console.log(message);
-
                 updateUserList(message)
-
-                // updateUserList(message);
                 break;
             case "broadcast":
                 displayMessage(message.sender, message);
@@ -37,7 +33,6 @@ export function setupWs() {
                 break;
             case "offline":
                 updateUserList(message)
-                // showTypingNotification(message.userId);
                 break;
             default:
                 console.warn("Unhandled message type:", message.type);
@@ -111,41 +106,39 @@ function addUser(userId, userName, status) {
 
     const statusDot = document.createElement("span");
     statusDot.className = "status";
-    //  if (userId === status.online_users) {//online_users type
-    //     statusDot.style.background ="green"
-    // }else{
-    //     statusDot.style.background ="red"
-    // }\
-    console.log(userName);
 
     userItem.append(userIcon, userNameDiv, statusDot);
     userList.appendChild(userItem);
-
     statusDot.style.background = status === "online" ? "green" : "red";
 
 }
 
-function genreteMessages() {
-    let chat = document.querySelector(".chat")
+function genreteMessages(sender, content, isOwnMessage = false) {
+    const messageDiv = document.createElement("div");
+    messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
+    messageDiv.classList.add(isOwnMessage ? "own-message" : "received-message");
+    chatLog.appendChild(messageDiv);
+    chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll
 }
 
-function updateUserList(message) {
 
-    let id = document.getElementById(message.online_users)
-    let status = id.querySelector(".status")
-    console.log(message.type);
+// function updateUserList(message) {
+
+//     let id = document.getElementById(message.online_users)
+//     let status = id.querySelector(".status")
+//     console.log(message.type);
 
 
-    if (id) {
-        if (message.type === "online") {
-            status.style.background = "green"
-        }else {
-            status.style.background = "red"
-        }
-    }
-    console.log(id);
+//     if (id) {
+//         if (message.type === "online") {
+//             status.style.background = "green"
+//         } else {
+//             status.style.background = "red"
+//         }
+//     }
+//     console.log(id);
 
-}
+// }
 
 function displayMessage(sender, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
@@ -153,13 +146,6 @@ function displayMessage(sender, content, isOwnMessage = false) {
     const messageDiv = document.createElement("div");
     messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
     log.appendChild(messageDiv);
-    log.scrollTop = log.scrollHeight;
-}
-
-function logMessage(message) {
-    const logDiv = document.createElement("div");
-    logDiv.textContent = message;
-    log.appendChild(logDiv);
     log.scrollTop = log.scrollHeight;
 }
 
@@ -177,26 +163,27 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-
+            genreteMessages()
         })
 
     })
 }
 
-function sendMessage(receiver) {
-    sendButton.addEventListener("click", () => {
-        console.log(+receiver, parsedData.id);
-        const message = messageInput.value.trim();
-        if (message) {
-            ws.send(
-                JSON.stringify({
-                    type: "broadcast",
-                    content: message,
-                    sender: parsedData.id,
-                    receiver: +receiver
-                })
-            );
+// function sendMessage(receiver) {
+sendButton.addEventListener("click", () => {
+    console.log(+receiver, parsedData.id);
+    const message = messageInput.value.trim();
+    if (message) {
+        displayMessage("You", content, true);
+        ws.send(
+            JSON.stringify({
+                type: "broadcast",
+                content: message,
+                sender: parsedData.id,
+                receiver: +receiver
+            })
+        );
 
-        }
-    });
-}
+    }
+});
+// }
