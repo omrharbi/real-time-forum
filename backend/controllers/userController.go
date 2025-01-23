@@ -168,6 +168,7 @@ func (uc *UserController) HandleUserConnected(w http.ResponseWriter, r *http.Req
 		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	id_usr := uc.userService.UserConnect()
-	json.NewEncoder(w).Encode(id_usr)
+
+	// id_usr := uc.userService.UserConnect(user int)
+	// json.NewEncoder(w).Encode(id_usr)
 }

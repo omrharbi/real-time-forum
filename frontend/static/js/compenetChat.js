@@ -1,5 +1,5 @@
 
-const log = document.getElementById("log");
+
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
 
@@ -10,20 +10,24 @@ let receiver = new URLSearchParams(location.search).get("receiver")
 // document.addEventListener("DOMContentLoaded", (c) => {
 //     sendMessage(receiver)
 // })
+let ws
 export function setupWs() {
-    let ws = new WebSocket("ws://localhost:8080/ws");
+    fetchConnectedUsers()
+    ws = new WebSocket("ws://localhost:8080/ws");
     ws.onopen = () => {
         console.log("is connected");
-        fetchConnectedUsers(null)
+
     };
 
     ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
         switch (message.type) {
             case "online":
-                console.log(message.online_users);
-                updateUserList(message);
-                await fetchConnectedUsers(message);
+                console.log(message);
+                
+                updateUserList(message)
+
+                // updateUserList(message);
                 break;
             case "broadcast":
                 displayMessage(message.sender, message);
@@ -32,7 +36,7 @@ export function setupWs() {
                 showTypingNotification(message.userId);
                 break;
             case "offline":
-                await fetchConnectedUsers(message);
+                 
                 // showTypingNotification(message.userId);
                 break;
             default:
@@ -51,8 +55,6 @@ export function setupWs() {
 }
 
 export function messamges() {
-    console.log("test");
-
     const chat = document.querySelector(".content_post");
     chat.style.height = "100%"
     chat.innerHTML += /*html*/`
@@ -71,26 +73,25 @@ export function messamges() {
                                 <input type="text" id="messageInput" placeholder="Type your message here..." />
                                 <button id="sendButton">Send</button>
                             </div>
-                            <div id="log"></div>
                     </div>
             </div>
     `;
 
 }
-async function fetchConnectedUsers(status) {
-    if (status === null) {
 
-        const response = await fetch("/api/connected");
-        if (response.ok) {
-            const users = await response.json();
-            users.forEach((user) => {
-                addUser(user.id, user.username, user.status)
-            })
-            console.log(response);
 
-        }
-    } else {
-        status_user(status)
+async function fetchConnectedUsers() {
+    const response = await fetch("/api/connected");
+    if (response.ok) {
+        const userList = document.getElementById("userList");
+        userList.innerHTML = ""
+        const users = await response.json();
+        users.forEach((user) => {
+            console.log(user);
+            
+            addUser(user.id, user.username, user.status)
+        })
+        user_item()
     }
 }
 function addUser(userId, userName, status) {
@@ -110,60 +111,35 @@ function addUser(userId, userName, status) {
 
     const statusDot = document.createElement("span");
     statusDot.className = "status";
-
+    // if (userId === status.online_users) {//online_users type
+    //     statusDot.style.background ="green"
+    // }else{
+    //     statusDot.style.background ="red"
+    // }
     statusDot.style.background = status === "online" ? "green" : "red";
     userItem.append(userIcon, userNameDiv, statusDot);
     userList.appendChild(userItem);
-    if (userItem!==null) {
-        let items = document.querySelectorAll(".user-item")
-        user_item(items)
-    }
+
+
 }
 
 function genreteMessages() {
     let chat = document.querySelector(".chat")
-
 }
 
-
-
-
-
-
-function updateUserList(users) {
-    //users.forEach((user) => {
-    console.log(users);
-
-    //addUser(user.id, user.username, user.status);
-    //  status()
-    //});
-    //user_item()
+function updateUserList(message) {
+     
+    let id = document.getElementById(message.online_users)
+    if(id){
+        id.style.background = "green"
+    }
+    console.log(id);
+ 
 }
-
-function status_user(message) {
-    console.log(47, message);
-    const user = document.getElementsByClassName("user-item");
-
-    // for (let d of user) {
-    //     if (message.online_users === d.id) {
-    //         console.log(d);
-
-    //     } else {
-    //         d.style.background = "red"
-
-    //     }
-
-    // }
-
-
-    // for (let d of user) {
-    //     console.log(d);     
-    // }
-    //  statusDot.style.background = status === "online" ? "green" : "red";
-}
-
 
 function displayMessage(sender, content, isOwnMessage = false) {
+    let log = document.querySelector(".chat");
+
     const messageDiv = document.createElement("div");
     messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
     log.appendChild(messageDiv);
@@ -184,12 +160,9 @@ function showTypingNotification(userId) {
     }, 3000);
 }
 
-export function user_item(items) {
-
-    console.log(items);
-
-
-    items.forEach((clik) => {
+export function user_item() {
+    let items = document.querySelectorAll(".user-item")
+     items.forEach((clik) => {
         clik.addEventListener("click", () => {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`

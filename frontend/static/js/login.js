@@ -31,7 +31,7 @@ export function Login() {
       localStorage.setItem("data", JSON.stringify(userData));
       console.log(localStorage);
 
-      location.href = "/messages";
+      location.href = "/chat";
     } else if (response.status === 400) {
       const data = await response.json();
       console.log(data);

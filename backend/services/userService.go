@@ -28,7 +28,7 @@ type UserService interface {
 	UUiduser(uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
 	GetContext(ctx context.Context, token string) any
-	UserConnect() []models.UUID
+	UserConnect(user int) []models.UUID
 	UpdateStatus(status string, iduser int) error
 }
 
@@ -270,8 +270,8 @@ func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
 	return ctx.Value(token)
 }
 
-func (u *userServiceImpl) UserConnect() []models.UUID {
-	return u.userRepo.UserConnect()
+func (u *userServiceImpl) UserConnect(user int) []models.UUID {
+	return u.userRepo.UserConnect(user)
 }
 
 func (u *userServiceImpl) UpdateStatus(status string, iduser int) error {

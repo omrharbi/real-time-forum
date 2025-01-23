@@ -19,7 +19,7 @@ type UserRepository interface {
 	CheckAuthenticat(uuid string) (bool, time.Time)
 	CheckUser(ctx context.Context, id int) bool
 	GetUserIdWithUUID(uuid string) (string, string, string, error)
-	UserConnect() []models.UUID
+	UserConnect(user int) []models.UUID
 	UpdateStatus(status string, iduser int) error
 }
 
@@ -34,7 +34,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 // UserConnect implements UserRepository.
-func (u *userRepositoryImpl) UserConnect() []models.UUID {
+func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
 	query := `SELECT 
             id,
             username,
@@ -42,13 +42,14 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
             lastname,
             status
         FROM user
+		WHERE id!=?
         ORDER BY 
             CASE 
                 WHEN status = 'online' THEN 1
                 ELSE 2
             END,
             username ASC`
-	rows, err := u.db.Query(query)
+	rows, err := u.db.Query(query, user)
 	if err != nil {
 		fmt.Println(err)
 	}

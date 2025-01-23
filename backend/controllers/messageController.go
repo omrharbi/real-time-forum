@@ -73,9 +73,10 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(mes.MessageError)
 	}
 
+	m.broadcastOnlineUserList("online", uuid.Iduser)
+
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
-	m.broadcastOnlineUserList("online", uuid.Iduser)
 	go client.WriteMess()
 	go client.ReadMess(m)
 }
@@ -112,7 +113,7 @@ func (c *Client) ReadMess(mg *Manager) {
 
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
-			mg.broadcastOnlineUserList("offline", c.id_user)
+			// mg.broadcastOnlineUserList("offline", c.id_user)
 			// err := mg.userSer.UpdateStatus("offline", m.Sender)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Println("error Reading Message", err)
@@ -185,6 +186,7 @@ func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 
 	// Broadcast the message to all connected clients
 	for _, connection := range clientsList {
+		// if(clientsList[connection.id_user])
 		connection.connection.WriteJSON(&message)
 		// if err != nil {
 		// 	log.Println("Error broadcasting online list:", err)

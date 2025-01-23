@@ -1564,3 +1564,11 @@ input.input-chat {
   border: none;
   margin: 0px 3px 0 3px;
 }
+
+
+.status {
+  margin-left: auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
