@@ -107,15 +107,16 @@ func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
 		c.connection.Close()
 		delete(clientsList, c.id_user)
+		err := mg.userSer.UpdateStatus("offline", c.id_user)
+		if err != nil {
+			fmt.Println("error", err)
+		}
 	}()
 	for {
 		var m models.Messages
 
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
-			fmt.Println("here",err)
-			// mg.broadcastOnlineUserList("offline", c.id_user)
-			// err := mg.userSer.UpdateStatus("offline", m.Sender)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Println("error Reading Message", err)
 			}
@@ -127,8 +128,10 @@ func (c *Client) ReadMess(mg *Manager) {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-			// err := mg.userSer.UpdateStatus("online", m.Sender)
-
+			err := mg.userSer.UpdateStatus("online", m.Sender)
+			if err != nil {
+				fmt.Println("error", err)
+			}
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
