@@ -26,6 +26,8 @@ export function setupWs() {
                 updateUserList(message)
                 break;
             case "broadcast":
+                console.log(message,"herererer");
+                
                 displayMessage(message.sender, message);
                 break;
             case "typing":
@@ -71,7 +73,7 @@ export function messamges() {
                     </div>
             </div>
     `;
-
+    sendMessage()
 }
 
 
@@ -169,21 +171,28 @@ export function user_item() {
     })
 }
 
-// function sendMessage(receiver) {
-sendButton.addEventListener("click", () => {
-    console.log(+receiver, parsedData.id);
-    const message = messageInput.value.trim();
-    if (message) {
-        displayMessage("You", content, true);
-        ws.send(
-            JSON.stringify({
-                type: "broadcast",
-                content: message,
-                sender: parsedData.id,
-                receiver: +receiver
-            })
-        );
 
-    }
-});
-// }
+function sendMessage() {
+    const chat = document.querySelector(".content_post");
+    console.log(chat);
+    let message = chat.querySelector("#messageInput");
+    let sendButton = chat.querySelector("#sendButton");
+    console.log(sendButton);
+
+    sendButton.addEventListener("click", () => {
+        console.log(+receiver, parsedData.id);
+        const messages = message.value.trim();
+        if (messages) {
+            displayMessage("You", content, true);
+            ws.send(
+                JSON.stringify({
+                    type: "broadcast",
+                    content: messages,
+                    sender: parsedData.id,
+                    receiver: +receiver
+                })
+            );
+
+        }
+    });
+}
