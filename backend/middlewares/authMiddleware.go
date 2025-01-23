@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -36,16 +37,17 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			return
 		}
 
-		// Add a user value to the context
-
-		messages, expire := m.userService.AuthenticatLogin(cookies.Value)
+		messages, expire, id_user := m.userService.AuthenticatLogin(cookies.Value)
 		if messages.MessageError != "" {
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
+
+		r = r.WithContext(context.WithValue(r.Context(), "id_user", id_user))
+
 		if !time.Now().Before(expire) {
 			u := models.UUID{}
-			m.userService.UUiduser(cookies.Value)
+
 			m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return

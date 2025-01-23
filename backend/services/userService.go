@@ -24,9 +24,9 @@ type UserService interface {
 	LogOut(ctx context.Context, uuid models.UUID) (m messages.Messages)
 	checkPasswordHash(hash, password string) bool
 	hashPassword(password string) string
-	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time)
+	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time, iduser int)
 	UUiduser(uuid string) (m messages.Messages, us models.UUID)
-	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
+	CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int)
 	GetContext(ctx context.Context, token string) any
 	UserConnect(user int) []models.UUID
 	UpdateStatus(status string, iduser int) error
@@ -42,9 +42,9 @@ func NewUserService(repo repo.UserRepository) UserService {
 	return &userServiceImpl{userRepo: repo}
 }
 
-func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time) {
+func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int) {
 	if uuid == "" {
-		return false, time.Time{}
+		return false, time.Time{}, 0
 	}
 	return u.userRepo.CheckAuthenticat(uuid)
 }
@@ -57,14 +57,14 @@ func (u *userServiceImpl) Getuuid(ctx context.Context, uuid string) {
 // NewUserService creates a new UserService
 
 // AuthenticatLogin implements UserService.
-func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time) {
-	exists, expire := u.userRepo.CheckAuthenticat(UUID)
+func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time, iduser int) {
+	exists, expire, iduser := u.userRepo.CheckAuthenticat(UUID)
 	if !exists {
 		m.MessageError = "Unauthorized token"
-		return m, time.Time{}
+		return m, time.Time{}, 0
 	}
 
-	return m, expire
+	return m, expire, iduser
 }
 
 // Authentication implements UserService.
