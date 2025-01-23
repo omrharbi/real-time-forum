@@ -105,13 +105,13 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 
 func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
+		mg.broadcastOnlineUserList("offline", c.id_user)
+		err := mg.userSer.UpdateStatus("offline", c.id_user)
 		c.connection.Close()
 		delete(clientsList, c.id_user)
-		err := mg.userSer.UpdateStatus("offline", c.id_user)
 		if err != nil {
 			fmt.Println("error", err)
 		}
-		mg.broadcastOnlineUserList("offline", c.id_user)
 	}()
 	for {
 		var m models.Messages

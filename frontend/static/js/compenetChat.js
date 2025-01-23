@@ -36,7 +36,7 @@ export function setupWs() {
                 showTypingNotification(message.userId);
                 break;
             case "offline":
-                 
+                updateUserList(message)
                 // showTypingNotification(message.userId);
                 break;
             default:
