@@ -52,7 +52,7 @@ export function setupWs() {
 
 export function messamges() {
     console.log("test");
-    
+
     const chat = document.querySelector(".content_post");
     chat.style.height = "100%"
     chat.innerHTML += /*html*/`
@@ -75,8 +75,6 @@ export function messamges() {
                     </div>
             </div>
     `;
-     let items = document.querySelectorAll(".user-item")
-    user_item(items)
 
 }
 async function fetchConnectedUsers(status) {
@@ -88,7 +86,7 @@ async function fetchConnectedUsers(status) {
             users.forEach((user) => {
                 addUser(user.id, user.username, user.status)
             })
-console.log(response);
+            console.log(response);
 
         }
     } else {
@@ -97,8 +95,6 @@ console.log(response);
 }
 function addUser(userId, userName, status) {
     const userList = document.getElementById("userList");
-    console.log("477");
-
     const userItem = document.createElement("li");
     userItem.className = "user-item";
     userItem.id = userId;
@@ -117,8 +113,11 @@ function addUser(userId, userName, status) {
 
     statusDot.style.background = status === "online" ? "green" : "red";
     userItem.append(userIcon, userNameDiv, statusDot);
-
     userList.appendChild(userItem);
+    if (userItem!==null) {
+        let items = document.querySelectorAll(".user-item")
+        user_item(items)
+    }
 }
 
 function genreteMessages() {
@@ -186,21 +185,21 @@ function showTypingNotification(userId) {
 }
 
 export function user_item(items) {
- 
-   console.log(items);
-   
-     
+
+    console.log(items);
+
+
     items.forEach((clik) => {
         clik.addEventListener("click", () => {
             let id = clik.getAttribute("data-id")
-            let url = `messages?receiver=${id}`
+            let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
 
         })
 
     })
 }
- 
+
 function sendMessage(receiver) {
     sendButton.addEventListener("click", () => {
         console.log(+receiver, parsedData.id);
