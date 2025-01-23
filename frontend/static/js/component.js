@@ -1,8 +1,10 @@
+import { Inf } from "./checklogin.js";
+import { comments } from "./globa.js";
 import { Change } from "./home.js";
 
 const section = document.querySelector("section");
 const main = /*html*/ `
-      <main>
+      <main class ="scroll">
         <div class="alert"></div>
         <div class="headMian">
           <img class="logo" src="../static/imgs/logo.png" alt="logo" />
@@ -122,22 +124,32 @@ function leftside() {
   Change();
   if (window.location.pathname === "/categories") {
     rightSide();
+  } else if (window.location.pathname === "/comment") {
+    CommtSide();
+    document.querySelector("input").remove();
+    return;
   }
+  Inf();
+}
+
+function CommtSide() {
+  const main = document.querySelector("main");
+  main.innerHTML = comments;
 }
 
 function SetcategoriesOption(nav) {
   for (let obj of categories) {
-    const divC = document.createElement("a");
+    const divC = document.createElement("span");
     divC.innerText = obj;
-    divC.href = "#";
+    // divC.href = "#";
     nav.append(divC);
   }
 }
 
 function SetIcon(nav) {
   for (let obj of nav_item) {
-    const a = document.createElement("a");
-    a.href = "#";
+    const a = document.createElement("span");
+    // a.href = "#";
     a.id = obj.id;
     a.className = "nav-item";
     // console.log(window.location.pathname.slice(1), obj.id);

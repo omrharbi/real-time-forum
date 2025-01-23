@@ -1,14 +1,20 @@
+// import { log } from "console";
 import { ProfileNav } from "./categories.js";
+import { Inf } from "./checklogin.js";
+import { fetchdata } from "./comment.js";
 import { leftside } from "./component.js";
-import { login } from "./globa.js";
+import { fetchData } from "./forum.js";
+import { login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
+import { Register } from "./register.js";
 import { setupWs } from "./ws.js";
 
 const section = document.querySelector("section");
 
-document.addEventListener("DOMContentLoaded", () => {
-  setupWs();
+document.addEventListener("DOMContentLoaded", async () => {
+  const res = await fetch("/api/isLogged");
+  if (res.ok) setupWs();
 });
 
 function loadPage() {
@@ -19,24 +25,30 @@ function loadPage() {
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
-      document.body.addEventListener("keydown", (e) => {
-        if (e.key === "p") {
-          history.pushState(null, "", "/");
-          loadPage();
-        }
-      });
       break;
-
+    case "register":
+      section.classList.add("sectionLogin");
+      section.innerHTML = register;
+      Register();
+      break;
     case "":
     case "home":
       section.classList.remove("sectionLogin");
       leftside();
       classes();
+      // Inf()
+      fetchData();
       break;
     case "categories":
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
+      classes();
+      fetchData();
+      break;
+    case "comment":
+      leftside();
+      fetchdata();
       classes();
 
       break;
@@ -47,5 +59,13 @@ function loadPage() {
 }
 
 loadPage();
+let lastPath = window.location.pathname;
+
+setInterval(() => {
+  if (lastPath !== window.location.pathname) {
+    loadPage();
+    lastPath = window.location.pathname;
+  }
+}, 100);
 
 export { loadPage };

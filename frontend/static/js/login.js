@@ -1,6 +1,13 @@
-//import { alertPopup } from "./alert.js"
+import { alertPopup } from "./alert.js";
 
-export function Login() {
+import { checklogin } from "./checklogin.js";
+import { setupWs } from "./ws.js";
+
+export async function Login() {
+  checklogin();
+  document.querySelector("#register").addEventListener("click", () => {
+    history.pushState(null, "", "/register");
+  });
   let login = document.querySelector("#login");
 
   login.addEventListener("submit", async (e) => {
@@ -30,13 +37,13 @@ export function Login() {
       };
       localStorage.setItem("data", JSON.stringify(userData));
       console.log(localStorage);
-
-      location.href = "/messages";
+      setupWs();
+      history.pushState(null, "", "/");
     } else if (response.status === 400) {
       const data = await response.json();
       console.log(data);
 
-      //       alertPopup(data)
+      alertPopup(data);
     } else {
       const errorData = await response.json();
       console.error("Error:", errorData);

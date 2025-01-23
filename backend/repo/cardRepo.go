@@ -47,10 +47,10 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 	offset := (page - 1) * postsPerPage
 
-	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
               count(cm.id) comments,
-              (SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
-        		(SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+              (SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
+        		(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
               FROM card c 
               JOIN post p on c.id = p.card_id 
               LEFT JOIN comment cm ON c.id = cm.target_id 
@@ -82,7 +82,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 // getCard implements cardRepository.
 
 func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.Card_View {
-	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.card_id =p.card_id  ) AND l.is_like = 1) as likes,
         (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes

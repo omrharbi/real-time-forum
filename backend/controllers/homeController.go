@@ -51,11 +51,12 @@ func (h *HomeController) HomeHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+	// fmt.Println(response)
 }
 
 func (h *HomeController) GetCard_handler(res http.ResponseWriter, req *http.Request) {
 	defer req.Body.Close()
-	 
+
 	if req.Method != http.MethodGet {
 		JsoneResponse(res, "Status Method Not Allowed", http.StatusMethodNotAllowed)
 		return

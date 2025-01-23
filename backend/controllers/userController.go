@@ -156,10 +156,14 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 		u := models.UUID{}
 		uc.userService.UUiduser(cookies.Value)
 		uc.userService.LogOut(r.Context(), u)
+		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Println("Log out")
 		return
 	} else {
-		json.NewEncoder(w).Encode(is)
+		if is {
+			return
+		}
+		w.WriteHeader(http.StatusUnauthorized)
 	}
 }
 
