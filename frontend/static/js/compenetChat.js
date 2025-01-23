@@ -21,6 +21,8 @@ export function setupWs() {
 
     ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
+        console.log(message);
+        
         switch (message.type) {
             case "online":
                 updateUserList(message)
@@ -28,7 +30,7 @@ export function setupWs() {
             case "broadcast":
                 console.log(message,"herererer");
                 
-                displayMessage(message.sender, message);
+               // displayMessage(message.sender, message);
                 break;
             case "typing":
                 showTypingNotification(message.userId);

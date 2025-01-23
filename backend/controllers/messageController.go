@@ -123,16 +123,12 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
-
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-			// err := mg.userSer.UpdateStatus("online", m.Sender)
-			// if err != nil {
-			// 	fmt.Println("error", err)
-			// }
+		 
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
