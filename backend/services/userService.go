@@ -28,7 +28,7 @@ type UserService interface {
 	UUiduser(uuid string) (m messages.Messages, us models.UUID)
 	CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int)
 	UserConnect(user int) []models.UUID
-	UpdateStatus(status string, iduser int) error
+	// UpdateStatus(status string, iduser int) error
 }
 
 type userServiceImpl struct {
@@ -260,7 +260,7 @@ func (u *userServiceImpl) UserConnect(user int) []models.UUID {
 	return u.userRepo.UserConnect(user)
 }
 
-func (u *userServiceImpl) UpdateStatus(status string, iduser int) error {
-	fmt.Println("")
-	return u.userRepo.UpdateStatus(status, iduser)
-}
+// func (u *userServiceImpl) UpdateStatus(status string, iduser int) error {
+// 	fmt.Println("")
+// 	return u.userRepo.UpdateStatus(status, iduser)
+// }

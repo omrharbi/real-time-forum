@@ -20,7 +20,7 @@ type UserRepository interface {
 	CheckUser(ctx context.Context, id int) bool
 	GetUserIdWithUUID(uuid string) (string, string, string, error)
 	UserConnect(user int) []models.UUID
-	UpdateStatus(status string, iduser int) error
+	// UpdateStatus(status string, iduser int) error
 }
 
 type userRepositoryImpl struct {
@@ -65,14 +65,14 @@ func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
 	return us
 }
 
-func (u *userRepositoryImpl) UpdateStatus(status string, iduser int) error {
-	qury := "UPDATE user SET   status=?  WHERE id=?"
-	_, err := u.db.Exec(qury, status, iduser)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func (u *userRepositoryImpl) UpdateStatus(status string, iduser int) error {
+// 	qury := "UPDATE user SET   status=?  WHERE id=?"
+// 	_, err := u.db.Exec(qury, status, iduser)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // insertUser implements UserRepository.
 func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error) {

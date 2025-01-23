@@ -170,12 +170,12 @@ func (uc *UserController) HandleUserConnected(w http.ResponseWriter, r *http.Req
 	}
 	id := r.Context().Value("id_user").(int)
 	id_usr := uc.userService.UserConnect(id)
+
 	for i := 0; i < len(id_usr); i++ {
 		id := id_usr[i].Iduser
 		_, ok := clientsList[id]
 		if ok {
 			id_usr[i].Status = "online"
-
 		}else {
 			id_usr[i].Status = "offline"
 		}
