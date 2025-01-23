@@ -30,7 +30,7 @@ export function setupWs() {
             case "broadcast":
                 console.log(message,"herererer");
                 
-               // displayMessage(message.sender, message);
+                displayMessage(message.sender, message);
                 break;
             case "typing":
                 showTypingNotification(message.userId);
@@ -146,6 +146,7 @@ function genreteMessages(sender, content, isOwnMessage = false) {
 
 function displayMessage(sender, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
+console.log(content.content);
 
     const messageDiv = document.createElement("div");
     messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
