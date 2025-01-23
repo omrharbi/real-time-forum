@@ -3,8 +3,13 @@ import { leftside } from "./component.js";
 import { login } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
+import { setupWs } from "./ws.js";
 
 const section = document.querySelector("section");
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupWs();
+});
 
 function loadPage() {
   const path = window.location.pathname.slice(1);
