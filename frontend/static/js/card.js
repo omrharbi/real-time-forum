@@ -54,18 +54,26 @@ export function createPos(ele) {
                 ele.dislikes
               }</span>
             </div>
-              <a href="/comment?card_id=${ele.id}">
+              <span class="link">
             <div class="action">
               <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 19H1.871a.886.886 0 0 1-.798-.52.886.886 0 0 1 .158-.941L3.1 15.771A9 9 0 1 1 10 19Zm-6.549-1.5H10a7.5 7.5 0 1 0-5.323-2.219l.54.545L3.451 17.5Z"></path>
                         </svg>
                <span>${ele.comments}</span>
             </div>
-            </a>
+            </span>
           </div>
         </div>
         `;
+      contents.querySelector(".link").addEventListener("click" , ()=> {
+        handleCommentClick(ele.id)
+      })
   return contents;
+}
+
+function handleCommentClick(cardId) {
+  const url = `/comment?card_id=${cardId}`;
+  history.pushState({ cardId }, "Comments", url);
 }
 
 export function getTimeDifferenceInHours(createdAt) {

@@ -1,9 +1,9 @@
 // import { log } from "console";
 import { ProfileNav } from "./categories.js";
 import { Inf } from "./checklogin.js";
-import { fetchdata } from "./comment.js";
+import { fetchCommat, GetComments } from "./comment.js";
 import { leftside } from "./component.js";
-import { fetchData } from "./forum.js";
+// import { fetchData } from "./forum.js";
 import { login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
@@ -46,9 +46,10 @@ function loadPage() {
       break;
     case "comment":
       leftside();
-      fetchdata();
       classes();
-      Inf();
+      fetchCommat();
+      GetComments();
+      // Inf();
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";
@@ -61,8 +62,8 @@ let lastPath = window.location.pathname;
 
 setInterval(() => {
   if (lastPath !== window.location.pathname) {
-    loadPage();
     lastPath = window.location.pathname;
+    loadPage();
   }
 }, 100);
 

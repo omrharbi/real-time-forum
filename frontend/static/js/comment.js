@@ -4,7 +4,7 @@ import { InitialComment } from "./createcomment.js";
 import { alertPopup } from "./alert.js";
 // await checklogin()
 
-async function fetchdata() {
+async function fetchCommat() {
   const urlParams = new URLSearchParams(window.location.search);
   const cardData = urlParams.get("card_id");
   let fullname = document.querySelector(".full-name");
@@ -43,6 +43,8 @@ async function fetchdata() {
 }
 // await fetchdata()
 async function GetComments() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const cardData = urlParams.get("card_id");
   let path = window.location.pathname;
   if (path !== "/comment") {
     return "";
@@ -71,4 +73,4 @@ async function GetComments() {
   }
 }
 // await GetComments()
-export { GetComments, fetchdata };
+export { GetComments, fetchCommat };

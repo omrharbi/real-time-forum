@@ -1,9 +1,18 @@
 import { fetchData } from "./forum.js";
+import { setupWs } from "./ws.js";
 
 export async function checklogin() {
   const res = await fetch("/api/isLogged");
+  const path = window.location.pathname
   if (res.ok) {
-    history.pushState(null, "", "/");
+    setupWs()
+    if (path==="/login" || path ==="/register"){
+      history.pushState(null, "", "/");
+    }
+  }else {
+    if (path!=="/login" && path!=="/register"){
+      history.pushState(null, "", "/login");
+    }
   }
 }
 

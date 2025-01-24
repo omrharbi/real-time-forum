@@ -183,15 +183,15 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		Firstname: users.Firstname,
 		Lastname:  users.Lastname,
 	}
-	if strings.Trim(users.Firstname, " ") == "" ||
-		strings.Trim(users.Email, " ") == "" ||
-		strings.Trim(users.Lastname, " ") == "" ||
-		strings.Trim(users.Password, " ") == "" ||
-		strings.Trim(users.Nickname, " ") == "" ||
-		strings.Trim(users.Gender, " ") == "" {
-		message.MessageError = "All Input is Required"
-		return models.ResponceUser{}, message, ""
-	}
+	// if strings.Trim(users.Firstname, " ") == "" ||
+	// 	strings.Trim(users.Email, " ") == "" ||
+	// 	strings.Trim(users.Lastname, " ") == "" ||
+	// 	strings.Trim(users.Password, " ") == "" ||
+	// 	strings.Trim(users.Nickname, " ") == "" ||
+	// 	strings.Trim(users.Gender, " ") == "" {
+	// 	message.MessageError = "All Input is Required"
+	// 	return models.ResponceUser{}, message, ""
+	// }
 
 	message = u.validateUser(users)
 	if message.MessageError != "" {
