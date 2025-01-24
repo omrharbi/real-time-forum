@@ -2,19 +2,20 @@
 import { ProfileNav } from "./categories.js";
 import { Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
+import { setupWs } from "./compenetChat.js";
 import { leftside } from "./component.js";
 // import { fetchData } from "./forum.js";
 import { login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
 import { Register } from "./register.js";
-import { setupWs } from "./ws.js";
+
 
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
   const res = await fetch("/api/isLogged");
-  if (res.ok) setupWs();
+  if (res.ok) setupWs()
 });
 
 function loadPage() {
@@ -30,6 +31,12 @@ function loadPage() {
       section.classList.add("sectionLogin");
       section.innerHTML = register;
       Register();
+      break;
+    case "chat":
+      section.classList.remove("sectionLogin");
+      leftside();
+      messamges();
+      user_item();
       break;
     case "":
     case "home":

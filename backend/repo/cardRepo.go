@@ -62,6 +62,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 	data_Rows, err := c.db.QueryContext(ctx, query, postsPerPage, offset)
 	if err != nil {
 		fmt.Println("Error in get all", err)
+		return []models.Card_View{}, 0
 	}
 	defer data_Rows.Close()
 

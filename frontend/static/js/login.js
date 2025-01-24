@@ -1,7 +1,7 @@
 import { alertPopup } from "./alert.js";
 
 import { checklogin } from "./checklogin.js";
-import { setupWs } from "./ws.js";
+import { setupWs } from "./compenetChat.js";
 
 export async function Login() {
   checklogin();

@@ -1,5 +1,5 @@
 import { fetchData } from "./forum.js";
-import { setupWs } from "./ws.js";
+import { setupWs } from "./compenetChat.js";
 
 export async function checklogin() {
   const res = await fetch("/api/isLogged");

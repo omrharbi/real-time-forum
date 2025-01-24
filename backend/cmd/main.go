@@ -86,7 +86,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/api/likescheked", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.LikesCheckedHandle))) /// this get user liked card
 	mux.Handle("/api/addlike", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleAddLike)))
 	mux.Handle("/api/deleted", middlewareController.AuthenticateMiddleware(http.HandlerFunc(likesController.HandleDeletLike)))
-	mux.Handle("/ws", http.HandlerFunc(newWs.ServWs))
+	mux.Handle("/ws", middlewareController.AuthenticateMiddleware(http.HandlerFunc(newWs.ServWs)))
 
 	mux.Handle("/api/comment", middlewareController.AuthenticateMiddleware(http.HandlerFunc(commentController.Handel_GetCommet)))
 	mux.Handle("/api/messages", http.HandlerFunc(newWs.HandleGetMessages))

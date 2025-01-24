@@ -16,11 +16,11 @@ type UserRepository interface {
 	UpdateUUIDUser(ctx context.Context, uudi string, status string, userId int64, expires time.Time) error
 	InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error)
 	SelectUser(ctx context.Context, log *models.Login) *models.User
-	CheckAuthenticat(uuid string) (bool, time.Time)
+	CheckAuthenticat(uuid string) (bool, time.Time, int)
 	CheckUser(ctx context.Context, id int) bool
 	GetUserIdWithUUID(uuid string) (string, string, string, error)
-	UserConnect() []models.UUID
-	UpdateStatus(status string, iduser int) error
+	UserConnect(user int) []models.UUID
+	// UpdateStatus(status string, iduser int) error
 }
 
 type userRepositoryImpl struct {
@@ -34,7 +34,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 // UserConnect implements UserRepository.
-func (u *userRepositoryImpl) UserConnect() []models.UUID {
+func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
 	query := `SELECT 
             id,
             username,
@@ -42,13 +42,14 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
             lastname,
             status
         FROM user
+		WHERE id!=?
         ORDER BY 
             CASE 
                 WHEN status = 'online' THEN 1
                 ELSE 2
             END,
             username ASC`
-	rows, err := u.db.Query(query)
+	rows, err := u.db.Query(query, user)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -64,14 +65,14 @@ func (u *userRepositoryImpl) UserConnect() []models.UUID {
 	return us
 }
 
-func (u *userRepositoryImpl) UpdateStatus(status string, iduser int) error {
-	qury := "UPDATE user SET   status=?  WHERE id=?"
-	_, err := u.db.Exec(qury, status, iduser)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func (u *userRepositoryImpl) UpdateStatus(status string, iduser int) error {
+// 	qury := "UPDATE user SET   status=?  WHERE id=?"
+// 	_, err := u.db.Exec(qury, status, iduser)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // insertUser implements UserRepository.
 func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User, password string) (sql.Result, error) {
@@ -102,25 +103,27 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 }
 
 // CheckAuthenticat implements UserRepository.
-func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time) {
+func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int) {
 	stm := `SELECT 
 			EXISTS (SELECT 1 FROM user WHERE UUID = ?),
-			(SELECT expires FROM user WHERE UUID = ? ) AS expires; `
+			(SELECT expires  FROM user WHERE UUID = ? ) AS expires,
+			(SELECT id  FROM user WHERE UUID = ? ) AS expires; `
 	var exists bool
 	var expires sql.NullTime
+	var id int
 
-	err := u.db.QueryRow(stm, uuid, uuid).Scan(&exists, &expires)
+	err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
 	if err != nil {
 		fmt.Println(err, "in User Repo")
-		return exists, time.Time{}
+		return exists, time.Time{}, 0
 	}
 	if !expires.Valid {
-		return exists, time.Time{}
+		return exists, time.Time{}, 0
 	}
 	if !time.Now().Before(expires.Time) {
-		return false, time.Time{}
+		return false, time.Time{}, 0
 	}
-	return exists, expires.Time
+	return exists, expires.Time, id
 }
 
 // CheckUser implements UserRepository.

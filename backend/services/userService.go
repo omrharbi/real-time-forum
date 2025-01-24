@@ -24,12 +24,11 @@ type UserService interface {
 	LogOut(ctx context.Context, uuid models.UUID) (m messages.Messages)
 	checkPasswordHash(hash, password string) bool
 	hashPassword(password string) string
-	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time)
+	AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time, iduser int)
 	UUiduser(uuid string) (m messages.Messages, us models.UUID)
-	CheckAuth(ctx context.Context, uuid string) (bool, time.Time)
-	GetContext(ctx context.Context, token string) any
-	UserConnect() []models.UUID
-	UpdateStatus(status string, iduser int) error
+	CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int)
+	UserConnect(user int) []models.UUID
+	// UpdateStatus(status string, iduser int) error
 }
 
 type userServiceImpl struct {
@@ -42,9 +41,9 @@ func NewUserService(repo repo.UserRepository) UserService {
 	return &userServiceImpl{userRepo: repo}
 }
 
-func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time) {
+func (u *userServiceImpl) CheckAuth(ctx context.Context, uuid string) (bool, time.Time, int) {
 	if uuid == "" {
-		return false, time.Time{}
+		return false, time.Time{}, 0
 	}
 	return u.userRepo.CheckAuthenticat(uuid)
 }
@@ -57,14 +56,14 @@ func (u *userServiceImpl) Getuuid(ctx context.Context, uuid string) {
 // NewUserService creates a new UserService
 
 // AuthenticatLogin implements UserService.
-func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time) {
-	exists, expire := u.userRepo.CheckAuthenticat(UUID)
+func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, expire time.Time, iduser int) {
+	exists, expire, iduser := u.userRepo.CheckAuthenticat(UUID)
 	if !exists {
 		m.MessageError = "Unauthorized token"
-		return m, time.Time{}
+		return m, time.Time{}, 0
 	}
 
-	return m, expire
+	return m, expire, iduser
 }
 
 // Authentication implements UserService.
@@ -102,9 +101,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 				fmt.Println("Error to Update")
 				return models.ResponceUser{}, message, uuid.UUID{}
 			}
-			ctx := saveContext(ctx, "user", loged.Email)
-			val := ctx.Value("user")
-			fmt.Println(val, "value Context")
+
 			return loged, messages.Messages{}, uuids
 		} else {
 			message.MessageError = "Email or password incorrect."
@@ -259,22 +256,11 @@ func (u *userServiceImpl) validateUser(users *models.User) messages.Messages {
 	return message
 }
 
-func saveContext(ctx context.Context, token string, val string) context.Context {
-	if ctx == nil {
-		ctx = context.TODO() // Use a placeholder context
-	}
-	return context.WithValue(ctx, token, val)
+func (u *userServiceImpl) UserConnect(user int) []models.UUID {
+	return u.userRepo.UserConnect(user)
 }
 
-func (u *userServiceImpl) GetContext(ctx context.Context, token string) any {
-	return ctx.Value(token)
-}
-
-func (u *userServiceImpl) UserConnect() []models.UUID {
-	return u.userRepo.UserConnect()
-}
-
-func (u *userServiceImpl) UpdateStatus(status string, iduser int) error {
-	fmt.Println("")
-	return u.userRepo.UpdateStatus(status, iduser)
-}
+// func (u *userServiceImpl) UpdateStatus(status string, iduser int) error {
+// 	fmt.Println("")
+// 	return u.userRepo.UpdateStatus(status, iduser)
+// }

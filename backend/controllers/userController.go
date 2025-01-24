@@ -153,7 +153,7 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 		fmt.Println(err)
 		return
 	}
-	is, expire := uc.userService.CheckAuth(r.Context(), cookies.Value)
+	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
 	if !time.Now().Before(expire) {
 		u := models.UUID{}
 		uc.userService.UUiduser(cookies.Value)
@@ -174,6 +174,17 @@ func (uc *UserController) HandleUserConnected(w http.ResponseWriter, r *http.Req
 		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	id_usr := uc.userService.UserConnect()
+	id := r.Context().Value("id_user").(int)
+	id_usr := uc.userService.UserConnect(id)
+
+	for i := 0; i < len(id_usr); i++ {
+		id := id_usr[i].Iduser
+		_, ok := clientsList[id]
+		if ok {
+			id_usr[i].Status = "online"
+		}else {
+			id_usr[i].Status = "offline"
+		}
+	}
 	json.NewEncoder(w).Encode(id_usr)
 }
