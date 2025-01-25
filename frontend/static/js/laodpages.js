@@ -33,6 +33,7 @@ async function loadPage() {
 
   switch (path) {
     case "login":
+      document.head.title = "login"
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
