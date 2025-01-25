@@ -134,9 +134,9 @@ function displayMessage(sender, createAt, content, isOwnMessage = false) {
     messageUser.className = "messages";
     message_content.className = "message-content"
     time.className = "time";
-    message_content.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
+    message_content.textContent = `${content}`;
 
-   // time.textContent = createAt
+    // time.textContent = createAt
 
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
@@ -145,8 +145,8 @@ function displayMessage(sender, createAt, content, isOwnMessage = false) {
         messageUser.className = "messages resiver";
         time.textContent = createAt
     }
-   console.log(createAt);
-   
+    console.log(createAt);
+
     messageUser.append(message_content, time);
     log.appendChild(messageUser);
     log.scrollTop = log.scrollHeight;
@@ -187,7 +187,7 @@ function sendMessage() {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
-            displayMessage("You", messages, true);
+            displayMessage("You",new Date(), messages, true);
             ws.send(
                 JSON.stringify({
                     type: "broadcast",

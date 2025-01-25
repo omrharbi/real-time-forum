@@ -1558,6 +1558,7 @@ user chat
 .chat {
   height: 84%;
   width: 84%;
+  overflow-y: scroll;
 }
 
 input.input-chat {
