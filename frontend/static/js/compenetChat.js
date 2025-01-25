@@ -162,11 +162,11 @@ function displayMessage(sender, createAt, content, isOwnMessage = false) {
 export function user_item() {
     let items = document.querySelectorAll(".user-item")
     items.forEach((clik) => {
-        clik.addEventListener("click", () => {
+        clik.addEventListener("click", async () => {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-            getMessage(id)
+            await getMessage(id)
         })
 
     })
@@ -206,16 +206,28 @@ function sendMessage() {
 
 
 }
-function getMessage(receiver) {
-    let response = fetch("/api/messages", {
+async function getMessage(receiver) {
+    console.log(+receiver);
+
+    const response = fetch("/api/messages", {
+        method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            receiver: receiver
-        })
+            receiver: +receiver
+        }),
+
     })
+    if (response) {
+        let data = await response.json()
+        console.log(data);
+
+    } else {
+        console.log("error");
+    }
 }
+
 
 
 export function addStyle() {
