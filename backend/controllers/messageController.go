@@ -25,7 +25,6 @@ type Client struct {
 	egress     chan models.Messages
 	Name_user  string
 	id_user    int
-	Count      map[int]int
 }
 
 // var clientsList = make(map[int]*Client)
@@ -35,6 +34,7 @@ type Manager struct {
 	MessageS services.MessageService
 	userSer  services.UserService
 	Client   map[int]*Client
+	Count    map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -100,8 +100,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-	client.Count[uuid.Iduser]++
-	fmt.Println(client.Count)
+
 	m.addClient(client)
 	go client.WriteMess()
 	go client.ReadMess(m)
@@ -121,7 +120,6 @@ func (c *Client) ReadMess(mg *Manager) {
 				log.Println("error Reading Message", err)
 			}
 			break
-			// continue
 		}
 		c.Manager.Lock()
 		if receiverClient, ok := mg.Client[m.Receiver]; ok {
