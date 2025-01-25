@@ -63,27 +63,22 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("Err", err)
 		return
 	}
-	fmt.Println("Add", conn.RemoteAddr())
 	coock, _ := r.Cookie("token")
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
-		fmt.Println(mes.MessageError)
-		return
+		fmt.Println(mes.MessageError , "jjj")
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
 	m.Count[client.id_user]++
-	m.addClient(client)
-
 	defer func() {
 		m.Count[client.id_user]--
 		if m.Count[client.id_user] == 0 {
-			fmt.Println("Is 0", m.Count)
+			clientsList[client.id_user].connection.Close()
 			delete(clientsList, client.id_user)
 			m.broadcastOnlineUserList("offline", client.id_user)
-			client.connection.Close()
 		}
 	}()
 	go client.WriteMess()
@@ -106,7 +101,6 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	err := des.Decode(&u_ms)
 	if err != nil {
 		JsoneResponse(w, err.Error(), http.StatusNotFound)
-		fmt.Println(err)
 		return
 	}
 	Sender := r.Context().Value("id_user").(int)
@@ -128,25 +122,19 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
+		fmt.Println(m)
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
-			receiverClient.egress <- m
-			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
-		} else {
-			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
+			receiverClient.connection.WriteJSON(m)
 		}
+		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content,m.CreateAt)
 		c.Manager.Unlock()
-		fmt.Println("Message from", c.Name_user, "to", m.Receiver, ":", m.Content)
+
 	}
 }
 
 func (c *Client) WriteMess() {
-	defer func() {
-		c.connection.Close()
-		delete(clientsList, c.id_user)
-	}()
 	for msg := range c.egress {
-		fmt.Println("msg.Receiver", msg.Receiver, "msg.Sender", msg.Sender, "msg.Type", msg.Type)
 		if err := c.connection.WriteJSON(websocket.CloseMessage); err != nil {
 			log.Println("Connection Closed ", err)
 			return
@@ -155,8 +143,6 @@ func (c *Client) WriteMess() {
 		if err := c.connection.WriteJSON(msg); err != nil {
 			log.Println("Error To Send Message", err)
 		}
-		fmt.Println("Message Sending")
-
 	}
 }
 
@@ -164,7 +150,6 @@ func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
 	clientsList[client.id_user] = client
-	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 
 func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
@@ -175,14 +160,7 @@ func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 		Type:        typ,
 		OnlineUsers: id_user,
 	}
-	fmt.Println(message)
 	for _, connection := range clientsList {
-		// if(clientsList[connection.id_user])
 		connection.connection.WriteJSON(&message)
-		// if err != nil {
-		// 	log.Println("Error broadcasting online list:", err)
-		// 	connection.connection.Close()
-		// 	delete(mu.Clients, connection.id_user)
-		// }
 	}
 }

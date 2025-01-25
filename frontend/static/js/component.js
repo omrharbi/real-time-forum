@@ -1,6 +1,7 @@
 import { Inf } from "./checklogin.js";
-import { comments } from "./globa.js";
+import { comments, profile, setting } from "./globa.js";
 import { Change } from "./home.js";
+import { Profile } from "./profile.js";
 
 const section = document.querySelector("section");
 const main = /*html*/ `
@@ -42,7 +43,6 @@ const nav_item = [
     id: "home",
     name: "home",
   },
-
 ];
 
 const categories = [
@@ -79,7 +79,7 @@ function rightSide() {
 
 function leftside() {
   section.innerHTML = main;
- 
+
   const aside = document.createElement("aside");
   aside.className = "aside-left";
   aside.innerHTML = /*html*/ `
@@ -137,7 +137,18 @@ function leftside() {
     CommtSide();
     document.querySelector("input").remove();
     return;
+  } else if (window.location.pathname === "/profile") {
+    SetPro();
+    Profile();
+  } else if (window.location.pathname === "/settings") {
+    const main = document.querySelector("main");
+    main.innerHTML = setting;
   }
+}
+
+function SetPro() {
+  const main = document.querySelector("main");
+  main.innerHTML = profile;
 }
 
 function CommtSide() {

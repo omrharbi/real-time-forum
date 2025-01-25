@@ -305,7 +305,7 @@ button:hover {
   white-space: nowrap;
 }
 
-.profile-nav a.active {
+.profile-nav span.active {
   color: white;
   border-bottom: 2px solid var(--color-action-hover);
 }

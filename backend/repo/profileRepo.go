@@ -29,12 +29,12 @@ func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 	c.created_at ,
 	u.firstname, 
 	u.lastname,
-	u.nickname,
+	u.username,
 	u.Age,
 	u.gender,
     count(cm.id) comments,
-	(SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
-     (SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+	(SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
+     (SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
 	FROM post p, card c, user u LEFT  JOIN comment cm
 	ON c.id = cm.target_id  WHERE p.card_id=c.id 
 	AND c.user_id=u.id AND u.id ="` + strconv.Itoa(user_id) + "\" GROUP BY c.id  ORDER BY c.id DESC"
@@ -51,12 +51,12 @@ func (p *ProfileRepositoryImpl) GetProfileByLikes(user_id int) string {
 		c.created_at ,
 		u.firstname, 
 		u.lastname,
-		u.nickname,
+		u.username,
 		u.Age,
 		u.gender,
 		count(cm.id) comments,
-		(SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
-     	(SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+		(SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
+     	(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
 		 
 		FROM post p, card c, likes l ,user u LEFT JOIN comment cm
 		ON c.id = cm.target_id  WHERE p.card_id=c.id AND l.is_like = 1

@@ -133,4 +133,42 @@ const comments = /*html*/ `
             <div class="allcomment"></div>
 `;
 
-export { register, login, comments };
+const profile = /*html*/ `
+  <div class="alert"></div>
+      <header class="profile-header"></header>
+      <div class="profile-content">
+        <div class="profile-avatar">
+          <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
+        </div>
+
+        <div class="profile-info">
+          
+        </div>
+
+        <nav class="profile-nav">
+          <span class="active" id="posts">Posts</span>
+          <span id="likes">Likes</span>
+        </nav>
+      </div>
+      <article class="profile content_post main"></article>
+`;
+
+const setting = /*html*/ `
+  <div class="alert"></div>
+      <div class="settings-container">
+        <h1 class="settings-title">Settings</h1>
+
+        <div class="profile-section">
+          <div class="profile-avatar">
+            <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
+          </div>
+
+          <div class="profile-info">
+          </div>
+        </div>
+      </div>
+      <div class="signOut" href="">
+        <h1 id="logout" >Sign out</h1>
+      </div>
+`;
+export { register, login, comments, profile, setting };

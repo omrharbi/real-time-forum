@@ -21,8 +21,8 @@ type PostResponde struct {
 	Gender       string `json:"gender"`
 	Content      string `json:"content"`
 	Likes        int    `json:"likes"`
-	DisLikes     int    `json:"disLikes"`
+	DisLikes     int    `json:"dislikes"`
 	Userdisliked int    `json:"userdisliked"`
 	Comments     string `json:"comments"`
-	CreatedAt    string `json:"createdat"`
+	CreatedAt    string `json:"date"`
 }
