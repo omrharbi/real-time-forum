@@ -53,6 +53,7 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		MessageS: messageS,
 		userSer:  userSer,
 		Client:   make(map[int]*Client),
+		Count:    make(map[int]int),
 	}
 }
 
@@ -103,7 +104,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	m.addClient(client)
 	go client.WriteMess()
-	go client.ReadMess(m)
+	client.ReadMess(m)
 }
 
 func (c *Client) ReadMess(mg *Manager) {
@@ -160,17 +161,6 @@ func (m *Manager) addClient(client *Client) {
 
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
-
-// func (m *Manager) removeClient(client *Client) {
-// 	m.Lock()
-// 	defer m.Unlock()
-// 	if _, ok := clientsList[client.id_user]; ok {
-// 		client.connection.Close()
-// 		delete(clientsList, client.id_user)
-// 		log.Printf("Client removed: %s (ID: %d)\n", client.Name_user, client.id_user)
-// 		// m.broadcastOnlineUserList("offline", client.id_user)
-// 	}
-// }
 
 func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 	mu.Lock()
