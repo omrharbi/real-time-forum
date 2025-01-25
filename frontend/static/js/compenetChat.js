@@ -6,13 +6,12 @@ const sendButton = document.getElementById("sendButton");
 const cookies = document.cookie.split("token=")[1];
 const storedData = localStorage.getItem("data");
 const parsedData = JSON.parse(storedData);
-let receiver = new URLSearchParams(location.search).get("receiver")
 // document.addEventListener("DOMContentLoaded", (c) => {
 //     sendMessage(receiver)
 // })
 let ws
 export function setupWs() {
-    fetchConnectedUsers()
+
     ws = new WebSocket("ws://localhost:8080/ws");
     ws.onopen = () => {
         console.log("is connected");
@@ -22,14 +21,14 @@ export function setupWs() {
     ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
         console.log(message);
-        
+
         switch (message.type) {
             case "online":
                 updateUserList(message)
                 break;
             case "broadcast":
-                console.log(message,"herererer");
-                
+                console.log(message, "herererer");
+
                 displayMessage(message.sender, message);
                 break;
             case "typing":
@@ -53,7 +52,7 @@ export function setupWs() {
     };
 }
 
-export function messamges() {
+export function messages() {
     const chat = document.querySelector(".content_post");
     chat.style.height = "100%"
     chat.innerHTML += /*html*/`
@@ -79,7 +78,7 @@ export function messamges() {
 }
 
 
-async function fetchConnectedUsers() {
+export async function fetchConnectedUsers() {
     const response = await fetch("/api/connected");
     if (response.ok) {
         const userList = document.getElementById("userList");
@@ -126,27 +125,27 @@ function genreteMessages(sender, content, isOwnMessage = false) {
 }
 
 
-// function updateUserList(message) {
+function updateUserList(message) {
 
-//     let id = document.getElementById(message.online_users)
-//     let status = id.querySelector(".status")
-//     console.log(message.type);
+    let id = document.getElementById(message.online_users)
+    let status = id.querySelector(".status")
+    console.log(message.type);
 
 
-//     if (id) {
-//         if (message.type === "online") {
-//             status.style.background = "green"
-//         } else {
-//             status.style.background = "red"
-//         }
-//     }
-//     console.log(id);
+    if (id) {
+        if (message.type === "online") {
+            status.style.background = "green"
+        } else {
+            status.style.background = "red"
+        }
+    }
+    console.log(id);
 
-// }
+}
 
 function displayMessage(sender, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
-console.log(content.content);
+    console.log(isOwnMessage);
 
     const messageDiv = document.createElement("div");
     messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
@@ -183,7 +182,7 @@ function sendMessage() {
     console.log(sendButton);
 
     sendButton.addEventListener("click", () => {
-        console.log(+receiver, parsedData.id);
+        let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
             displayMessage("You", content, true);
@@ -198,4 +197,6 @@ function sendMessage() {
 
         }
     });
+
+
 }
