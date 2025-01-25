@@ -25,6 +25,7 @@ type Client struct {
 	egress     chan models.Messages
 	Name_user  string
 	id_user    int
+	Count      int
 }
 
 var clientsList = make(map[int]*Client)
@@ -105,13 +106,11 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 
 func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
-		mg.broadcastOnlineUserList("offline", c.id_user)
-		// err := mg.userSer.UpdateStatus("offline", c.id_user)
-		c.connection.Close()
-		delete(clientsList, c.id_user)
-		// if err != nil {
-		// 	fmt.Println("error", err)
-		// }
+		if c.Count == 0 {
+			mg.broadcastOnlineUserList("offline", c.id_user)
+			c.connection.Close()
+			delete(clientsList, c.id_user)
+		}
 	}()
 	for {
 		var m models.Messages
@@ -128,7 +127,6 @@ func (c *Client) ReadMess(mg *Manager) {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-		 
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
@@ -159,9 +157,10 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	// err := m.userSer.UpdateStatus("online", client.id_user)
-	// fmt.Println(err, "Error")
+
 	clientsList[client.id_user] = client
+	client.Count++
+	fmt.Println("count connectin",client.Count)
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 

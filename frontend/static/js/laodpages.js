@@ -19,7 +19,7 @@ function loadPage() {
       section.innerHTML = login;
       Login();
       break;
- 
+
     case "home":
       section.classList.remove("sectionLogin");
       leftside();
