@@ -17,6 +17,7 @@ export async function checklogin() {
       loadPage();
     }
   }
+
 }
 
 export const throttle = (func, wait = 100) => {

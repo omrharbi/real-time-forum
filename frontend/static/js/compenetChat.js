@@ -80,8 +80,8 @@ export async function fetchConnectedUsers() {
         })
 
         user_item()
-    }else{
-    console.error("Failed to fetch connected users:", response.status);
+    } else {
+        console.error("Failed to fetch connected users:", response.status);
     }
 }
 function addUser(userId, userName, status) {
@@ -128,27 +128,22 @@ function updateUserList(message) {
 
 function displayMessage(sender, createAt, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
-
-    const messageUser = document.createElement("div");// 
+    const messageUser = document.createElement("div");
     const message_content = document.createElement("div");
     const time = document.createElement("div");
 
     messageUser.className = "messages";
     message_content.className = "message-content"
     time.className = "time";
-    message_content.textContent = `${content}`;
-
-    // time.textContent = createAt
+    message_content.textContent = `${sender} ${content}`;
+    time.textContent = createAt
 
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
-        time.textContent = createAt
+
     } else {
         messageUser.className = "messages resiver";
-        time.textContent = createAt
     }
-    console.log(createAt);
-
     messageUser.append(message_content, time);
     log.appendChild(messageUser);
     log.scrollTop = log.scrollHeight;
@@ -168,7 +163,7 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-            await getMessage(id)
+           
         })
 
     })
@@ -179,13 +174,10 @@ export function user_item() {
 function sendMessage() {
     const storedData = localStorage.getItem("data");
     const parsedData = JSON.parse(storedData);
-
     const chat = document.querySelector(".content_post");
-
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
-    console.log(sendButton);
-
+  
     sendButton.addEventListener("click", () => {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
@@ -202,16 +194,15 @@ function sendMessage() {
             );
 
         }
-        console.log(new Date());
-
+        
     });
 
 
 }
 async function getMessage(receiver) {
-    console.log(+receiver);
-
-    const response =await fetch("/api/messages", {
+    const storedData = localStorage.getItem("data");
+    const parsedData = JSON.parse(storedData);
+    const response = await fetch("/api/messages", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -224,11 +215,22 @@ async function getMessage(receiver) {
     if (response) {
         let data = await response.json()
         console.log(data);
+        let isOwen
+        data.forEach(d => {
+            if (parsedData.id === d.sender) {
+                isOwen = true
+            } else {
+                isOwen = false
+            }
+            console.log(d.username, d.createAt, d.content);
+            displayMessage(d.username, d.createAt, d.content, isOwen)
+        })
 
     } else {
         console.log("error");
     }
 }
+
 
 
 

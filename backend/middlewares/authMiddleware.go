@@ -30,8 +30,7 @@ func NewMeddlewireController(service services.UserService, user *controllers.Use
 func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookies, err := r.Cookie("token")
-
-		// user := models.User{}
+ 
 		if err != nil || cookies == nil {
 			if err == http.ErrNoCookie {
 				controllers.JsoneResponse(w, "Unauthorized: Cookie not presen", http.StatusUnauthorized)
@@ -45,6 +44,7 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 
 		messages, expire, id_user := m.userService.AuthenticatLogin(cookies.Value)
 		if messages.MessageError != "" {
+
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
@@ -56,13 +56,11 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		// r = r.WithContext(context.WithValue(r.Context(), "uuid", id_user))
 
 		if !time.Now().Before(expire) {
-			// u := models.UUID{}
-			http.SetCookie(w , &http.Cookie{
+			http.SetCookie(w, &http.Cookie{
 				MaxAge: -1,
 				Name:   "token",
 				Value:  "",
 			})
-			// m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return
 		} else {
@@ -70,11 +68,4 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		}
 	})
 }
-
-// func (m MeddlewireController) ContextMiddleware(ctx context.Context, next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		timeex := time.Now().Add(8 * time.Second).UTC()
-
-// 		next.ServeHTTP(w, r.WithContext())
-// 	})
-// }
+ 

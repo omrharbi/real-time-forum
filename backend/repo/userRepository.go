@@ -105,9 +105,9 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 // CheckAuthenticat implements UserRepository.
 func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int) {
 	stm := `SELECT 
-			EXISTS (SELECT 1 FROM user WHERE UUID = ?),
-			(SELECT expires  FROM user WHERE UUID = ? ) AS expires,
-			(SELECT id  FROM user WHERE UUID = ? ) AS id_user; `
+            EXISTS (SELECT 1 FROM user WHERE UUID = ?),
+            (SELECT expires  FROM user WHERE UUID = ? ) AS expires,
+            (SELECT id  FROM user WHERE UUID = ? ) AS id_user; `
 	var exists bool
 	var expires sql.NullTime
 	var id any
@@ -123,7 +123,10 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
 	if !time.Now().Before(expires.Time) {
 		return false, time.Time{}, 0
 	}
-	return exists, expires.Time, id.(int)
+	if id == nil {
+		return false, time.Time{}, 0
+	}
+	return exists, expires.Time, int(id.(int64))
 }
 
 // CheckUser implements UserRepository.

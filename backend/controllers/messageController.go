@@ -66,7 +66,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	coock, _ := r.Cookie("token")
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
-		fmt.Println(mes.MessageError , "jjj")
+		fmt.Println(mes.MessageError, "jjj")
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
@@ -74,13 +74,17 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	m.Count[client.id_user]++
 	defer func() {
+		m.Lock()
 		m.Count[client.id_user]--
 		if m.Count[client.id_user] == 0 {
+
 			clientsList[client.id_user].connection.Close()
 			delete(clientsList, client.id_user)
 			m.broadcastOnlineUserList("offline", client.id_user)
 		}
+		m.Unlock()
 	}()
+	m.addClient(client)
 	go client.WriteMess()
 	client.ReadMess(m)
 }
@@ -127,7 +131,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content,m.CreateAt)
+		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
 		c.Manager.Unlock()
 
 	}
