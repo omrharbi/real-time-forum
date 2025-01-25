@@ -3,6 +3,7 @@ import { ProfileNav } from "./categories.js";
 import { checklogin, Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
 import {
+  addStyle,
   fetchConnectedUsers,
   messages,
   setupWs,
@@ -49,8 +50,7 @@ window.addEventListener("popstate", (e) => {
       section.classList.remove("sectionLogin");
       fetchConnectedUsers();
       leftside();
-      fetchConnectedUsers();
-      messages();
+       messages();
       user_item();
       addStyle();
       break;

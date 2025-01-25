@@ -94,7 +94,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
-	logout.Id = int64(uc.GetUserId(r))
+	logout.Id = r.Context().Value("id_user").(int64)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
@@ -132,18 +132,13 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 	m, uuid := uc.userService.UUiduser(cookie.Value)
 	if m.MessageError != "" {
 		fmt.Println(m.MessageError)
+		return 0
 	}
-	fmt.Println(uuid, "uuid ")
 	return uuid.Iduser
 }
 
 func (uc *UserController) ClearCookies(w http.ResponseWriter) {
-	// SetCookie(w, "token", "", time.Now() )
-	// SetCookie(w, "user_id", "", time.Now())
-	http.SetCookie(w, &http.Cookie{
-		MaxAge: -1,
-		Name:   "token",
-	})
+	SetCookie(w, "token", "", time.Now())
 }
 
 func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request) {
@@ -154,6 +149,7 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	cookies, err := r.Cookie("token")
 	if err != nil {
 		JsoneResponse(w, err.Error(), http.StatusUnauthorized)
+		fmt.Println(err,"Error")
 		return
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
