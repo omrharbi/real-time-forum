@@ -7,7 +7,7 @@ import (
 )
 
 type MessageService interface {
-	AddMessages(Sender, Receiver int, Content string) (mss messages.Messages)
+	AddMessages(Sender, Receiver int, Content ,CreateAt string) (mss messages.Messages)
 	GetMessages(senderID int, receiverID int) (s []models.Messages, mss messages.Messages)
 	DeleteMessages(msgID int) error
 }
@@ -21,8 +21,8 @@ func NewMessageService(ms repo.MessageRepository) MessageService {
 }
 
 // AddMessages implements MessageService.
-func (m *MessageServiceImpl) AddMessages(Sender, Receiver int, Content string) (mss messages.Messages) {
-	err := m.repo.AddMessage(Sender, Receiver, Content)
+func (m *MessageServiceImpl) AddMessages(Sender, Receiver int, Content ,CreateAt string) (mss messages.Messages) {
+	err := m.repo.AddMessage(Sender, Receiver, Content,CreateAt)
 	if err.MessageError != "" {
 		return err
 	}

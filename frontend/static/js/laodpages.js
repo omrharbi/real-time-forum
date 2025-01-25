@@ -2,7 +2,7 @@
 import { ProfileNav } from "./categories.js";
 import { Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
-import { fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
+import { addStyle, fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
 import { leftside } from "./component.js";
 // import { fetchData } from "./forum.js";
 import { login, register } from "./globa.js";
@@ -40,6 +40,7 @@ function loadPage() {
       leftside();
       messages();
       user_item();
+      addStyle()
       break;
     case "":
     case "home":

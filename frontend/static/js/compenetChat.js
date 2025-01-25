@@ -13,15 +13,13 @@ export function setupWs() {
 
     ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
-        console.log(message);
-
         switch (message.type) {
             case "online":
                 updateUserList(message)
                 break;
             case "broadcast":
-                console.log(message, "herererer");
-                displayMessage(message.sender, message.content, false);
+
+                displayMessage(message.sender, message.createAt, message.content, false);
                 break;
             case "typing":
                 showTypingNotification(message.userId);
@@ -126,23 +124,29 @@ function updateUserList(message) {
 
 }
 
-function displayMessage(sender, content, isOwnMessage = false) {
+function displayMessage(sender, createAt, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
 
     const messageUser = document.createElement("div");// 
     const message_content = document.createElement("div");
     const time = document.createElement("div");
 
-    messageUser.className = "message";
+    messageUser.className = "messages";
     message_content.className = "message-content"
     time.className = "time";
     message_content.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
 
+   // time.textContent = createAt
+
     if (isOwnMessage) {
-        messageUser.classList = "bot";
+        messageUser.classList = "messages sander";
+        time.textContent = createAt
     } else {
-        messageUser.className = "user";
+        messageUser.className = "messages resiver";
+        time.textContent = createAt
     }
+   console.log(createAt);
+   
     messageUser.append(message_content, time);
     log.appendChild(messageUser);
     log.scrollTop = log.scrollHeight;
@@ -189,11 +193,14 @@ function sendMessage() {
                     type: "broadcast",
                     content: messages,
                     sender: parsedData.id,
-                    receiver: +receiver
+                    receiver: +receiver,
+                    createAt: new Date()
                 })
             );
 
         }
+        console.log(new Date());
+
     });
 
 

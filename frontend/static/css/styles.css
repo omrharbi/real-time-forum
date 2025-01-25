@@ -1552,10 +1552,12 @@ user chat
 .message {
   display: flex;
   flex-direction: column;
-  background: aqua;
+  /* background: aqua; */
+  align-items: center;
 }
 .chat {
   height: 84%;
+  width: 84%;
 }
 
 input.input-chat {

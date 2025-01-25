@@ -130,7 +130,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.egress <- m
-			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
+			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
 		} else {
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}

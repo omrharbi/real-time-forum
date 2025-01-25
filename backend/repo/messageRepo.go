@@ -8,7 +8,7 @@ import (
 )
 
 type MessageRepository interface {
-	AddMessage(Sender, Receiver int, Content string) (mss messages.Messages)
+	AddMessage(Sender, Receiver int, Content, CreateAt string) (mss messages.Messages)
 	GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages)
 	DeleteMessage()
 }
@@ -22,9 +22,9 @@ func NewMessageRepository(db *sql.DB) MessageRepository {
 }
 
 // AddMessage implements MessageRepository.m
-func (m *MessageRepositoryImpl) AddMessage(Sender, Receiver int, Content string) (mss messages.Messages) {
-	qury := "INSERT INTO messages (sender,receiver,content) VALUES(?,?,?)"
-	_, err := m.db.Exec(qury, Sender, Receiver, Content)
+func (m *MessageRepositoryImpl) AddMessage(Sender, Receiver int, Content, CreateAt string) (mss messages.Messages) {
+	qury := "INSERT INTO messages (sender,receiver,created_at,content ) VALUES(?,? ,?,?)"
+	_, err := m.db.Exec(qury, Sender, Receiver, CreateAt, Content)
 	if err != nil {
 		mss.MessageError = err.Error()
 		return mss
