@@ -5,8 +5,11 @@ type Messages struct {
 	Sender   int    `json:"sender"`
 	Receiver int    `json:"receiver"`
 	Content  string `json:"content"`
+	CreateAt string `json:"createAt"`
 }
-
+type Resiver struct {
+	Receiver int `json:"receiver"`
+}
 type OnlineUser struct {
 	Type        string `json:"type"`
 	OnlineUsers int    `json:"online_users"`

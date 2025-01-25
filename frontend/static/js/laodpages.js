@@ -20,8 +20,9 @@ import { Register } from "./register.js";
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const res = await fetch("/api/isLogged");
+   const res = await fetch("/api/isLogged");
   if (res.ok) setupWs();
+  
 });
 
 window.addEventListener("popstate", (e) => {
@@ -30,7 +31,6 @@ window.addEventListener("popstate", (e) => {
 
 async function loadPage() {
   const path = window.location.pathname.slice(1);
-
   switch (path) {
     case "login":
       document.head.title = "login"
@@ -46,10 +46,12 @@ async function loadPage() {
     case "chat":
       await checklogin();
       section.classList.remove("sectionLogin");
+      fetchConnectedUsers()  
       leftside();
       fetchConnectedUsers();
       messages();
       user_item();
+      addStyle()
       break;
     case "":
     case "home":

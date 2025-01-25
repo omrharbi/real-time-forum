@@ -7,17 +7,23 @@ import (
 	"time"
 
 	"real-time-froum/controllers"
-	"real-time-froum/models"
 	"real-time-froum/services"
 )
 
-type MeddlewireController struct {
-	userService services.UserService
+type info_user struct {
+	username string `json:"username"`
+	id_user  int    `json:"id_user"`
 }
 
-func NewMeddlewireController(service services.UserService) *MeddlewireController {
+type MeddlewireController struct {
+	userService services.UserService
+	user        *controllers.UserController
+}
+
+func NewMeddlewireController(service services.UserService, user *controllers.UserController) *MeddlewireController {
 	return &MeddlewireController{
 		userService: service,
+		user:        user,
 	}
 }
 
@@ -42,13 +48,21 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
-
+		// info := info_user{
+		// 	id_user:  id_user,
+		// 	username: messages.Username,
+		// }
 		r = r.WithContext(context.WithValue(r.Context(), "id_user", id_user))
+		// r = r.WithContext(context.WithValue(r.Context(), "uuid", id_user))
 
 		if !time.Now().Before(expire) {
-			u := models.UUID{}
-
-			m.userService.LogOut(r.Context(), u)
+			// u := models.UUID{}
+			http.SetCookie(w , &http.Cookie{
+				MaxAge: -1,
+				Name:   "token",
+				Value:  "",
+			})
+			// m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return
 		} else {

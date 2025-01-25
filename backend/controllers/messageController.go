@@ -34,7 +34,8 @@ type Manager struct {
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
-	Count    map[int]int
+
+	Count map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -70,7 +71,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-	m.addClient(client)
+
 	m.Count[client.id_user]++
 	defer func() {
 		m.Count[client.id_user]--
@@ -80,7 +81,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 			m.broadcastOnlineUserList("offline", client.id_user)
 		}
 	}()
-	m.Read(client)
+	go client.WriteMess()
+	client.ReadMess(m)
 }
 
 func (m *Manager) Read(client *Client) {
@@ -93,7 +95,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	u_ms := models.Messages{}
+	u_ms := models.Resiver{}
 	des := json.NewDecoder(r.Body)
 	des.DisallowUnknownFields()
 	err := des.Decode(&u_ms)
@@ -101,7 +103,8 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	mes, mesErr := m.MessageS.GetMessages(u_ms.Sender, u_ms.Receiver)
+	Sender := r.Context().Value("id_user").(int)
+	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver)
 	if mesErr.MessageError != "" {
 		JsoneResponse(w, mesErr.MessageError, http.StatusNotFound)
 		return
@@ -112,7 +115,6 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 func (c *Client) ReadMess(mg *Manager) {
 	for {
 		var m models.Messages
-
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -125,7 +127,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
+		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content,m.CreateAt)
 		c.Manager.Unlock()
 
 	}
