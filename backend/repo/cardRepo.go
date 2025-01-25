@@ -35,6 +35,9 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 	countRows, err := c.db.QueryContext(ctx, countQuery)
 	if err != nil {
 		fmt.Println("Error in get all one", err)
+		if err != nil {
+			return nil, 0
+		}
 	}
 	var totalPosts int
 	if countRows.Next() {

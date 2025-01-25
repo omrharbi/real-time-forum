@@ -67,6 +67,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError, "jjj")
+		return
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
