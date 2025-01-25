@@ -11,6 +11,11 @@ import (
 	"real-time-froum/services"
 )
 
+type info_user struct {
+	username string `json:"username"`
+	id_user  int    `json:"id_user"`
+}
+
 type MeddlewireController struct {
 	userService services.UserService
 }
@@ -42,8 +47,12 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
-
+		// info := info_user{
+		// 	id_user:  id_user,
+		// 	username: messages.Username,
+		// }
 		r = r.WithContext(context.WithValue(r.Context(), "id_user", id_user))
+		// r = r.WithContext(context.WithValue(r.Context(), "uuid", id_user))
 
 		if !time.Now().Before(expire) {
 			u := models.UUID{}

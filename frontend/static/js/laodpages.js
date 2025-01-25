@@ -13,9 +13,8 @@ import { Register } from "./register.js";
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
-  setupWs();
-  // const res = await fetch("/api/isLogged");
-  // if (res.ok) setupWs();
+   const res = await fetch("/api/isLogged");
+  if (res.ok) setupWs();
 });
 
 window.addEventListener("popstate", (e) => {

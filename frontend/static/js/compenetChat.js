@@ -1,7 +1,6 @@
 
 const cookies = document.cookie.split("token=")[1];
-const storedData = localStorage.getItem("data");
-const parsedData = JSON.parse(storedData);
+
 
 let ws
 export function setupWs() {
@@ -81,7 +80,7 @@ export async function fetchConnectedUsers() {
             console.log(user);
             addUser(user.id, user.username, user.status)
         })
-         
+
         user_item()
     }
 }
@@ -171,6 +170,9 @@ export function user_item() {
 
 
 function sendMessage() {
+    const storedData = localStorage.getItem("data");
+    const parsedData = JSON.parse(storedData);
+
     const chat = document.querySelector(".content_post");
 
     let message = chat.querySelector("#messageInput");

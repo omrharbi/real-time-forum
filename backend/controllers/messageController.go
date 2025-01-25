@@ -68,17 +68,19 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError)
+		return
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
-	// m.Count[client.id_user]++
+	m.Count[client.id_user]++
 	m.addClient(client)
 
 	defer func() {
 		m.Count[client.id_user]--
 		if m.Count[client.id_user] == 0 {
+			fmt.Println("Is 0", m.Count)
 			delete(clientsList, client.id_user)
 			m.broadcastOnlineUserList("offline", client.id_user)
 			client.connection.Close()
