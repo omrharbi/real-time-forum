@@ -3,7 +3,7 @@ import { leftside } from "./component.js";
 import { login } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
-import { fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
+import { addStyle, fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
 
 const section = document.querySelector("section");
 
@@ -13,15 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadPage() {
   const path = window.location.pathname.slice(1);
-
   switch (path) {
     case "login":
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
       break;
-
-    case "":
+ 
     case "home":
       section.classList.remove("sectionLogin");
       leftside();
@@ -29,6 +27,7 @@ function loadPage() {
       break;
     case "chat":
       section.classList.remove("sectionLogin");
+      addStyle()
       leftside();
       messages()
       fetchConnectedUsers()

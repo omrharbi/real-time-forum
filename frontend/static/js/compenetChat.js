@@ -1,14 +1,8 @@
 
-
-const messageInput = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
-
 const cookies = document.cookie.split("token=")[1];
 const storedData = localStorage.getItem("data");
 const parsedData = JSON.parse(storedData);
-// document.addEventListener("DOMContentLoaded", (c) => {
-//     sendMessage(receiver)
-// })
+
 let ws
 export function setupWs() {
 
@@ -28,8 +22,7 @@ export function setupWs() {
                 break;
             case "broadcast":
                 console.log(message, "herererer");
-
-                displayMessage(message.sender, message);
+                displayMessage(message.sender, message.content, false);
                 break;
             case "typing":
                 showTypingNotification(message.userId);
@@ -116,15 +109,6 @@ function addUser(userId, userName, status) {
 
 }
 
-function genreteMessages(sender, content, isOwnMessage = false) {
-    const messageDiv = document.createElement("div");
-    messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
-    messageDiv.classList.add(isOwnMessage ? "own-message" : "received-message");
-    chatLog.appendChild(messageDiv);
-    chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll
-}
-
-
 function updateUserList(message) {
 
     let id = document.getElementById(message.online_users)
@@ -145,11 +129,23 @@ function updateUserList(message) {
 
 function displayMessage(sender, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
-    console.log(isOwnMessage);
 
-    const messageDiv = document.createElement("div");
-    messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content.content}`;
-    log.appendChild(messageDiv);
+    const messageUser = document.createElement("div");// 
+    const message_content = document.createElement("div");
+    const time = document.createElement("div");
+
+    messageUser.className = "message";
+    message_content.className = "message-content"
+    time.className = "time";
+    message_content.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
+
+    if (isOwnMessage) {
+        messageUser.classList = "bot";
+    } else {
+        messageUser.className = "user";
+    }
+    messageUser.append(message_content, time);
+    log.appendChild(messageUser);
     log.scrollTop = log.scrollHeight;
 }
 
@@ -167,7 +163,7 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-            genreteMessages()
+
         })
 
     })
@@ -176,7 +172,7 @@ export function user_item() {
 
 function sendMessage() {
     const chat = document.querySelector(".content_post");
-    console.log(chat);
+
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
     console.log(sendButton);
@@ -185,7 +181,7 @@ function sendMessage() {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
-            displayMessage("You", content, true);
+            displayMessage("You", messages, true);
             ws.send(
                 JSON.stringify({
                     type: "broadcast",
@@ -198,5 +194,14 @@ function sendMessage() {
         }
     });
 
+
+}
+
+
+export function addStyle() {
+    let style = document.createElement("link")
+    style.rel = "stylesheet"
+    style.href = "../static/css/chat.css"
+    document.head.appendChild(style)
 
 }
