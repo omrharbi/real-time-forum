@@ -2,21 +2,21 @@ import { fetchData } from "./forum.js";
 import { setupWs } from "./compenetChat.js";
 import { loadPage } from "./laodpages.js";
 
-export async function checklogin() {
-  const res = await fetch("/api/isLogged");
-  const path = window.location.pathname;
-  if (res.ok) {
-    setupWs();
-    if (path === "/login" || path === "/register") {
-      history.pushState(null, "", "/");
-      loadPage();
+export function checklogin() {
+  fetch("/api/isLogged").then((res) => {
+    const path = window.location.pathname;
+    if (res.ok) {
+      if (path === "/login" || path === "/register") {
+        history.pushState(null, "", "/");
+        loadPage();
+      }
+    } else {
+      if (path !== "/login" && path !== "/register") {
+        history.pushState(null, "", "/login");
+        loadPage();
+      }
     }
-  } else {
-    if (path !== "/login" && path !== "/register") {
-      history.pushState(null, "", "/login");
-      loadPage();
-    }
-  }
+  });
 }
 
 export const throttle = (func, wait = 100) => {

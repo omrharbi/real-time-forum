@@ -51,39 +51,64 @@ const register = /*html*/ `
         <div class="wrapper active">
             <div class="form-box register">
                 <h2>Registration</h2>
-                <form action="" id="form-submit">
-                    <div class="input-box">
-                        <span class="icon"><ion-icon name="person-circle"></ion-icon></span>
-                        <input type="text" required id="firstname" />
-                        <label>Firstname</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><ion-icon name="person-circle"></ion-icon></span>
-                        <input type="text" required id="lastname" />
-                        <label>Lastname</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><ion-icon name="mail"></ion-icon></span>
-                        <input type="text" required id="emailRegister" />
-                        <label>Email</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-                        <input type="password" required id="passwordRegister" />
-                        <label>Password</label>
-                    </div>
-                    <div class="remember-forgot">
-                        <label><input class="checkbox" type="checkbox" /> I agree to the terms
-                            & conditions</label>
-                    </div>
-                    <button type="submit" class="btn">register</button>
-                    <div class="login-register">
-                        <p>
-                            Already have an account?
-                            <span class="login-link" id="login">Login</span>
-                        </p>
-                    </div>
-                </form>
+              <form action="" id="form-submit">
+  <div class="input-box">
+    <span class="icon"><ion-icon name="person-circle"></ion-icon></span>
+    <input type="text" required id="firstname" />
+    <label>Firstname</label>
+  </div>
+  <div class="input-box">
+    <span class="icon"><ion-icon name="person-circle"></ion-icon></span>
+    <input type="text" required id="lastname" />
+    <label>Lastname</label>
+  </div>
+  <div class="input-box">
+    <span class="icon"><ion-icon name="person"></ion-icon></span>
+    <input type="text" required id="username" />
+    <label>Username</label>
+  </div>
+  <div class="input-box">
+    <span class="icon"><ion-icon name="mail"></ion-icon></span>
+    <input type="text" required id="emailRegister" />
+    <label>Email</label>
+  </div>
+  <div class="input-box">
+    <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+    <input type="password" required id="passwordRegister" />
+    <label>Password</label>
+  </div>
+  <div class="input-box">
+    <span class="icon"><ion-icon name="calendar"></ion-icon></span>
+    <input type="number" min="18" max="60" required id="age" />
+    <label>Age</label>
+  </div>
+  <div class="gender-box">
+    <label>Gender:</label>
+    <div class="gender-options">
+      <label>
+        <input type="radio" name="gender" value="male" required checked/>
+        Male
+      </label>
+      <label>
+        <input type="radio" name="gender" value="female" required />
+        Female
+      </label>
+    </div>
+  </div>
+  <div class="remember-forgot">
+    <label><input class="checkbox" type="checkbox" required /> I agree to the terms
+      & conditions</label>
+  </div>
+  <button type="submit" class="btn">Register</button>
+  <div class="login-register">
+    <p>
+      Already have an account?
+      <span class="login-link" id="login">Login</span>
+    </p>
+  </div>
+</form>
+
+
             </div>
         </div>
     </div>

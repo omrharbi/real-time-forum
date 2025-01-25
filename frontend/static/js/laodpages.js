@@ -20,20 +20,21 @@ import { Register } from "./register.js";
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
-   const res = await fetch("/api/isLogged");
+  const res = await fetch("/api/isLogged");
   if (res.ok) setupWs();
-  
 });
 
-window.addEventListener("popstate", (e) => {
+window.addEventListener("popstate", (e) => {  
   loadPage();
 });
 
-async function loadPage() {
+ function loadPage() {
   const path = window.location.pathname.slice(1);
+  console.log(path);
+
   switch (path) {
     case "login":
-      document.head.title = "login"
+      // document.head.title = "login";
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
@@ -44,25 +45,25 @@ async function loadPage() {
       Register();
       break;
     case "chat":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
-      fetchConnectedUsers()  
+      fetchConnectedUsers();
       leftside();
       fetchConnectedUsers();
       messages();
       user_item();
-      addStyle()
+      addStyle();
       break;
     case "":
     case "home":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
       Inf();
       break;
     case "categories":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
@@ -71,7 +72,7 @@ async function loadPage() {
 
       break;
     case "comment":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
@@ -80,7 +81,7 @@ async function loadPage() {
       // Inf();
       break;
     case "profile":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
@@ -88,7 +89,7 @@ async function loadPage() {
       profileInfo();
       break;
     case "settings":
-      await checklogin();
+       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();

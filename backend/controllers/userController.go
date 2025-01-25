@@ -154,7 +154,6 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	cookies, err := r.Cookie("token")
 	if err != nil {
 		JsoneResponse(w, err.Error(), http.StatusUnauthorized)
-		fmt.Println(err)
 		return
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
@@ -166,10 +165,6 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 			Value:  "",
 			Path:   "/",
 		})
-		// u := models.UUID{}
-		// uc.userService.UUiduser(cookies.Value)
-		// uc.userService.LogOut(r.Context(), u)
-		// w.WriteHeader(http.StatusUnauthorized)
 
 		return
 	} else {

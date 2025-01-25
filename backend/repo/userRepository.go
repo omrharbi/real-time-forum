@@ -123,7 +123,10 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
 	if !time.Now().Before(expires.Time) {
 		return false, time.Time{}, 0
 	}
-	return exists, expires.Time, id.(int)
+	if id == nil {
+		return false, time.Time{}, 0
+	}
+	return exists, expires.Time, int(id.(int64))
 }
 
 // CheckUser implements UserRepository.
