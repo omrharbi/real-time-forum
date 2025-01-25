@@ -15,7 +15,12 @@ export async function Register() {
     let lastname = document.getElementById("lastname").value;
     let emailRegister = document.getElementById("emailRegister").value;
     let passwordRegister = document.getElementById("passwordRegister").value;
-
+    let username = document.getElementById("username").value;
+    let age = document.getElementById("age").value;
+    const selectedGender = document.querySelector(
+      'input[name="gender"]:checked'
+    ).value;
+    console.log(age);
     const response = await fetch("/api/register", {
       method: "POST",
       headers: {
@@ -28,6 +33,9 @@ export async function Register() {
         lastname: lastname,
         email: emailRegister,
         password: passwordRegister,
+        username: username,
+        age: +age,
+        gender: selectedGender,
       }),
     });
 

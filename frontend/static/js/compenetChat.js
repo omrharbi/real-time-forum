@@ -128,6 +128,7 @@ function updateUserList(message) {
 
 function displayMessage(sender, createAt, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
+
     const messageUser = document.createElement("div");
     const message_content = document.createElement("div");
     const time = document.createElement("div");
@@ -163,7 +164,9 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-           
+             let log = document.querySelector(".chat");
+            log.innerHTML = ""
+            getMessage(id)
         })
 
     })
@@ -177,7 +180,7 @@ function sendMessage() {
     const chat = document.querySelector(".content_post");
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
-  
+
     sendButton.addEventListener("click", () => {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
@@ -194,7 +197,7 @@ function sendMessage() {
             );
 
         }
-        
+
     });
 
 
@@ -223,6 +226,7 @@ async function getMessage(receiver) {
                 isOwen = false
             }
             console.log(d.username, d.createAt, d.content);
+           
             displayMessage(d.username, d.createAt, d.content, isOwen)
         })
 

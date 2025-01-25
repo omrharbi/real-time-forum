@@ -34,8 +34,7 @@ type Manager struct {
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
-
-	Count map[int]int
+	Count    map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -60,10 +59,17 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	conn, err := websocketUpgrade.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Err", err)
+		log.Println("WebSocket upgrade error:", err)
 		return
 	}
-	coock, _ := r.Cookie("token")
+	defer conn.Close()
+
+	coock, err := r.Cookie("token")
+	if err != nil {
+		log.Println("Error retrieving cookie:", err)
+		return
+	}
+
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError, "jjj")
@@ -71,23 +77,28 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
+
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
+	m.Lock()
+	// clientsList[client.id_user] = client
 	m.Count[client.id_user]++
+	m.Unlock()
+
+	log.Println("User Count:", m.Count[client.id_user])
+
 	defer func() {
-		m.Lock()
 		m.Count[client.id_user]--
 		if m.Count[client.id_user] == 0 {
-
-			clientsList[client.id_user].connection.Close()
-			delete(clientsList, client.id_user)
-			m.broadcastOnlineUserList("offline", client.id_user)
+			if clientData, ok := clientsList[client.id_user]; ok && clientData != nil {
+				clientData.connection.Close()
+				delete(clientsList, client.id_user)
+				m.broadcastOnlineUserList("offline", client.id_user)
+			}
 		}
-		m.Unlock()
 	}()
 	m.addClient(client)
-	go client.WriteMess()
-	client.ReadMess(m)
+	m.Read(client)
 }
 
 func (m *Manager) Read(client *Client) {
@@ -127,14 +138,12 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
-		fmt.Println(m)
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
 		}
 		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
 		c.Manager.Unlock()
-
 	}
 }
 
@@ -152,8 +161,8 @@ func (c *Client) WriteMess() {
 }
 
 func (m *Manager) addClient(client *Client) {
-	m.Lock()
 	defer m.Unlock()
+	m.Lock()
 	clientsList[client.id_user] = client
 }
 

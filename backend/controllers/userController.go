@@ -94,7 +94,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
-	logout.Id = r.Context().Value("id_user").(int64)
+	logout.Id = r.Context().Value("id_user").(int)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
