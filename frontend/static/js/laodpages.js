@@ -15,6 +15,7 @@ const section = document.querySelector("section");
 document.addEventListener("DOMContentLoaded", async () => {
    const res = await fetch("/api/isLogged");
   if (res.ok) setupWs();
+  
 });
 
 window.addEventListener("popstate", (e) => {

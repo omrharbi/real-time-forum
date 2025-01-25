@@ -108,7 +108,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
-	clearCookies(w)
+	uc.ClearCookies(w)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -137,7 +137,7 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 	return uuid.Iduser
 }
 
-func clearCookies(w http.ResponseWriter) {
+func (uc *UserController) ClearCookies(w http.ResponseWriter) {
 	SetCookie(w, "token", "", time.Now())
 	SetCookie(w, "user_id", "", time.Now())
 }

@@ -18,11 +18,13 @@ type info_user struct {
 
 type MeddlewireController struct {
 	userService services.UserService
+	user        *controllers.UserController
 }
 
-func NewMeddlewireController(service services.UserService) *MeddlewireController {
+func NewMeddlewireController(service services.UserService, user *controllers.UserController) *MeddlewireController {
 	return &MeddlewireController{
 		userService: service,
+		user:        user,
 	}
 }
 
@@ -56,7 +58,7 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 
 		if !time.Now().Before(expire) {
 			u := models.UUID{}
-
+			m.user.ClearCookies(w)
 			m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return

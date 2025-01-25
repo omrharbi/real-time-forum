@@ -80,6 +80,8 @@ export async function fetchConnectedUsers() {
         })
 
         user_item()
+    }else{
+    console.error("Failed to fetch connected users:", response.status);
     }
 }
 function addUser(userId, userName, status) {
@@ -209,7 +211,7 @@ function sendMessage() {
 async function getMessage(receiver) {
     console.log(+receiver);
 
-    const response = fetch("/api/messages", {
+    const response =await fetch("/api/messages", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

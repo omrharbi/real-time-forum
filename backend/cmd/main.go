@@ -68,7 +68,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	commentController := controllers.NewCommentController(commentService, userController)
 	postController := controllers.NewpostController(postService, userController, cardService)
 	profileController := controllers.NewprofileController(profileService, userController)
-	middlewareController := middlewares.NewMeddlewireController(userService) //.NewMeddlewireController(userService)
+	middlewareController := middlewares.NewMeddlewireController(userService, userController) //.NewMeddlewireController(userService)
 	// hubController := controllers.NewHubController(hubService, userController) //.NewMeddlewireController(userService)
 	// handlers
 	mux.HandleFunc("/api/register", userController.HandleRegister) // done

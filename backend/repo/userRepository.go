@@ -165,7 +165,8 @@ func (u *userRepositoryImpl) GetUserIdWithUUID(uuid string) (string, string, str
 
 // updateUUIDUser implements UserRepository.
 func (u *userRepositoryImpl) UpdateUUIDUser(ctx context.Context, uudi string, status string, userId int64, expires time.Time) error {
-	stm := "UPDATE user SET UUID=?,  expires =? ,status=? WHERE id=?"
+	stm := "UPDATE user SET UUID=$1,  expires =$2 ,status=$3 WHERE id=$4"
 	_, err := u.db.ExecContext(ctx, stm, uudi, expires, status, userId)
+	fmt.Println("Error in here ",err)
 	return err
 }
