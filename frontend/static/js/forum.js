@@ -1,52 +1,55 @@
 // import { likes } from "./likescomment.js";
-// import { cards } from "./card.js";
+import { cards } from "./card.js";
 // import { search } from "./search.js";
 
-// import { alertPopup } from "./alert.js";
-let content = []
+import { alertPopup } from "./alert.js";
+let content = [];
 export async function fetchData(page = 1) {
   const response = await fetch(`/api/home?page=${page}`, {
     method: "GET",
   });
+
   if (response.ok) {
-    let path = window.location.pathname
+    let path = window.location.pathname;
     if (path !== "/profile") {
       let data = await response.json();
       let user_info = document.querySelector(".main");
-      content = cards(data.posts, user_info)
+      content = cards(data.posts, user_info);
+      // console.log(data.posts);
 
-      let like = document.querySelectorAll("#likes");
-      likes(like)
-      search(content)
-      renderPagination(data, user_info);
+      // let like = document.querySelectorAll("#likes");
+      // //likes(like);
+      // // search(content);
+      // //renderPagination(data, user_info);
     }
-  } else if ( response.status === 400) {
+  } else if (response.status === 400) {
     const data = await response.json();
-    alertPopup(data)
+    alertPopup(data);
   }
-
-
 }
-await fetchData()
-
+// await fetchData();
 
 function renderPagination(data, container) {
-
   let path = window.location.pathname;
-  if (path !== '/comment' && path !== '/settings') {
-    let paginationDiv = document.querySelector('.pagination-controls');
-    if (!paginationDiv) {
-      paginationDiv = document.createElement('div');
-      paginationDiv.className = 'pagination-controls';
-      container.appendChild(paginationDiv);
-    }
+  if (path !== "/comment" && path !== "/settings") {
+    // let paginationDiv = document.querySelector(".pagination-controls");
+    // console.log(paginationDiv);
 
-    let paginationHTML = '';
+    // // if (!paginationDiv) {
+    // //   paginationDiv = document.createElement("div");
+    // //   paginationDiv.className = "pagination-controls";
+    // //   container.appendChild(paginationDiv);
+    // // }
+    console.log(container);
+
+    let paginationHTML = "";
 
     // Previous button
     if (data.currentPage > 1) {
       paginationHTML += `
-      <button onclick="window.fetchData(${data.currentPage - 1})" class="pagination-btn">
+      <button onclick="window.fetchData(${
+        data.currentPage - 1
+      })" class="pagination-btn">
         Previous
       </button>
     `;
@@ -57,7 +60,7 @@ function renderPagination(data, container) {
       paginationHTML += `
       <button 
         onclick="window.fetchData(${i})" 
-        class="pagination-btn ${i === data.currentPage ? 'active' : ''}"
+        class="pagination-btn ${i === data.currentPage ? "active" : ""}"
       >
         ${i}
       </button>
@@ -67,14 +70,15 @@ function renderPagination(data, container) {
     // Next button
     if (data.currentPage < data.totalPages) {
       paginationHTML += `
-      <button onclick="window.fetchData(${data.currentPage + 1})" class="pagination-btn">
+      <button onclick="window.fetchData(${
+        data.currentPage + 1
+      })" class="pagination-btn">
         Next
       </button>
     `;
     }
-    paginationDiv.innerHTML = paginationHTML;
+    // paginationDiv.innerHTML = paginationHTML;
   }
 }
 // Make fetchData available globally
-window.fetchData = fetchData;
-
+// window.fetchData = fetchData;

@@ -83,7 +83,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 // getCard implements cardRepository.
 
 func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.Card_View {
-	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.nickname,u.Age,u.gender,
+	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.card_id =p.card_id  ) AND l.is_like = 1) as likes,
         (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes

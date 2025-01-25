@@ -66,7 +66,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	likesController := controllers.NewLikesController(likesService, userController)
 	categoryController := controllers.NewcategoryController(categoryService)
 	commentController := controllers.NewCommentController(commentService, userController)
-	postController := controllers.NewpostController(postService, userController)
+	postController := controllers.NewpostController(postService, userController, cardService)
 	profileController := controllers.NewprofileController(profileService, userController)
 	middlewareController := middlewares.NewMeddlewireController(userService) //.NewMeddlewireController(userService)
 	// hubController := controllers.NewHubController(hubService, userController) //.NewMeddlewireController(userService)

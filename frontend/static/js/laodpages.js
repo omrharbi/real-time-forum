@@ -1,14 +1,24 @@
+// import { log } from "console";
 import { ProfileNav } from "./categories.js";
+import { Inf } from "./checklogin.js";
+import { fetchCommat, GetComments } from "./comment.js";
+import { messamges, setupWs, user_item } from "./compenetChat.js";
 import { leftside } from "./component.js";
-import { login } from "./globa.js";
+// import { fetchData } from "./forum.js";
+import { login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { classes } from "./popup.js";
-import { addStyle, fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
+import { Register } from "./register.js";
 
 const section = document.querySelector("section");
 
-document.addEventListener("DOMContentLoaded", () => {
-  setupWs();
+document.addEventListener("DOMContentLoaded", async () => {
+  const res = await fetch("/api/isLogged");
+  if (res.ok) setupWs();
+});
+
+window.addEventListener("popstate", (e) => {
+  loadPage();
 });
 
 function loadPage() {
@@ -19,25 +29,38 @@ function loadPage() {
       section.innerHTML = login;
       Login();
       break;
-
+    case "register":
+      section.classList.add("sectionLogin");
+      section.innerHTML = register;
+      Register();
+      break;
+    case "chat":
+      section.classList.remove("sectionLogin");
+      leftside();
+      messamges();
+      user_item();
+      break;
+    case "":
     case "home":
       section.classList.remove("sectionLogin");
       leftside();
       classes();
-      break;
-    case "chat":
-      section.classList.remove("sectionLogin");
-      addStyle()
-      leftside();
-      messages()
-      fetchConnectedUsers()
-      user_item()
+      Inf();
       break;
     case "categories":
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
       classes();
+      Inf();
+
+      break;
+    case "comment":
+      leftside();
+      classes();
+      fetchCommat();
+      GetComments();
+      // Inf();
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";
@@ -46,5 +69,4 @@ function loadPage() {
 }
 
 loadPage();
-
 export { loadPage };

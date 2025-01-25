@@ -35,11 +35,11 @@ func (c *CategoryRepositoryImpl) GetPostsByCategor(categoryName string) string {
     c.created_at,
     u.firstname,
     u.lastname,
-	u.nickname,
+	u.username,
 	u.age,
 	u.gender, count(cm.id) comments,
-	(SELECT count(*) FROM likes l WHERE ( l.post_id =p.id  ) AND l.is_like = 1) as likes,
-    (SELECT count(*) FROM likes l WHERE( l.post_id =p.id )AND l.is_like = 0) as dislikes
+	(SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
+    (SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
 			FROM card c JOIN post p on c.id = p.card_id LEFT JOIN comment cm
 			ON c.id = cm.target_id JOIN user u ON c.user_id = u.id
             JOIN post_category pc on pc.post_id=p.id 

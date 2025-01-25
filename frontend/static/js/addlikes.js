@@ -24,7 +24,7 @@ export function checkandAdd() {
                     await addLikes(card_id, -1, false, true, click);
                  }
             }
-            await fetchCard(click);
+            //await fetchCard(click);
         } catch (error) {
             console.error("Error handling like/dislike:", error);
         }

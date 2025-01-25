@@ -27,14 +27,16 @@ type Client struct {
 	id_user    int
 }
 
-// var clientsList = make(map[int]*Client)
+var clientsList = make(map[int]*Client)
+
 type Manager struct {
 	sync.RWMutex
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
-	Client   map[int]*Client
-	Count    map[int]int
+
+	Client map[int]*Client
+	Count  map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -52,9 +54,43 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
-		Client:   make(map[int]*Client),
 		Count:    make(map[int]int),
 	}
+}
+
+func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
+	conn, err := websocketUpgrade.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Err", err)
+		return
+	}
+	fmt.Println("Add", conn.RemoteAddr())
+	coock, _ := r.Cookie("token")
+	mes, uuid := m.user.userService.UUiduser(coock.Value)
+	if mes.MessageError != "" {
+		fmt.Println(mes.MessageError)
+	}
+
+	m.broadcastOnlineUserList("online", uuid.Iduser)
+	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
+
+	m.addClient(client)
+	m.Count[client.id_user]++
+	fmt.Println(m.Count[client.id_user])
+	defer func() {
+		m.Count[client.id_user]--
+		if m.Count[client.id_user] == 0 {
+			delete(clientsList, client.id_user)
+			m.broadcastOnlineUserList("offline", client.id_user)
+			client.connection.Close()
+		}
+	}()
+	m.Read(client)
+}
+
+func (m *Manager) Read(client *Client) {
+	go client.WriteMess()
+	client.ReadMess(m)
 }
 
 func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
@@ -79,40 +115,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mes)
 }
 
-func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
-	log.Println("Connected")
-	conn, err := websocketUpgrade.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println("Err", err)
-		return
-	}
-	fmt.Println("Add", conn.RemoteAddr())
-	coock, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println("Err", err)
-		return
-	}
-
-	mes, uuid := m.user.userService.UUiduser(coock.Value)
-	if mes.MessageError != "" {
-		fmt.Println(mes.MessageError)
-	}
-
-	m.broadcastOnlineUserList("online", uuid.Iduser)
-
-	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-
-	m.addClient(client)
-	go client.WriteMess()
-	client.ReadMess(m)
-}
-
 func (c *Client) ReadMess(mg *Manager) {
-	defer func() {
-		delete(c.Manager.Client, c.id_user)
-		mg.broadcastOnlineUserList("offline", c.id_user)
-		c.connection.Close()
-	}()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
@@ -157,8 +160,7 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	m.Client[client.id_user] = client
-
+	clientsList[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
 

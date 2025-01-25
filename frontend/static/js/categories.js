@@ -7,9 +7,10 @@ import { alertPopup } from "./alert.js";
 // navigate()
 let content = [];
 function ProfileNav() {
-  const profileNav = document.querySelectorAll(".profile-nav a");
+  const profileNav = document.querySelectorAll(".profile-nav span");
   profileNav.forEach((navItem) => {
     navItem.addEventListener("click", async () => {
+      document.querySelector(".main").innerHTML = "";
       navItem.className = "active";
       await fetchData(navItem.textContent);
       profileNav.forEach((item) => {
@@ -52,9 +53,9 @@ async function fetchData(categoryName) {
     let data = await response.json();
     let user_info = document.querySelector(".main");
     content = cards(data, user_info);
-    search(content);
-    let like = document.querySelectorAll("#likes");
-    likes(like);
+    // search(content);
+    // let like = document.querySelectorAll("#likes");
+    // likes(like);
   } else if (response.status === 409 || response.status === 400) {
     const data = await response.json();
     alertPopup(data);
