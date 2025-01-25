@@ -34,9 +34,7 @@ type Manager struct {
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
-
-	Client map[int]*Client
-	Count  map[int]int
+	Count    map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -54,6 +52,7 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
+		
 		Count:    make(map[int]int),
 	}
 }
@@ -75,16 +74,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
 	m.addClient(client)
-	m.Count[client.id_user]++
-	fmt.Println(m.Count[client.id_user])
-	defer func() {
-		m.Count[client.id_user]--
-		if m.Count[client.id_user] == 0 {
-			delete(clientsList, client.id_user)
-			m.broadcastOnlineUserList("offline", client.id_user)
-			client.connection.Close()
-		}
-	}()
+
 	m.Read(client)
 }
 
@@ -116,6 +106,14 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) ReadMess(mg *Manager) {
+	defer func() {
+		mg.Count[c.id_user]--
+		if mg.Count[c.id_user] == 0 {
+			delete(clientsList, c.id_user)
+			mg.broadcastOnlineUserList("offline", c.id_user)
+			c.connection.Close()
+		}
+	}()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
@@ -126,7 +124,7 @@ func (c *Client) ReadMess(mg *Manager) {
 			break
 		}
 		c.Manager.Lock()
-		if receiverClient, ok := mg.Client[m.Receiver]; ok {
+		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
@@ -140,7 +138,7 @@ func (c *Client) ReadMess(mg *Manager) {
 func (c *Client) WriteMess() {
 	defer func() {
 		c.connection.Close()
-		delete(c.Manager.Client, c.id_user)
+		delete(clientsList, c.id_user)
 	}()
 	for msg := range c.egress {
 		fmt.Println("msg.Receiver", msg.Receiver, "msg.Sender", msg.Sender, "msg.Type", msg.Type)
@@ -172,9 +170,8 @@ func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 		Type:        typ,
 		OnlineUsers: id_user,
 	}
-
-	// Broadcast the message to all connected clients
-	for _, connection := range mu.Client {
+	fmt.Println(message)
+	for _, connection := range clientsList {
 		// if(clientsList[connection.id_user])
 		connection.connection.WriteJSON(&message)
 		// if err != nil {

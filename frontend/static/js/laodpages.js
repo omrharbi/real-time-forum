@@ -2,7 +2,7 @@
 import { ProfileNav } from "./categories.js";
 import { Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
-import { messamges, setupWs, user_item } from "./compenetChat.js";
+import { fetchConnectedUsers, messages, setupWs, user_item } from "./compenetChat.js";
 import { leftside } from "./component.js";
 // import { fetchData } from "./forum.js";
 import { login, register } from "./globa.js";
@@ -13,8 +13,9 @@ import { Register } from "./register.js";
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const res = await fetch("/api/isLogged");
-  if (res.ok) setupWs();
+  setupWs();
+  // const res = await fetch("/api/isLogged");
+  // if (res.ok) setupWs();
 });
 
 window.addEventListener("popstate", (e) => {
@@ -36,8 +37,9 @@ function loadPage() {
       break;
     case "chat":
       section.classList.remove("sectionLogin");
+      fetchConnectedUsers()  
       leftside();
-      messamges();
+      messages();
       user_item();
       break;
     case "":

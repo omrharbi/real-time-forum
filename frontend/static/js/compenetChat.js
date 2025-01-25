@@ -37,7 +37,7 @@ export function setupWs() {
 
     ws.onclose = () => {
         console.log("WebSocket connection closed.");
-        logMessage("WebSocket disconnected.");
+        //logMessage("WebSocket disconnected.");
     };
 
     ws.onerror = (error) => {
@@ -79,9 +79,9 @@ export async function fetchConnectedUsers() {
         const users = await response.json();
         users.forEach((user) => {
             console.log(user);
-
             addUser(user.id, user.username, user.status)
         })
+         
         user_item()
     }
 }
@@ -149,12 +149,12 @@ function displayMessage(sender, content, isOwnMessage = false) {
     log.scrollTop = log.scrollHeight;
 }
 
-function showTypingNotification(userId) {
-    logMessage(`User ${userId} is typing...`);
-    setTimeout(() => {
-        logMessage("");
-    }, 3000);
-}
+// function showTypingNotification(userId) {
+//     logMessage(`User ${userId} is typing...`);
+//     setTimeout(() => {
+//         logMessage("");
+//     }, 3000);
+// }
 
 export function user_item() {
     let items = document.querySelectorAll(".user-item")
