@@ -100,7 +100,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	u_ms := models.Messages{}
+	u_ms := models.Resiver{}
 	des := json.NewDecoder(r.Body)
 	des.DisallowUnknownFields()
 	err := des.Decode(&u_ms)
@@ -109,7 +109,8 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	mes, mesErr := m.MessageS.GetMessages(u_ms.Sender, u_ms.Receiver)
+	Sender := r.Context().Value("id_user").(int)
+	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver)
 	if mesErr.MessageError != "" {
 		JsoneResponse(w, mesErr.MessageError, http.StatusNotFound)
 		return

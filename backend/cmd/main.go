@@ -91,7 +91,7 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	mux.Handle("/ws", middlewareController.AuthenticateMiddleware(http.HandlerFunc(newWs.ServWs)))
 
 	mux.Handle("/api/comment", middlewareController.AuthenticateMiddleware(http.HandlerFunc(commentController.Handel_GetCommet)))
-	mux.Handle("/api/messages", http.HandlerFunc(newWs.HandleGetMessages))
+	mux.Handle("/api/messages", middlewareController.AuthenticateMiddleware(http.HandlerFunc(newWs.HandleGetMessages)))
 	// mux.Handle("/ws", http.HandlerFunc(hubController.Messages))
 }
 
@@ -134,7 +134,7 @@ func SetupPageRoutes(mux *http.ServeMux) {
 	})
 
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		if strings.Contains(r.URL.Path,"..") {
+		if strings.Contains(r.URL.Path, "..") {
 			return
 		}
 		filename := "../../frontend" + r.URL.Path
