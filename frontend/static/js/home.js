@@ -1,4 +1,4 @@
-// import { loadPage } from "./laodpages.js";
+import { loadPage } from "./laodpages.js";
 
 // import { checklogin } from "./checklogin.js";
 
@@ -14,7 +14,7 @@ function navigate(id) {
       }
       history.pushState(null, "", `/${id}`);
       div.classList.add("active");
-      // loadPage();
+      loadPage();
     } else {
       e.preventDefault();
 
@@ -23,7 +23,7 @@ function navigate(id) {
   });
 }
 
-const ids = ["chat","home", "categories", "profile", "settings"];
+const ids = ["chat", "home", "categories", "profile", "settings"];
 
 function Change() {
   for (let idl of ids) {

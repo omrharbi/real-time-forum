@@ -2,7 +2,7 @@
 import { ProfileNav } from "./categories.js";
 import { Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
-import { setupWs } from "./compenetChat.js";
+import { messamges, setupWs, user_item } from "./compenetChat.js";
 import { leftside } from "./component.js";
 // import { fetchData } from "./forum.js";
 import { login, register } from "./globa.js";
@@ -53,6 +53,8 @@ function loadPage() {
       leftside();
       ProfileNav();
       classes();
+      Inf();
+
       break;
     case "comment":
       leftside();

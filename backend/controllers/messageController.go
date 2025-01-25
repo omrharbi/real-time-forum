@@ -34,6 +34,7 @@ type Manager struct {
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
+	Count    map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -51,37 +52,42 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
+		Count:    make(map[int]int),
 	}
 }
 
 func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
-	log.Println("Connected")
 	conn, err := websocketUpgrade.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("Err", err)
 		return
 	}
 	fmt.Println("Add", conn.RemoteAddr())
-	coock, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println("Err", err)
-		return
-	}
-
+	coock, _ := r.Cookie("token")
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError)
 	}
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
-	oldclient, ok := clientsList[uuid.Iduser]
-	if ok {
-		oldclient.connection.Close()
-	}
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 	m.addClient(client)
+	m.Count[client.id_user]++
+	fmt.Println(m.Count[client.id_user])
+	defer func() {
+		m.Count[client.id_user]--
+		if m.Count[client.id_user] == 0 {
+			delete(clientsList, client.id_user)
+			m.broadcastOnlineUserList("offline", client.id_user)
+			client.connection.Close()
+		}
+	}()
+	m.Read(client)
+}
+
+func (m *Manager) Read(client *Client) {
 	go client.WriteMess()
-	go client.ReadMess(m)
+	client.ReadMess(m)
 }
 
 func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
@@ -107,15 +113,6 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) ReadMess(mg *Manager) {
-	defer func() {
-		mg.broadcastOnlineUserList("offline", c.id_user)
-		// err := mg.userSer.UpdateStatus("offline", c.id_user)
-		c.connection.Close()
-		delete(clientsList, c.id_user)
-		// if err != nil {
-		// 	fmt.Println("error", err)
-		// }
-	}()
 	for {
 		var m models.Messages
 
@@ -131,7 +128,6 @@ func (c *Client) ReadMess(mg *Manager) {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
-
 			log.Printf("Recipient with ID %d not connected\n %v %v  %v", m.Receiver, m.Type, c.id_user, c.Name_user)
 		}
 		c.Manager.Unlock()
@@ -162,8 +158,6 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	// err := m.userSer.UpdateStatus("online", client.id_user)
-	// fmt.Println(err, "Error")
 	clientsList[client.id_user] = client
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }

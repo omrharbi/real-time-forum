@@ -10,8 +10,7 @@ function ProfileNav() {
   const profileNav = document.querySelectorAll(".profile-nav span");
   profileNav.forEach((navItem) => {
     navItem.addEventListener("click", async () => {
-      console.log("ok");
-
+      document.querySelector(".main").innerHTML = "";
       navItem.className = "active";
       await fetchData(navItem.textContent);
       profileNav.forEach((item) => {
