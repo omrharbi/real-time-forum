@@ -34,7 +34,8 @@ type Manager struct {
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
-	Count    map[int]int
+
+	Count map[int]int
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -52,7 +53,6 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
-		
 		Count:    make(map[int]int),
 	}
 }
@@ -73,9 +73,19 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
+	// m.Count[client.id_user]++
 	m.addClient(client)
 
-	m.Read(client)
+	defer func() {
+		m.Count[client.id_user]--
+		if m.Count[client.id_user] == 0 {
+			delete(clientsList, client.id_user)
+			m.broadcastOnlineUserList("offline", client.id_user)
+			client.connection.Close()
+		}
+	}()
+	go client.WriteMess()
+	client.ReadMess(m)
 }
 
 func (m *Manager) Read(client *Client) {
@@ -106,14 +116,6 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) ReadMess(mg *Manager) {
-	defer func() {
-		mg.Count[c.id_user]--
-		if mg.Count[c.id_user] == 0 {
-			delete(clientsList, c.id_user)
-			mg.broadcastOnlineUserList("offline", c.id_user)
-			c.connection.Close()
-		}
-	}()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
