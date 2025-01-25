@@ -1,16 +1,7 @@
-const messageInput = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
-
 const cookies = document.cookie.split("token=")[1];
-const storedData = localStorage.getItem("data");
-const parsedData = JSON.parse(storedData);
-let receiver = new URLSearchParams(location.search).get("receiver");
-// document.addEventListener("DOMContentLoaded", (c) => {
-//     sendMessage(receiver)
-// })
+
 let ws;
 export function setupWs() {
-  fetchConnectedUsers();
   ws = new WebSocket("ws://localhost:8080/ws");
   ws.onopen = () => {
     console.log("is connected");
@@ -26,8 +17,7 @@ export function setupWs() {
         break;
       case "broadcast":
         console.log(message, "herererer");
-
-        displayMessage(message.sender, message);
+        displayMessage(message.sender, message.content, false);
         break;
       case "typing":
         showTypingNotification(message.userId);
@@ -42,7 +32,7 @@ export function setupWs() {
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    logMessage("WebSocket disconnected.");
+    //logMessage("WebSocket disconnected.");
   };
 
   ws.onerror = (error) => {
@@ -50,7 +40,7 @@ export function setupWs() {
   };
 }
 
-export function messamges() {
+export function messages() {
   const chat = document.querySelector(".content_post");
   chat.style.height = "100%";
   chat.innerHTML += /*html*/ `
@@ -75,19 +65,17 @@ export function messamges() {
   sendMessage();
 }
 
-async function fetchConnectedUsers() {
+export async function fetchConnectedUsers() {
   const response = await fetch("/api/connected");
   if (response.ok) {
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
     const users = await response.json();
-    console.log(users);
-
     users.forEach((user) => {
       console.log(user);
-
       addUser(user.id, user.username, user.status);
     });
+
     user_item();
   }
 }
@@ -97,10 +85,9 @@ function addUser(userId, userName, status) {
   userItem.className = "user-item";
   userItem.id = userId;
   userItem.dataset.id = userId;
-
   const userIcon = document.createElement("div");
   userIcon.className = "user-icon";
-  userIcon.textContent = userName.toUpperCase();
+  userIcon.textContent = userName[0].toUpperCase();
 
   const userNameDiv = document.createElement("div");
   userNameDiv.className = "user-name";
@@ -114,49 +101,48 @@ function addUser(userId, userName, status) {
   statusDot.style.background = status === "online" ? "green" : "red";
 }
 
-function genreteMessages(sender, content, isOwnMessage = false) {
-  const messageDiv = document.createElement("div");
-  messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
-  messageDiv.classList.add(isOwnMessage ? "own-message" : "received-message");
-  chatLog.appendChild(messageDiv);
-  chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll
+function updateUserList(message) {
+  let id = document.getElementById(message.online_users);
+
+  if (id) {
+    let status = id.querySelector(".status");
+    if (message.type === "online") {
+      status.style.background = "green";
+    } else {
+      status.style.background = "red";
+    }
+  }
+  console.log(id);
 }
-
-// function updateUserList(message) {
-
-//     let id = document.getElementById(message.online_users)
-//     let status = id.querySelector(".status")
-//     console.log(message.type);
-
-//     if (id) {
-//         if (message.type === "online") {
-//             status.style.background = "green"
-//         } else {
-//             status.style.background = "red"
-//         }
-//     }
-//     console.log(id);
-
-// }
 
 function displayMessage(sender, content, isOwnMessage = false) {
   let log = document.querySelector(".chat");
-  console.log(content.content);
 
-  const messageDiv = document.createElement("div");
-  messageDiv.textContent = `${isOwnMessage ? "You" : sender}: ${
-    content.content
-  }`;
-  log.appendChild(messageDiv);
+  const messageUser = document.createElement("div"); //
+  const message_content = document.createElement("div");
+  const time = document.createElement("div");
+
+  messageUser.className = "message";
+  message_content.className = "message-content";
+  time.className = "time";
+  message_content.textContent = `${isOwnMessage ? "You" : sender}: ${content}`;
+
+  if (isOwnMessage) {
+    messageUser.classList = "bot";
+  } else {
+    messageUser.className = "user";
+  }
+  messageUser.append(message_content, time);
+  log.appendChild(messageUser);
   log.scrollTop = log.scrollHeight;
 }
 
-function showTypingNotification(userId) {
-  logMessage(`User ${userId} is typing...`);
-  setTimeout(() => {
-    logMessage("");
-  }, 3000);
-}
+// function showTypingNotification(userId) {
+//     logMessage(`User ${userId} is typing...`);
+//     setTimeout(() => {
+//         logMessage("");
+//     }, 3000);
+// }
 
 export function user_item() {
   let items = document.querySelectorAll(".user-item");
@@ -165,23 +151,24 @@ export function user_item() {
       let id = clik.getAttribute("data-id");
       let url = `chat?receiver=${id}`;
       history.pushState(null, "", url);
-      genreteMessages();
     });
   });
 }
 
 function sendMessage() {
   const chat = document.querySelector(".content_post");
-  console.log(chat);
+
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
   console.log(sendButton);
-
+  const storedData = localStorage.getItem("data");
+  const parsedData = JSON.parse(storedData);
   sendButton.addEventListener("click", () => {
-    console.log(+receiver, parsedData.id);
+    let receiver = new URLSearchParams(location.search).get("receiver");
+    console.log(receiver);
     const messages = message.value.trim();
     if (messages) {
-      displayMessage("You", content, true);
+      displayMessage("You", messages, true);
       ws.send(
         JSON.stringify({
           type: "broadcast",
@@ -192,4 +179,11 @@ function sendMessage() {
       );
     }
   });
+}
+
+export function addStyle() {
+  let style = document.createElement("link");
+  style.rel = "stylesheet";
+  style.href = "../static/css/chat.css";
+  document.head.appendChild(style);
 }

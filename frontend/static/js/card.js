@@ -30,7 +30,7 @@ export function createPos(ele) {
               }</div>
               <span class="username">Created</span>
               <span class="timestamp">· ${getTimeDifferenceInHours(
-                ele.createdat
+                ele.date
               )}</span>
             </div>
           </div>
@@ -80,7 +80,6 @@ export function handleCommentClick(cardId) {
 }
 
 export function getTimeDifferenceInHours(createdAt) {
-  console.log(createdAt);
   const now = new Date();
   const createdTime = new Date(createdAt);
   const diffInMilliseconds = now - createdTime;

@@ -1,17 +1,20 @@
 import { fetchData } from "./forum.js";
 import { setupWs } from "./compenetChat.js";
+import { loadPage } from "./laodpages.js";
 
 export async function checklogin() {
   const res = await fetch("/api/isLogged");
-  const path = window.location.pathname
+  const path = window.location.pathname;
   if (res.ok) {
-    setupWs()
-    if (path==="/login" || path ==="/register"){
+    setupWs();
+    if (path === "/login" || path === "/register") {
       history.pushState(null, "", "/");
+      loadPage();
     }
-  }else {
-    if (path!=="/login" && path!=="/register"){
+  } else {
+    if (path !== "/login" && path !== "/register") {
       history.pushState(null, "", "/login");
+      loadPage();
     }
   }
 }
