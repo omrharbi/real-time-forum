@@ -10,12 +10,15 @@ import { Login } from "./login.js";
 import { classes } from "./popup.js";
 import { Register } from "./register.js";
 
-
 const section = document.querySelector("section");
 
 document.addEventListener("DOMContentLoaded", async () => {
   const res = await fetch("/api/isLogged");
-  if (res.ok) setupWs()
+  if (res.ok) setupWs();
+});
+
+window.addEventListener("popstate", (e) => {
+  loadPage();
 });
 
 function loadPage() {
@@ -65,13 +68,4 @@ function loadPage() {
 }
 
 loadPage();
-let lastPath = window.location.pathname;
-
-setInterval(() => {
-  if (lastPath !== window.location.pathname) {
-    lastPath = window.location.pathname;
-    loadPage();
-  }
-}, 100);
-
 export { loadPage };

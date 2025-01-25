@@ -2,11 +2,14 @@ import { alertPopup } from "./alert.js";
 
 import { checklogin } from "./checklogin.js";
 import { setupWs } from "./compenetChat.js";
+import { loadPage } from "./laodpages.js";
 
 export async function Login() {
   checklogin();
   document.querySelector("#register").addEventListener("click", () => {
     history.pushState(null, "", "/register");
+    loadPage();
+    return;
   });
   let login = document.querySelector("#login");
 
@@ -39,6 +42,7 @@ export async function Login() {
       console.log(localStorage);
       setupWs();
       history.pushState(null, "", "/");
+      loadPage();
     } else if (response.status === 400) {
       const data = await response.json();
       console.log(data);

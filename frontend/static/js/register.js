@@ -1,10 +1,12 @@
 import { alertPopup } from "./alert.js";
 import { checklogin } from "./checklogin.js";
 import { setupWs } from "./compenetChat.js";
+import { loadPage } from "./laodpages.js";
 export async function Register() {
   checklogin();
   document.querySelector("#login").addEventListener("click", () => {
     history.pushState(null, "", "/login");
+    loadPage();
   });
   let register = document.querySelector("#form-submit");
   register.addEventListener("submit", async (e) => {
@@ -41,6 +43,7 @@ export async function Register() {
       localStorage.setItem("data", JSON.stringify(userData));
       history.pushState(null, "", "/");
       setupWs();
+      loadPage();
     } else if (response.status === 409 || response.status === 400) {
       const data = await response.json();
       alertPopup(data);

@@ -1,3 +1,5 @@
+import { loadPage } from "./laodpages.js";
+
 export function cards(data, user_info) {
   let content = [];
   if (user_info === null) {
@@ -65,18 +67,20 @@ export function createPos(ele) {
           </div>
         </div>
         `;
-      contents.querySelector(".link").addEventListener("click" , ()=> {
-        handleCommentClick(ele.id)
-      })
+  contents.querySelector(".link").addEventListener("click", () => {
+    handleCommentClick(ele.id);
+  });
   return contents;
 }
 
-function handleCommentClick(cardId) {
+export function handleCommentClick(cardId) {
   const url = `/comment?card_id=${cardId}`;
   history.pushState({ cardId }, "Comments", url);
+  loadPage();
 }
 
 export function getTimeDifferenceInHours(createdAt) {
+  console.log(createdAt);
   const now = new Date();
   const createdTime = new Date(createdAt);
   const diffInMilliseconds = now - createdTime;
