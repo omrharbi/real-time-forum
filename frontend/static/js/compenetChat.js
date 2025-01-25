@@ -166,10 +166,11 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-
+            getMessage(id)
         })
 
     })
+
 }
 
 
@@ -187,7 +188,7 @@ function sendMessage() {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
-            displayMessage("You",new Date(), messages, true);
+            displayMessage("You", new Date(), messages, true);
             ws.send(
                 JSON.stringify({
                     type: "broadcast",
@@ -204,6 +205,16 @@ function sendMessage() {
     });
 
 
+}
+function getMessage(receiver) {
+    let response = fetch("/api/messages", {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            receiver: receiver
+        })
+    })
 }
 
 
