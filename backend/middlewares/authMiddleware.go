@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"real-time-froum/controllers"
-	"real-time-froum/models"
 	"real-time-froum/services"
 )
 
@@ -57,9 +56,13 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		// r = r.WithContext(context.WithValue(r.Context(), "uuid", id_user))
 
 		if !time.Now().Before(expire) {
-			u := models.UUID{}
-			m.user.ClearCookies(w)
-			m.userService.LogOut(r.Context(), u)
+			// u := models.UUID{}
+			http.SetCookie(w , &http.Cookie{
+				MaxAge: -1,
+				Name:   "token",
+				Value:  "",
+			})
+			// m.userService.LogOut(r.Context(), u)
 			fmt.Println("Log out")
 			return
 		} else {

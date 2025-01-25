@@ -107,10 +107,10 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
 	stm := `SELECT 
 			EXISTS (SELECT 1 FROM user WHERE UUID = ?),
 			(SELECT expires  FROM user WHERE UUID = ? ) AS expires,
-			(SELECT id  FROM user WHERE UUID = ? ) AS expires; `
+			(SELECT id  FROM user WHERE UUID = ? ) AS id_user; `
 	var exists bool
 	var expires sql.NullTime
-	var id int
+	var id any
 
 	err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
 	if err != nil {
@@ -123,7 +123,7 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
 	if !time.Now().Before(expires.Time) {
 		return false, time.Time{}, 0
 	}
-	return exists, expires.Time, id
+	return exists, expires.Time, id.(int)
 }
 
 // CheckUser implements UserRepository.
@@ -165,8 +165,7 @@ func (u *userRepositoryImpl) GetUserIdWithUUID(uuid string) (string, string, str
 
 // updateUUIDUser implements UserRepository.
 func (u *userRepositoryImpl) UpdateUUIDUser(ctx context.Context, uudi string, status string, userId int64, expires time.Time) error {
-	stm := "UPDATE user SET UUID=$1,  expires =$2 ,status=$3 WHERE id=$4"
+	stm := "UPDATE user SET UUID=?,  expires =? ,status=? WHERE id=?"
 	_, err := u.db.ExecContext(ctx, stm, uudi, expires, status, userId)
-	fmt.Println("Error in here ",err)
 	return err
 }

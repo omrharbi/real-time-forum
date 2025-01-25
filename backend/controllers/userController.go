@@ -138,8 +138,12 @@ func (uc *UserController) GetUserId(r *http.Request) int {
 }
 
 func (uc *UserController) ClearCookies(w http.ResponseWriter) {
-	SetCookie(w, "token", "", time.Now())
-	SetCookie(w, "user_id", "", time.Now())
+	// SetCookie(w, "token", "", time.Now() )
+	// SetCookie(w, "user_id", "", time.Now())
+	http.SetCookie(w, &http.Cookie{
+		MaxAge: -1,
+		Name:   "token",
+	})
 }
 
 func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request) {
@@ -155,11 +159,18 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
 	if !time.Now().Before(expire) {
-		u := models.UUID{}
-		uc.userService.UUiduser(cookies.Value)
-		uc.userService.LogOut(r.Context(), u)
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Println("Log out")
+		fmt.Println("expire")
+		http.SetCookie(w, &http.Cookie{
+			MaxAge: -1,
+			Name:   "token",
+			Value:  "",
+			Path:   "/",
+		})
+		// u := models.UUID{}
+		// uc.userService.UUiduser(cookies.Value)
+		// uc.userService.LogOut(r.Context(), u)
+		// w.WriteHeader(http.StatusUnauthorized)
+
 		return
 	} else {
 		if is {
