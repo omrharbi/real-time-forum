@@ -28,13 +28,13 @@ type Client struct {
 	Count      map[int]int
 }
 
-var clientsList = make(map[int]*Client)
-
+// var clientsList = make(map[int]*Client)
 type Manager struct {
 	sync.RWMutex
 	user     *UserController
 	MessageS services.MessageService
 	userSer  services.UserService
+	Client   map[int]*Client
 }
 
 func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
@@ -44,7 +44,6 @@ func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client 
 		egress:     make(chan models.Messages),
 		Name_user:  name,
 		id_user:    id,
-		Count:      make(map[int]int),
 	}
 }
 
@@ -53,36 +52,8 @@ func NewManager(user *UserController, messageS services.MessageService, userSer 
 		user:     user,
 		MessageS: messageS,
 		userSer:  userSer,
+		Client:   make(map[int]*Client),
 	}
-}
-
-func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
-	log.Println("Connected")
-	conn, err := websocketUpgrade.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println("Err", err)
-		return
-	}
-	fmt.Println("Add", conn.RemoteAddr())
-	coock, err := r.Cookie("token")
-	if err != nil {
-		fmt.Println("Err", err)
-		return
-	}
-
-	mes, uuid := m.user.userService.UUiduser(coock.Value)
-	if mes.MessageError != "" {
-		fmt.Println(mes.MessageError)
-	}
-
-	m.broadcastOnlineUserList("online", uuid.Iduser)
-
-	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-	// clients, ok := clientsList[uuid.Iduser]
-	client.Count[client.id_user]++
-	m.addClient(client)
-	go client.WriteMess()
-	go client.ReadMess(m)
 }
 
 func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
@@ -107,28 +78,53 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mes)
 }
 
+func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
+	log.Println("Connected")
+	conn, err := websocketUpgrade.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Err", err)
+		return
+	}
+	fmt.Println("Add", conn.RemoteAddr())
+	coock, err := r.Cookie("token")
+	if err != nil {
+		fmt.Println("Err", err)
+		return
+	}
+
+	mes, uuid := m.user.userService.UUiduser(coock.Value)
+	if mes.MessageError != "" {
+		fmt.Println(mes.MessageError)
+	}
+
+	m.broadcastOnlineUserList("online", uuid.Iduser)
+
+	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
+	client.Count[uuid.Iduser]++
+	fmt.Println(client.Count)
+	m.addClient(client)
+	go client.WriteMess()
+	go client.ReadMess(m)
+}
+
 func (c *Client) ReadMess(mg *Manager) {
 	defer func() {
-		delete(clientsList, c.id_user)
-		_, ok := clientsList[c.id_user]
-		if !ok {
-			mg.broadcastOnlineUserList("offline", c.id_user)
-		}
+		delete(c.Manager.Client, c.id_user)
+		mg.broadcastOnlineUserList("offline", c.id_user)
 		c.connection.Close()
 	}()
 	for {
 		var m models.Messages
 		err := c.connection.ReadJSON(&m)
 		if err != nil {
-
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Println("error Reading Message", err)
 			}
-
 			break
+			// continue
 		}
 		c.Manager.Lock()
-		if receiverClient, ok := clientsList[m.Receiver]; ok {
+		if receiverClient, ok := mg.Client[m.Receiver]; ok {
 			receiverClient.egress <- m
 			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content)
 		} else {
@@ -142,7 +138,7 @@ func (c *Client) ReadMess(mg *Manager) {
 func (c *Client) WriteMess() {
 	defer func() {
 		c.connection.Close()
-		delete(clientsList, c.id_user)
+		delete(c.Manager.Client, c.id_user)
 	}()
 	for msg := range c.egress {
 		fmt.Println("msg.Receiver", msg.Receiver, "msg.Sender", msg.Sender, "msg.Type", msg.Type)
@@ -162,7 +158,7 @@ func (c *Client) WriteMess() {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
-	clientsList[client.id_user] = client
+	m.Client[client.id_user] = client
 
 	log.Printf("Client added: %s (ID: %d)\n", client.Name_user, client.id_user)
 }
@@ -188,7 +184,7 @@ func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
 	}
 
 	// Broadcast the message to all connected clients
-	for _, connection := range clientsList {
+	for _, connection := range mu.Client {
 		// if(clientsList[connection.id_user])
 		connection.connection.WriteJSON(&message)
 		// if err != nil {
