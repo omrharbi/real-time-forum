@@ -15,4 +15,5 @@ type Resiver struct {
 type OnlineUser struct {
 	Type        string `json:"type"`
 	OnlineUsers int    `json:"online_users"`
+	UserName    string `json:"userName"`
 }

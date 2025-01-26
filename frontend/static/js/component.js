@@ -19,7 +19,7 @@ const main = /*html*/ `
       <aside class="aside-right">
         <input class="search" type="text" placeholder="Search.." data-search />
         <div class="link-list">
-          <a href="/about">about</a>·<a href="/contact">contact</a>
+          <a href="/about">about</a>
         </div>
       </aside>`;
 const nav_item = [

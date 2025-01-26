@@ -50,10 +50,11 @@ func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
             END,
             username ASC`
 	rows, err := u.db.Query(query, user)
+	us := []models.UUID{}
 	if err != nil {
 		fmt.Println(err)
+		return us
 	}
-	us := []models.UUID{}
 	for rows.Next() {
 		ussr := models.UUID{}
 		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status)

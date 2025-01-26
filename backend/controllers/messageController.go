@@ -74,9 +74,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m.broadcastOnlineUserList("online", uuid.Iduser)
-
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname, coock.Value)
+	m.broadcastOnlineUserList("online", client)
 
 	defer func() {
 		m.Count[client.id_user]--
@@ -84,7 +83,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 			if clientData, ok := clientsList[client.id_user]; ok && clientData != nil {
 				clientData.connection.Close()
 				delete(clientsList, client.id_user)
-				m.broadcastOnlineUserList("offline", client.id_user)
+				m.broadcastOnlineUserList("offline", client)
 			}
 		}
 	}()
@@ -124,9 +123,9 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
-		m.Firstname = c.Name_user
+		m.Username = c.Name_user
 		m.Sender = c.id_user
-		m.Firstname = c.Name_user
+		// m.Firstname = c.Name_user
 		m.Sender = c.id_user
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
@@ -150,13 +149,14 @@ func (m *Manager) addClient(client *Client) {
 	clientsList[client.id_user] = client
 }
 
-func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
+func (mu *Manager) broadcastOnlineUserList(typ string, clien *Client) {
 	mu.Lock()
 	defer mu.Unlock()
 
 	message := models.OnlineUser{
 		Type:        typ,
-		OnlineUsers: id_user,
+		OnlineUsers: clien.id_user,
+		UserName:    clien.Name_user,
 	}
 	for _, connection := range clientsList {
 		connection.connection.WriteJSON(&message)

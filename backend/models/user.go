@@ -42,6 +42,7 @@ type UUID struct {
 	Firstname string `json:"firstname"`
 	Status    string `json:"status"`
 	Lastname  string `json:"lastname"`
+	Seen      any    `json:"seen"`
 }
 type Logout struct {
 	Id   int    `json:"id"`

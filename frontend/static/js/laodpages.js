@@ -6,10 +6,10 @@ import {
   addStyle,
   messages,
   setupWs,
-  user_item,
+  // user_item,
 } from "./chat/compenetChat.js";
 import { leftside } from "./component.js";
- import { login, register } from "./globa.js";
+import { about, login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { logout } from "./logout.js";
 import { classes } from "./popup.js";
@@ -24,11 +24,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (res.ok) setupWs();
 });
 
-window.addEventListener("popstate", (e) => {  
+window.addEventListener("popstate", (e) => {
   loadPage();
 });
 
- function loadPage() {
+function loadPage() {
   const path = window.location.pathname.slice(1);
   console.log(path);
 
@@ -45,11 +45,11 @@ window.addEventListener("popstate", (e) => {
       Register();
       break;
     case "chat":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       messages();
-      user_item();
+      // user_item();
       fetchConnectedUsers();
       addStyle();
       break;
@@ -62,7 +62,7 @@ window.addEventListener("popstate", (e) => {
       Inf();
       break;
     case "categories":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       ProfileNav();
@@ -71,7 +71,7 @@ window.addEventListener("popstate", (e) => {
 
       break;
     case "comment":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
@@ -80,7 +80,7 @@ window.addEventListener("popstate", (e) => {
       // Inf();
       break;
     case "profile":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
@@ -88,11 +88,15 @@ window.addEventListener("popstate", (e) => {
       profileInfo();
       break;
     case "settings":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
       logout();
+      break;
+    case "about":
+      section.classList.remove("sectionLogin");
+      section.innerHTML = about;
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";
