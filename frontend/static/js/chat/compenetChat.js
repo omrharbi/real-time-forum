@@ -1,6 +1,7 @@
+import { debounce } from "../checklogin.js";
 import { loadPage } from "../laodpages.js";
 import { SetUserUp, updateUserList } from "./create_user.js";
-import { displayMessage, getMessage } from "./displyMessage.js";
+import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
 
 let ws;
 export function setupWs() {
@@ -87,10 +88,8 @@ export function messages() {
             </div>
     `;
   const query = new URLSearchParams(window.location.search);
-  let sendButton = document.getElementById("sendButton");
-  let messageInput = document.getElementById("messageInput");
   if (query.get("receiver")) {
-    getMessage(query.get("receiver"));
+    GetMessage(query.get("receiver"));
     sendMessage();
   } else {
     let chat = document.querySelector(".chat");
@@ -105,55 +104,29 @@ export function sendMessage() {
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
-  sendButton.addEventListener("click", () => {
-    console.log("send");
-
-    let receiver = new URLSearchParams(location.search).get("receiver");
-    console.log(receiver);
-
-    const messages = message.value.trim();
-    if (messages) {
-      displayMessage(parsedData.firstname, new Date(), messages, true);
-      SetUserUp({ sender: receiver });
-      ws.send(
-        JSON.stringify({
-          type: "broadcast",
-          content: messages,
-          sender: parsedData.id,
-          receiver: +receiver,
-          createAt: new Date(),
-        })
-      );
-    }
-  });
+  sendButton.addEventListener(
+    "click",
+    debounce(() => {
+      let receiver = new URLSearchParams(location.search).get("receiver");
+      const messages = message.value.trim();
+      if (messages) {
+        displayMessage(parsedData.firstname, new Date(), messages, true);
+        SetUserUp({ sender: receiver });
+        ws.send(
+          JSON.stringify({
+            type: "broadcast",
+            content: messages,
+            sender: parsedData.id,
+            receiver: +receiver,
+            createAt: new Date(),
+          })
+        );
+        message.value = "";
+      }
+    }, 200)
+  );
 }
-
-// function showTypingNotification(userId) {
-//     logMessage(`User ${userId} is typing...`);
-//     setTimeout(() => {
-//         logMessage("");
-//     }, 3000);
-// }
-
-// export function user_item() {
-//     let items = document.querySelectorAll(".user-item")
-//     items.forEach((clik) => {
-//         clik.addEventListener("click", async () => {
-//             let id = clik.getAttribute("data-id")
-//             let url = `chat?receiver=${id}`
-//             history.pushState(null, "", url)
-//             let log = document.querySelector(".chat");
-//             if (log) {
-//                 log.innerHTML = ""
-//             }
-//             getMessage(id)
-//             sendMessage()
-//         })
-
-//     })
-// }
-
-function showPopup(message) {
+export function showPopup(message) {
   const popup = document.getElementById("message-popup");
   const popupMessage = document.getElementById("popup-message");
 

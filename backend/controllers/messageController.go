@@ -105,7 +105,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Sender := r.Context().Value("id_user").(int)
-	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver)
+	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver, u_ms.Offste)
 	if mesErr.MessageError != "" {
 		JsoneResponse(w, mesErr.MessageError, http.StatusNotFound)
 		return

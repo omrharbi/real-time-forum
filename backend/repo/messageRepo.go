@@ -10,7 +10,7 @@ import (
 
 type MessageRepository interface {
 	AddMessage(Sender, Receiver int, Content, CreateAt string) (mss messages.Messages)
-	GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages)
+	GetMeessage(senderID int, receiverID int, offset int) (s []models.Messages, mss messages.Messages)
 	DeleteMessage()
 }
 
@@ -39,7 +39,7 @@ func (m *MessageRepositoryImpl) DeleteMessage() {
 }
 
 // GetMeessage implements MessageRepository.
-func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages) {
+func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int, offste int) (s []models.Messages, mss messages.Messages) {
 	qury := `SELECT m.sender, m.receiver ,m.content,m.created_at,u.firstname,u.username  FROM messages m 
 		LEFT JOIN user u on m.sender = u.id
 		WHERE
@@ -47,9 +47,11 @@ func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []m
               OR
             (sender = $2 AND receiver = $1)
 
-		ORDER BY created_at ASC;`
+		ORDER BY created_at ASC
+		LIMIT $3 OFFSET $4;
+`
 
-	row, err := m.db.Query(qury, senderID, receiverID)
+	row, err := m.db.Query(qury, senderID, receiverID, 30, offste)
 	if err != nil {
 		fmt.Println(err)
 		mss.MessageError = err.Error()
@@ -57,7 +59,7 @@ func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []m
 	}
 	for row.Next() {
 		message := models.Messages{}
-		row.Scan(&message.Sender, &message.Receiver, &message.Content,&message.CreateAt,  &message.Firstname, &message.Username)
+		row.Scan(&message.Sender, &message.Receiver, &message.Content, &message.CreateAt, &message.Firstname, &message.Username)
 		s = append(s, message)
 
 	}

@@ -1,5 +1,5 @@
 import { sendMessage } from "./compenetChat.js";
-import { displayMessage, getMessage } from "./displyMessage.js";
+import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
 
 export function addUser(userId, userName, status) {
   const userList = document.getElementById("userList");
@@ -28,7 +28,7 @@ export function addUser(userId, userName, status) {
     if (log) {
       log.innerHTML = "";
     }
-    getMessage(userId);
+    GetMessage(userId);
     sendMessage();
   });
   statusDot.style.background = status === "online" ? "green" : "red";

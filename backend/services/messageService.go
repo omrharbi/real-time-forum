@@ -7,8 +7,8 @@ import (
 )
 
 type MessageService interface {
-	AddMessages(Sender, Receiver int, Content ,CreateAt string) (mss messages.Messages)
-	GetMessages(senderID int, receiverID int) (s []models.Messages, mss messages.Messages)
+	AddMessages(Sender, Receiver int, Content, CreateAt string) (mss messages.Messages)
+	GetMessages(senderID int, receiverID int, offset int) (s []models.Messages, mss messages.Messages)
 	DeleteMessages(msgID int) error
 }
 
@@ -21,8 +21,8 @@ func NewMessageService(ms repo.MessageRepository) MessageService {
 }
 
 // AddMessages implements MessageService.
-func (m *MessageServiceImpl) AddMessages(Sender, Receiver int, Content ,CreateAt string) (mss messages.Messages) {
-	err := m.repo.AddMessage(Sender, Receiver, Content,CreateAt)
+func (m *MessageServiceImpl) AddMessages(Sender, Receiver int, Content, CreateAt string) (mss messages.Messages) {
+	err := m.repo.AddMessage(Sender, Receiver, Content, CreateAt)
 	if err.MessageError != "" {
 		return err
 	}
@@ -35,8 +35,8 @@ func (m *MessageServiceImpl) DeleteMessages(msgID int) error {
 }
 
 // GetMessages implements MessageService.
-func (m *MessageServiceImpl) GetMessages(senderID int, receiverID int) ([]models.Messages, messages.Messages) {
-	mess, err := m.repo.GetMeessage(senderID, receiverID)
+func (m *MessageServiceImpl) GetMessages(senderID int, receiverID int, offset int) ([]models.Messages, messages.Messages) {
+	mess, err := m.repo.GetMeessage(senderID, receiverID, offset)
 	if err.MessageError != "" {
 		return []models.Messages{}, err
 	}

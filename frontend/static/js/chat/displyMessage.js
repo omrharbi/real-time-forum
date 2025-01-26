@@ -1,4 +1,5 @@
 import { getTimeDifferenceInHours } from "../card.js";
+import { throttle } from "../checklogin.js";
 import { chat } from "./compenetChat.js";
 // import { user_item } from "./compenetChat.js";
 import { addUser } from "./create_user.js";
@@ -39,12 +40,12 @@ export function displayMessage(
   row.append(userIcon, messageUser);
   parent.appendChild(row);
   log.appendChild(parent);
+  log.scrollBy(0, log.scrollHeight);
   //log.scrollTop = log.scrollHeight;
 }
 
-export async function getMessage(receiver) {
+export async function getMessage(receiver, offset = 0) {
   const log = document.querySelector(".chat-input");
-  console.log(log);
   log.innerHTML = chat;
   const storedData = localStorage.getItem("data");
   let sendButton = document.getElementById("sendButton");
@@ -59,12 +60,16 @@ export async function getMessage(receiver) {
     },
     body: JSON.stringify({
       receiver: +receiver,
+      offset: offset,
     }),
   });
   if (response) {
     let data = await response.json();
     if (data) {
       let isOwen;
+      if (!data) return;
+      console.log(data);
+
       data.forEach((d) => {
         if (parsedData.id === d.sender) {
           isOwen = true;
@@ -78,6 +83,19 @@ export async function getMessage(receiver) {
   } else {
     console.log("error");
   }
+}
+
+export function GetMessage(receiver) {
+  getMessage(receiver);
+  let offset = 1;
+  const chat = document.querySelector(".chat");
+  chat.addEventListener(
+    "scroll",
+    throttle(() => {
+      getMessage(receiver, offset);
+      offset++;
+    })
+  );
 }
 
 export async function fetchConnectedUsers() {
