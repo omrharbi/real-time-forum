@@ -56,7 +56,7 @@ window.addEventListener("popstate", (e) => {
       break;
     case "":
     case "home":
-       checklogin();
+      checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();

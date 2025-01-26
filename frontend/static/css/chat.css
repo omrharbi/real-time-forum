@@ -89,4 +89,16 @@ body {
     text-decoration: none;
     color: #007bff;
 }
-    
+.messages.sander {
+    flex-direction: column;
+}
+.messages.resiver {
+    flex-direction: column;
+    align-items: end;
+}
+.parent {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+     align-self: center;
+}

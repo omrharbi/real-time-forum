@@ -80,11 +80,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
 
-	m.Lock()
-	// clientsList[client.id_user] = client
-	m.Count[client.id_user]++
-	m.Unlock()
-
 	log.Println("User Count:", m.Count[client.id_user])
 
 	defer func() {
@@ -102,7 +97,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Manager) Read(client *Client) {
-	go client.WriteMess()
+	// go client.WriteMess()
 	client.ReadMess(m)
 }
 
@@ -138,6 +133,7 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
+		m.Username = c.Name_user
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
@@ -147,22 +143,10 @@ func (c *Client) ReadMess(mg *Manager) {
 	}
 }
 
-func (c *Client) WriteMess() {
-	for msg := range c.egress {
-		if err := c.connection.WriteJSON(websocket.CloseMessage); err != nil {
-			log.Println("Connection Closed ", err)
-			return
-		}
-
-		if err := c.connection.WriteJSON(msg); err != nil {
-			log.Println("Error To Send Message", err)
-		}
-	}
-}
-
 func (m *Manager) addClient(client *Client) {
 	defer m.Unlock()
 	m.Lock()
+	m.Count[client.id_user]++
 	clientsList[client.id_user] = client
 }
 

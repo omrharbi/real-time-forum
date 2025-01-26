@@ -1559,8 +1559,14 @@ user chat
   height: 84%;
   width: 84%;
   overflow-y: scroll;
+  flex-direction: column;
+  display: flex;
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
 }
-
+.chat::-webkit-scrollbar{
+  display: none; 
+}
 input.input-chat {
   border-radius: 5px;
   height: 9%;

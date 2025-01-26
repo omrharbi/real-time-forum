@@ -1,3 +1,4 @@
+import { getTimeDifferenceInHours } from "./card.js";
 
 const cookies = document.cookie.split("token=")[1];
 
@@ -128,26 +129,29 @@ function updateUserList(message) {
 
 function displayMessage(sender, createAt, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
-
+    const parent = document.createElement("div");
     const messageUser = document.createElement("div");
     const message_content = document.createElement("div");
     const time = document.createElement("div");
 
     messageUser.className = "messages";
     message_content.className = "message-content"
-    time.className = "time";
+    parent.className="parent"
     message_content.textContent = `${sender} ${content}`;
-    time.textContent = createAt
-
+    time.textContent = getTimeDifferenceInHours(createAt)
+    
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
-
+        time.className = "time sander";
+        
     } else {
         messageUser.className = "messages resiver";
+        time.className = "time resiver";
     }
     messageUser.append(message_content, time);
-    log.appendChild(messageUser);
-    log.scrollTop = log.scrollHeight;
+    parent.appendChild(messageUser);
+    log.appendChild(parent)
+    //log.scrollTop = log.scrollHeight;
 }
 
 // function showTypingNotification(userId) {
