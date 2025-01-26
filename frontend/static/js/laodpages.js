@@ -50,7 +50,7 @@ window.addEventListener("popstate", (e) => {
       section.classList.remove("sectionLogin");
       fetchConnectedUsers();
       leftside();
-       messages();
+      messages();
       user_item();
       addStyle();
       break;

@@ -65,6 +65,17 @@ export function messages() {
                     </div>
             </div>
     `;
+    const query = new URLSearchParams(window.location.search);
+    if(query.get("receiver")){
+        getMessage(query.get("receiver"))
+    }else{
+        let sendButton=document.getElementById("sendButton")
+        let messageInput=document.getElementById("messageInput")
+        let chat=document.querySelector(".chat")
+        chat.textContent="WELCOME TO CHAT"
+        sendButton.style.display="none"
+        messageInput.style.display="none"
+    }
     sendMessage()
 }
 
@@ -229,8 +240,7 @@ async function getMessage(receiver) {
             } else {
                 isOwen = false
             }
-            console.log(d.username, d.createAt, d.content);
-           
+            
             displayMessage(d.username, d.createAt, d.content, isOwen)
         })
 
