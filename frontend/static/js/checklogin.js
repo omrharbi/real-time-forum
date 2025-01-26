@@ -1,6 +1,5 @@
 import { fetchData } from "./forum.js";
-import { setupWs } from "./compenetChat.js";
-import { loadPage } from "./laodpages.js";
+ import { loadPage } from "./laodpages.js";
 
 export function checklogin() {
   fetch("/api/isLogged").then((res) => {

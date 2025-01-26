@@ -126,6 +126,8 @@ func (c *Client) ReadMess(mg *Manager) {
 		}
 		m.Firstname = c.Name_user
 		m.Sender = c.id_user
+		m.Firstname = c.Name_user
+		m.Sender = c.id_user
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
@@ -139,6 +141,9 @@ func (m *Manager) addClient(client *Client) {
 	defer m.Unlock()
 	m.Lock()
 	m.Count[client.id_user]++
+	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
+		clientData.connection.Close()
+	}
 	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
 		clientData.connection.Close()
 	}

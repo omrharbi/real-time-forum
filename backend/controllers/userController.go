@@ -95,6 +95,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logout.Id = r.Context().Value("id_user").(int)
+	logout.Id = r.Context().Value("id_user").(int)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()

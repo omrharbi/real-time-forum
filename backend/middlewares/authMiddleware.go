@@ -10,10 +10,10 @@ import (
 	"real-time-froum/services"
 )
 
-type info_user struct {
-	username string `json:"username"`
-	id_user  int    `json:"id_user"`
-}
+// type info_user struct {
+// 	username string `json:"username"`
+// 	id_user  int    `json:"id_user"`
+// }
 
 type MeddlewireController struct {
 	userService services.UserService
@@ -30,7 +30,7 @@ func NewMeddlewireController(service services.UserService, user *controllers.Use
 func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookies, err := r.Cookie("token")
- 
+
 		if err != nil || cookies == nil {
 			if err == http.ErrNoCookie {
 				controllers.JsoneResponse(w, "Unauthorized: Cookie not presen", http.StatusUnauthorized)
@@ -48,12 +48,15 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 			controllers.JsoneResponse(w, messages.MessageError, http.StatusUnauthorized)
 			return
 		}
-		// info := info_user{
-		// 	id_user:  id_user,
-		// 	username: messages.Username,
-		// }
+
+		// type ContextKey string
+		// type id_use string
+		// const (
+		// 	IDUserKey ContextKey = "id_user"
+		// 	UUIDKey   ContextKey = "UUID"
+		// )
 		r = r.WithContext(context.WithValue(r.Context(), "id_user", id_user))
-		// r = r.WithContext(context.WithValue(r.Context(), "uuid", id_user))
+		// r = r.WithContext(context.WithValue(r.Context(), UUIDKey, cookies.Value))
 
 		if !time.Now().Before(expire) {
 			http.SetCookie(w, &http.Cookie{
@@ -68,4 +71,3 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 		}
 	})
 }
- 
