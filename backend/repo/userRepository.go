@@ -112,6 +112,7 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
     var expires sql.NullTime
     var id any
 
+<<<<<<< HEAD
 	err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
 	if err != nil {
 		fmt.Println(err, "in User Repo")
@@ -127,6 +128,23 @@ func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int
 		return false, time.Time{}, 0
 	}
 	return exists, expires.Time, int(id.(int64))
+=======
+    err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
+    if err != nil {
+        fmt.Println(err, "in User Repo")
+        return exists, time.Time{}, 0
+    }
+    if !expires.Valid {
+        return exists, time.Time{}, 0
+    }
+    if !time.Now().Before(expires.Time) {
+        return false, time.Time{}, 0
+    }
+    if id == nil {
+        return false, time.Time{}, 0
+    }
+    return exists, expires.Time, int(id.(int64))
+>>>>>>> ysnbhb
 }
 
 // CheckUser implements UserRepository.

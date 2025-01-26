@@ -40,6 +40,16 @@ export const throttle = (func, wait = 100) => {
   };
 };
 
+export function debounce(func, wait) {
+  let timer;
+  return function (...arg) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...arg);
+    }, wait);
+  };
+}
+
 export function Inf() {
   fetchData();
   let offset = 2;

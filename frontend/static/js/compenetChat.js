@@ -6,7 +6,7 @@ const cookies = document.cookie.split("token=")[1];
 let ws
 export function setupWs() {
 
-    ws = new WebSocket("ws://localhost:8080/ws");
+    ws = new WebSocket(`ws://${window.location.host}/ws`);
     ws.onopen = () => {
         console.log("is connected");
 
@@ -65,18 +65,22 @@ export function messages() {
             </div>
     `;
     const query = new URLSearchParams(window.location.search);
+    let sendButton=document.getElementById("sendButton")
+    let messageInput=document.getElementById("messageInput")
     if(query.get("receiver")){
         getMessage(query.get("receiver"))
+        sendButton.style.display="block"
+        messageInput.style.display="block"
+        sendMessage()
     }else{
-        let sendButton=document.getElementById("sendButton")
-        let messageInput=document.getElementById("messageInput")
+       
         let chat=document.querySelector(".chat")
         chat.className="chat welcome"
         chat.textContent="WELCOME TO CHAT"
         sendButton.style.display="none"
         messageInput.style.display="none"
     }
-    sendMessage()
+   
 }
 
 
@@ -198,7 +202,6 @@ function sendMessage() {
     const chat = document.querySelector(".content_post");
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
-
     sendButton.addEventListener("click", () => {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
@@ -215,7 +218,6 @@ function sendMessage() {
             );
 
         }
-
     });
 
 

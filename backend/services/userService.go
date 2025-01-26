@@ -97,6 +97,7 @@ func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, lo
 
 			err = u.userRepo.UpdateUUIDUser(ctx, uuids.String(), "online", user.Id, time)
 			if err != nil {
+				fmt.Println(err)
 				message.MessageError = "Error to Update"
 				fmt.Println("Error to Update")
 				return models.ResponceUser{}, message, uuid.UUID{}

@@ -78,6 +78,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname, coock.Value)
 
+	log.Println("User Count:", m.Count[client.id_user])
+
 	defer func() {
 		m.Count[client.id_user]--
 		if m.Count[client.id_user] == 0 {
@@ -89,6 +91,11 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	m.addClient(client)
+	m.Read(client)
+}
+
+func (m *Manager) Read(client *Client) {
+	// go client.WriteMess()
 	client.ReadMess(m)
 }
 
