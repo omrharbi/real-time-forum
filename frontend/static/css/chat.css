@@ -23,6 +23,7 @@
    color: black;
    font-size: 14px;
    font-weight: 600;
+   word-break: break-all;
  }
 
  .message-content::after {
@@ -232,7 +233,8 @@
 }
 
 #sendButton {
-    display: flex;
+  display: flex !important;
+  
     align-items: center;
     justify-content: center;
     width: 48px;
