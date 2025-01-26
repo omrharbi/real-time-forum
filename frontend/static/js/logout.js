@@ -14,8 +14,6 @@ export async function logout() {
         },
         body: JSON.stringify({ uuid: Useruuid }),
       });
-      history.pushState(null, "", "/login");
-      loadPage();
     });
   } else {
     console.error("Logout button not found");

@@ -94,7 +94,7 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
-	logout.Id = r.Context().Value("id_user").(int64)
+	logout.Id = r.Context().Value("id_user").(int)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
@@ -107,6 +107,9 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 	if message.MessageError != "" {
 		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
+	}
+	if client, ok := clientsList[logout.Id]; ok && client != nil {
+		client.connection.Close()
 	}
 	uc.ClearCookies(w)
 	w.WriteHeader(http.StatusOK)
@@ -149,7 +152,7 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	cookies, err := r.Cookie("token")
 	if err != nil {
 		JsoneResponse(w, err.Error(), http.StatusUnauthorized)
-		fmt.Println(err,"Error")
+		fmt.Println(err, "Error")
 		return
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
