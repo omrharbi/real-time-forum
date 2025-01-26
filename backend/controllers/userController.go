@@ -108,6 +108,9 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, message.MessageError, http.StatusBadRequest)
 		return
 	}
+	if client, ok := clientsList[logout.Id]; ok && client != nil {
+        client.connection.Close()
+    }
 	uc.ClearCookies(w)
 	w.WriteHeader(http.StatusOK)
 }

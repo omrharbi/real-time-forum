@@ -1,11 +1,11 @@
 import { getTimeDifferenceInHours } from "./card.js";
-
-const cookies = document.cookie.split("token=")[1];
+import { loadPage } from "./laodpages.js";
 
 
 let ws
 export function setupWs() {
-
+    console.log("from login");
+    
     ws = new WebSocket(`ws://${window.location.host}/ws`);
     ws.onopen = () => {
         console.log("is connected");
@@ -36,6 +36,8 @@ export function setupWs() {
     ws.onclose = () => {
         console.log("WebSocket connection closed.");
         //logMessage("WebSocket disconnected.");
+        history.pushState("", "", "/login")
+        loadPage()
     };
 
     ws.onerror = (error) => {
@@ -65,22 +67,21 @@ export function messages() {
             </div>
     `;
     const query = new URLSearchParams(window.location.search);
-    let sendButton=document.getElementById("sendButton")
-    let messageInput=document.getElementById("messageInput")
-    if(query.get("receiver")){
+    let sendButton = document.getElementById("sendButton")
+    let messageInput = document.getElementById("messageInput")
+    if (query.get("receiver")) {
         getMessage(query.get("receiver"))
-        sendButton.style.display="block"
-        messageInput.style.display="block"
+
         sendMessage()
-    }else{
-       
-        let chat=document.querySelector(".chat")
-        chat.className="chat welcome"
-        chat.textContent="WELCOME TO CHAT"
-        sendButton.style.display="none"
-        messageInput.style.display="none"
+    } else {
+
+        let chat = document.querySelector(".chat")
+        chat.className = "chat welcome"
+        chat.textContent = "WELCOME TO CHAT"
+        sendButton.style.display = "none"
+        messageInput.style.display = "none"
     }
-   
+
 }
 
 
@@ -125,13 +126,9 @@ function addUser(userId, userName, status) {
 }
 
 function updateUserList(message) {
-
     let id = document.getElementById(message.online_users)
-    let status = id.querySelector(".status")
-    console.log(message.type);
-
-
     if (id) {
+        let status = id.querySelector(".status")
         if (message.type === "online") {
             status.style.background = "green"
         } else {
@@ -151,14 +148,14 @@ function displayMessage(sender, createAt, content, isOwnMessage = false) {
 
     messageUser.className = "messages";
     message_content.className = "message-content"
-    parent.className="parent"
+    parent.className = "parent"
     message_content.textContent = `${sender} ${content}`;
     time.textContent = getTimeDifferenceInHours(createAt)
-    
+
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
         time.className = "time sander";
-        
+
     } else {
         messageUser.className = "messages resiver";
         time.className = "time resiver";
@@ -185,10 +182,10 @@ export function user_item() {
             history.pushState(null, "", url)
             let log = document.querySelector(".chat");
             if (log) {
-                
                 log.innerHTML = ""
             }
             getMessage(id)
+            sendMessage()
         })
 
     })
@@ -203,6 +200,8 @@ function sendMessage() {
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
     sendButton.addEventListener("click", () => {
+        console.log("send");
+        
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
@@ -224,6 +223,10 @@ function sendMessage() {
 }
 async function getMessage(receiver) {
     const storedData = localStorage.getItem("data");
+    let sendButton = document.getElementById("sendButton")
+    let messageInput = document.getElementById("messageInput")
+    sendButton.style.display = "block"
+    messageInput.style.display = "block"
     const parsedData = JSON.parse(storedData);
     const response = await fetch("/api/messages", {
         method: "POST",
@@ -237,17 +240,19 @@ async function getMessage(receiver) {
     })
     if (response) {
         let data = await response.json()
-        console.log(data);
-        let isOwen
-        data.forEach(d => {
-            if (parsedData.id === d.sender) {
-                isOwen = true
-            } else {
-                isOwen = false
-            }
-            
-            displayMessage(d.username, d.createAt, d.content, isOwen)
-        })
+        if (data) {
+
+            let isOwen
+            data.forEach(d => {
+                if (parsedData.id === d.sender) {
+                    isOwen = true
+                } else {
+                    isOwen = false
+                }
+
+                displayMessage(d.username, d.createAt, d.content, isOwen)
+            })
+        }
 
     } else {
         console.log("error");
