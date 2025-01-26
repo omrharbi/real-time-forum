@@ -48,10 +48,10 @@ window.addEventListener("popstate", (e) => {
     case "chat":
        checklogin();
       section.classList.remove("sectionLogin");
-      fetchConnectedUsers();
       leftside();
-       messages();
+      messages();
       user_item();
+      fetchConnectedUsers();
       addStyle();
       break;
     case "":

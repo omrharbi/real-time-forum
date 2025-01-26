@@ -1,4 +1,5 @@
 import { loadPage } from "./laodpages.js";
+import { getTimeDifferenceInHours } from "./card.js";
 
 const cookies = document.cookie.split("token=")[1];
 
@@ -59,8 +60,7 @@ export function messages() {
                         </ul>
                     </div>
                     <div class="message">
-                        <h1>User Online:</h1>
-                        <div class="chat"></div>
+                         <div class="chat"></div>
                             <div>
                                 <input type="text" id="messageInput" placeholder="Type your message here..." />
                                 <button id="sendButton">Send</button>
@@ -68,7 +68,21 @@ export function messages() {
                     </div>
             </div>
     `;
-  sendMessage();
+  const query = new URLSearchParams(window.location.search);
+  let sendButton = document.getElementById("sendButton");
+  let messageInput = document.getElementById("messageInput");
+  if (query.get("receiver")) {
+    getMessage(query.get("receiver"));
+    sendButton.style.display = "block";
+    messageInput.style.display = "block";
+    sendMessage();
+  } else {
+    let chat = document.querySelector(".chat");
+    chat.className = "chat welcome";
+    chat.textContent = "WELCOME TO CHAT";
+    sendButton.style.display = "none";
+    messageInput.style.display = "none";
+  }
 }
 
 export async function fetchConnectedUsers() {
@@ -127,24 +141,28 @@ function updateUserList(message) {
 
 function displayMessage(sender, createAt, content, isOwnMessage = false) {
   let log = document.querySelector(".chat");
+  const parent = document.createElement("div");
   const messageUser = document.createElement("div");
   const message_content = document.createElement("div");
   const time = document.createElement("div");
 
   messageUser.className = "messages";
   message_content.className = "message-content";
-  time.className = "time";
+  parent.className = "parent";
   message_content.textContent = `${sender} ${content}`;
-  time.textContent = createAt;
+  time.textContent = getTimeDifferenceInHours(createAt);
 
   if (isOwnMessage) {
     messageUser.classList = "messages sander";
+    time.className = "time sander";
   } else {
     messageUser.className = "messages resiver";
+    time.className = "time resiver";
   }
   messageUser.append(message_content, time);
-  log.appendChild(messageUser);
-  log.scrollTop = log.scrollHeight;
+  parent.appendChild(messageUser);
+  log.appendChild(parent);
+  //log.scrollTop = log.scrollHeight;
 }
 
 // function showTypingNotification(userId) {
@@ -161,6 +179,11 @@ export function user_item() {
       let id = clik.getAttribute("data-id");
       let url = `chat?receiver=${id}`;
       history.pushState(null, "", url);
+      let log = document.querySelector(".chat");
+      if (log) {
+        log.innerHTML = "";
+      }
+      getMessage(id);
     });
   });
 }
@@ -171,6 +194,22 @@ function sendMessage() {
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
+  sendButton.addEventListener("click", () => {
+    let receiver = new URLSearchParams(location.search).get("receiver");
+    const messages = message.value.trim();
+    if (messages) {
+      displayMessage("You", new Date(), messages, true);
+      ws.send(
+        JSON.stringify({
+          type: "broadcast",
+          content: messages,
+          sender: parsedData.id,
+          receiver: +receiver,
+          createAt: new Date(),
+        })
+      );
+    }
+  });
 
   sendButton.addEventListener("click", () => {
     let receiver = new URLSearchParams(location.search).get("receiver");
@@ -211,7 +250,7 @@ async function getMessage(receiver) {
       } else {
         isOwen = false;
       }
-      console.log(d.username, d.createAt, d.content);
+
       displayMessage(d.username, d.createAt, d.content, isOwen);
     });
   } else {
