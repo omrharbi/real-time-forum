@@ -62,8 +62,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("WebSocket upgrade error:", err)
 		return
 	}
-	defer conn.Close()
-
 	coock, err := r.Cookie("token")
 	if err != nil {
 		log.Println("Error retrieving cookie:", err)

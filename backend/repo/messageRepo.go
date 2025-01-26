@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"fmt"
 
 	"real-time-froum/messages"
 	"real-time-froum/models"
@@ -39,22 +40,24 @@ func (m *MessageRepositoryImpl) DeleteMessage() {
 
 // GetMeessage implements MessageRepository.
 func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int) (s []models.Messages, mss messages.Messages) {
-	qury := `SELECT sender, receiver ,content  FROM messages
+	qury := `SELECT m.sender, m.receiver ,m.content,m.created_at,u.firstname,u.username  FROM messages m 
+		LEFT JOIN user u on m.sender = u.id
 		WHERE
             (sender = $1 AND receiver = $2)
-            OR
+              OR
             (sender = $2 AND receiver = $1)
 
 		ORDER BY created_at ASC;`
 
 	row, err := m.db.Query(qury, senderID, receiverID)
 	if err != nil {
+		fmt.Println(err)
 		mss.MessageError = err.Error()
 		return []models.Messages{}, mss
 	}
 	for row.Next() {
 		message := models.Messages{}
-		row.Scan(&message.Sender, &message.Receiver, &message.Content)
+		row.Scan(&message.Sender, &message.Receiver, &message.Content,&message.CreateAt,  &message.Firstname, &message.Username)
 		s = append(s, message)
 
 	}

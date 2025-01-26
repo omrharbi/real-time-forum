@@ -3,6 +3,7 @@ import { cards } from "./card.js";
 // import { search } from "./search.js";
 
 import { alertPopup } from "./alert.js";
+import { loadPage } from "./laodpages.js";
 let content = [];
 export async function fetchData(page = 1) {
   const response = await fetch(`/api/home?page=${page}`, {
@@ -25,6 +26,9 @@ export async function fetchData(page = 1) {
   } else if (response.status === 400) {
     const data = await response.json();
     alertPopup(data);
+  }else if (response.status === 401) {
+    history.pushState(null, "", "/login");
+    //loadPage();
   }
 }
 // await fetchData();

@@ -35,7 +35,7 @@ func (p *postController) HandlePost(w http.ResponseWriter, r *http.Request) {
 		JsoneResponse(w, "Status Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	id_user := p.userController.GetUserId(r)
+	id_user := r.Context().Value("id_user").(int)
 	post := models.Post{}
 	decode := DecodeJson(r)
 	err := decode.Decode(&post)

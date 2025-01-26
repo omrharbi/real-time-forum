@@ -202,7 +202,6 @@ function sendMessage() {
     const chat = document.querySelector(".content_post");
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
-
     sendButton.addEventListener("click", () => {
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
@@ -219,7 +218,6 @@ function sendMessage() {
             );
 
         }
-
     });
 
 
