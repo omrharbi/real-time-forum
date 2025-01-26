@@ -56,8 +56,7 @@ export function messages() {
                         </ul>
                     </div>
                     <div class="message">
-                        <h1>User Online:</h1>
-                        <div class="chat"></div>
+                         <div class="chat"></div>
                             <div>
                                 <input type="text" id="messageInput" placeholder="Type your message here..." />
                                 <button id="sendButton">Send</button>
@@ -72,6 +71,7 @@ export function messages() {
         let sendButton=document.getElementById("sendButton")
         let messageInput=document.getElementById("messageInput")
         let chat=document.querySelector(".chat")
+        chat.className="welcome"
         chat.textContent="WELCOME TO CHAT"
         sendButton.style.display="none"
         messageInput.style.display="none"
