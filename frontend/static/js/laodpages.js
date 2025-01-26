@@ -4,19 +4,18 @@ import { checklogin, Inf } from "./checklogin.js";
 import { fetchCommat, GetComments } from "./comment.js";
 import {
   addStyle,
-  fetchConnectedUsers,
   messages,
   setupWs,
   user_item,
-} from "./compenetChat.js";
+} from "./chat/compenetChat.js";
 import { leftside } from "./component.js";
-// import { fetchData } from "./forum.js";
-import { login, register } from "./globa.js";
+ import { login, register } from "./globa.js";
 import { Login } from "./login.js";
 import { logout } from "./logout.js";
 import { classes } from "./popup.js";
 import { fetchData, Profile, profileInfo } from "./profile.js";
 import { Register } from "./register.js";
+import { fetchConnectedUsers } from "./chat/displyMessage.js";
 
 const section = document.querySelector("section");
 

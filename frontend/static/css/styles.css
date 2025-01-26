@@ -9,9 +9,9 @@
 }
 
 :root {
-  --color-light: #3f4f5f;
-  --color-mid: #2b3747;
-  --color-dark: #161e27;
+  --color-light: #dadada;
+  --color-mid: #FFFFFF;
+  --color-dark: #FFFFFF;
   --color-white: #fff;
   --color-background: #262b3c;
   --color-button-hover-text: #161e27;
@@ -1011,9 +1011,9 @@ button:hover {
     display: block;
   }
 
-  .aside-left nav {
+  /* .aside-left nav {
     width: max-content;
-  }
+  } */
 
   .logo-user {
     width: max-content;
@@ -1478,107 +1478,7 @@ user chat
    border-radius: 5px;
   transition: transform 0.3s ease, box-shadow 0.3s;
 } */
-.user-list {
-  transform: translateY(47px);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  background-color: #FFFFFF;
-}
-.user-online{
-  color: black;
-}
-.user-list li {
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-} 
-.user-item li:active {
-  transition: transform 0.3s ease, box-shadow 0.3s;
-  transform: translateY(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-.user-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  cursor: pointer;
-  padding: 18px;
-  /* #2C2948 */
-  border-bottom: 1px solid #eee;
-}
-
-.user-item:last-child {
-  border-bottom: none;
-}
-.user-name{
-  color:  #2C2948;
-}
-.user-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: #555;
-  margin-right: 10px;
-}
-
-
-.chat-message {
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.message {
-  font-size: 20px;
-  text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  width: 100%;
-   margin: 2px 13px 0 15px;
-}
-
-.users {
-   width: 43%;
-   margin: 5px 13px 8px 15px;
-    background: #F9F9F9;
-}
-
-.message {
-  display: flex;
-  flex-direction: column;
-  /* background: aqua; */
-  align-items: center;
-}
-.chat {
-  height: 84%;
-  width: 84%;
-  overflow-y: scroll;
-  flex-direction: column;
-  display: flex;
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  scrollbar-width: none; /* For Firefox */
-}
-.chat::-webkit-scrollbar{
-  display: none; 
-}
-input.input-chat {
-  border-radius: 5px;
-  height: 9%;
-  border: none;
-  margin: 0px 3px 0 3px;
-}
-
-
-.status {
-  margin-left: auto;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: red;
+ion-icon.md.hydrated {
+  color: #C0C7CD;
 }

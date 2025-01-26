@@ -1,151 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat UI</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Message Design</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 50px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
+    .chat-container {
+      width: 100%;
+      max-width: 400px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 16px;
+    }
 
-        .message {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
+    .message {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
 
-        .message img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
+    .message:last-child {
+      margin-bottom: 0;
+    }
 
-        .message-content {
-            background-color: #f1f1f1;
-            padding: 10px 15px;
-            border-radius: 10px;
-            position: relative;
-            max-width: 75%;
-        }
+    .user-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #007bff;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
 
-        .message-content::after {
-            content: "";
-            position: absolute;
-            top: 10px;
-        }
+    .message-content {
+      background: #f0f0f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: #333333;
+      font-size: 14px;
+      line-height: 1.4;
+      max-width: 70%;
+    }
 
-        .message.user .message-content {
-            background-color: #e6f7ff;
-            margin-left: auto;
-        }
+    .time {
+      font-size: 12px;
+      color: #888888;
+      margin-top: 4px;
+    }
 
-        .message.user .message-content::after {
-            right: -10px;
-            border-width: 10px 0 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent transparent #e6f7ff;
-        }
+    .message.received .message-content {
+      background: #e1f5fe;
+    }
 
-        .message.bot .message-content::after {
-            left: -10px;
-            border-width: 10px 10px 10px 0;
-            border-style: solid;
-            border-color: transparent #f1f1f1 transparent transparent;
-        }
+    .message.sent .message-content {
+      background: #d1ffd7;
+      align-self: flex-end;
+    }
 
-        .message .time {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
-        }
+    .message.sent {
+      flex-direction: row-reverse;
+    }
 
-        .file {
-            display: flex;
-            align-items: center;
-            background-color: #fefefe;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .file-icon {
-            background-color: #ff6347;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        .file a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-    </style>
+    .message.sent .user-icon {
+      margin-right: 0;
+      margin-left: 12px;
+    }
+  </style>
 </head>
 <body>
-
-<div class="chat-container">
-    <div class="message bot">
-        <img src="https://via.placeholder.com/40" alt="User">
-        <div>
-            <div class="message-content">
-                Your story continues on mobile: Build and edit decks. Give and receive feedback. Add content from any other app. 😊
-            </div>
-            <div class="time">3:15 PM</div>
-        </div>
+  <div class="chat-container">
+    <div class="message received">
+      <div class="user-icon">O</div>
+      <div>
+        <div class="message-content">Hello! How are you?</div>
+        <div class="time">25 minutes ago</div>
+      </div>
     </div>
-
-    <div class="message user">
-        <img src="https://via.placeholder.com/40" alt="User">
-        <div>
-            <div class="message-content">
-                I’ve always been on the fringe of people in the design community.
-            </div>
-            <div class="time">3:18 PM</div>
-        </div>
+    <div class="message sent">
+      <div class="user-icon">A</div>
+      <div>
+        <div class="message-content">I'm good, thank you! How about you?</div>
+        <div class="time">20 minutes ago</div>
+      </div>
     </div>
-
-    <div class="message bot">
-        <img src="https://via.placeholder.com/40" alt="User">
-        <div>
-            <div class="message-content">
-                Can you send the file of Losra United Group?
-            </div>
-            <div class="time">3:21 PM</div>
-        </div>
+    <div class="message received">
+      <div class="user-icon">O</div>
+      <div>
+        <div class="message-content">I'm doing well too. Thanks for asking!</div>
+        <div class="time">15 minutes ago</div>
+      </div>
     </div>
-
-    <div class="message user">
-        <img src="https://via.placeholder.com/40" alt="User">
-        <div>
-            <div class="message-content">
-                Yeah, sure. Here it is.
-                <div class="file">
-                    <div class="file-icon">AI</div>
-                    <a href="#">Losra United logo.AI</a>
-                </div>
-            </div>
-            <div class="time">3:25 PM</div>
-        </div>
-    </div>
-</div>
-
+  </div>
 </body>
 </html>
