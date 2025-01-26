@@ -71,7 +71,7 @@ export function messages() {
         let sendButton=document.getElementById("sendButton")
         let messageInput=document.getElementById("messageInput")
         let chat=document.querySelector(".chat")
-        chat.className="welcome"
+        chat.className="chat welcome"
         chat.textContent="WELCOME TO CHAT"
         sendButton.style.display="none"
         messageInput.style.display="none"
@@ -179,8 +179,11 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-             let log = document.querySelector(".chat");
-            log.innerHTML = ""
+            let log = document.querySelector(".chat");
+            if (log) {
+                
+                log.innerHTML = ""
+            }
             getMessage(id)
         })
 
