@@ -22,9 +22,9 @@ var websocketUpgrade = websocket.Upgrader{
 type Client struct {
 	connection *websocket.Conn
 	Manager    *Manager
-	egress     chan models.Messages
 	Name_user  string
 	id_user    int
+	uid        string
 }
 
 var clientsList = make(map[int]*Client)
@@ -37,13 +37,13 @@ type Manager struct {
 	Count    map[int]int
 }
 
-func NewClient(conn *websocket.Conn, man *Manager, id int, name string) *Client {
+func NewClient(conn *websocket.Conn, man *Manager, id int, name, uid string) *Client {
 	return &Client{
 		connection: conn,
 		Manager:    man,
-		egress:     make(chan models.Messages),
 		Name_user:  name,
 		id_user:    id,
+		uid:        uid,
 	}
 }
 
@@ -62,8 +62,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("WebSocket upgrade error:", err)
 		return
 	}
-	defer conn.Close()
-
 	coock, err := r.Cookie("token")
 	if err != nil {
 		log.Println("Error retrieving cookie:", err)
@@ -78,9 +76,7 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 
 	m.broadcastOnlineUserList("online", uuid.Iduser)
 
-	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname)
-
-	log.Println("User Count:", m.Count[client.id_user])
+	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname, coock.Value)
 
 	defer func() {
 		m.Count[client.id_user]--
@@ -93,11 +89,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	m.addClient(client)
-	m.Read(client)
-}
-
-func (m *Manager) Read(client *Client) {
-	// go client.WriteMess()
 	client.ReadMess(m)
 }
 
@@ -133,7 +124,8 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
-		m.Username = c.Name_user
+		m.Firstname = c.Name_user
+		m.Sender = c.id_user
 		c.Manager.Lock()
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
@@ -147,6 +139,9 @@ func (m *Manager) addClient(client *Client) {
 	defer m.Unlock()
 	m.Lock()
 	m.Count[client.id_user]++
+	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
+		clientData.connection.Close()
+	}
 	clientsList[client.id_user] = client
 }
 
