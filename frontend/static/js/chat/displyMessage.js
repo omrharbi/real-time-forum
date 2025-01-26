@@ -1,5 +1,5 @@
 import { getTimeDifferenceInHours } from "../card.js";
-import { user_item } from "./compenetChat.js";
+
 import { addUser } from "./create_user.js";
 
 export function displayMessage(sender, createAt, content, isOwnMessage = false) {
@@ -11,7 +11,7 @@ export function displayMessage(sender, createAt, content, isOwnMessage = false) 
     const time = document.createElement("div");
     const userIcon = document.createElement("div");
     const row = document.createElement("div");
-    
+
     messageUser.className = "messages";
     message_content.className = "message-content"
     parent.className = "parent"
@@ -24,7 +24,7 @@ export function displayMessage(sender, createAt, content, isOwnMessage = false) 
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
         time.className = "time sander";
-        row.className = "row sander" 
+        row.className = "row sander"
 
     } else {
         messageUser.className = "messages resiver";
@@ -32,7 +32,7 @@ export function displayMessage(sender, createAt, content, isOwnMessage = false) 
         row.className = "row resiver"
     }
     messageUser.append(message_content, time);
-    row.append( userIcon,messageUser)
+    row.append(userIcon, messageUser)
     parent.appendChild(row);
     log.appendChild(parent)
     //log.scrollTop = log.scrollHeight;
@@ -80,6 +80,7 @@ export async function getMessage(receiver) {
 
 
 export async function fetchConnectedUsers() {
+
     const response = await fetch("/api/connected");
     if (response.ok) {
         const userList = document.getElementById("userList");
@@ -89,8 +90,16 @@ export async function fetchConnectedUsers() {
             console.log(user);
             addUser(user.id, user.username, user.status)
         })
+        const query = new URLSearchParams(window.location.search);
+        let user_item = document.querySelectorAll(".user-item")
+        user_item.forEach((user) => {
+            let id = user.getAttribute("data-id")
+            if (id === query.get("receiver")) {
+                user.classList.add("user-clicked");
+            }
+            console.log();
 
-        user_item()
+        })
     } else {
         console.error("Failed to fetch connected users:", response.status);
     }

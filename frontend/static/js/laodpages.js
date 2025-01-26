@@ -6,8 +6,7 @@ import {
   addStyle,
   messages,
   setupWs,
-  user_item,
-} from "./chat/compenetChat.js";
+ } from "./chat/compenetChat.js";
 import { leftside } from "./component.js";
  import { login, register } from "./globa.js";
 import { Login } from "./login.js";
@@ -49,7 +48,6 @@ window.addEventListener("popstate", (e) => {
       section.classList.remove("sectionLogin");
       leftside();
       messages();
-      user_item();
       fetchConnectedUsers();
       addStyle();
       break;

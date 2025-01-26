@@ -1,5 +1,5 @@
 import { loadPage } from "../laodpages.js";
-import {  updateUserList } from "./create_user.js";
+import { updateUserList } from "./create_user.js";
 import { displayMessage, getMessage } from "./displyMessage.js";
 
 
@@ -59,9 +59,10 @@ export function messages() {
                     </div>
                     <div class="message">
                          <div class="chat"></div>
-                            <div>
+                            <div class="chat-input">
                                 <input type="text" id="messageInput" placeholder="Type your message here..." />
-                                <button id="sendButton">Send</button>
+                                
+                                <ion-icon id="sendButton" name="send"></ion-icon>
                             </div>
                     </div>
             </div>
@@ -70,11 +71,13 @@ export function messages() {
     let sendButton = document.getElementById("sendButton")
     let messageInput = document.getElementById("messageInput")
     if (query.get("receiver")) {
-        getMessage(query.get("receiver"))
 
+
+        //
+
+        getMessage(query.get("receiver"))
         sendMessage()
     } else {
-
         let chat = document.querySelector(".chat")
         chat.className = "chat welcome"
         chat.textContent = "WELCOME TO CHAT"
@@ -91,12 +94,11 @@ export function sendMessage() {
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
     sendButton.addEventListener("click", () => {
-        console.log("send");
 
         let receiver = new URLSearchParams(location.search).get("receiver")
         const messages = message.value.trim();
         if (messages) {
-            displayMessage("You", new Date(), messages, true);
+            displayMessage(parsedData.firstname, new Date(), messages, true);
             ws.send(
                 JSON.stringify({
                     type: "broadcast",
@@ -122,24 +124,6 @@ export function sendMessage() {
 //         logMessage("");
 //     }, 3000);
 // }
-
-export function user_item() {
-    let items = document.querySelectorAll(".user-item")
-    items.forEach((clik) => {
-        clik.addEventListener("click", async () => {
-            let id = clik.getAttribute("data-id")
-            let url = `chat?receiver=${id}`
-            history.pushState(null, "", url)
-            let log = document.querySelector(".chat");
-            if (log) {
-                log.innerHTML = ""
-            }
-            getMessage(id)
-            sendMessage()
-        })
-
-    })
-}
 
 export function addStyle() {
     let style = document.createElement("link")
