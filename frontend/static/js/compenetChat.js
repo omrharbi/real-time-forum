@@ -1,3 +1,4 @@
+import { getTimeDifferenceInHours } from "./card.js";
 
 const cookies = document.cookie.split("token=")[1];
 
@@ -5,7 +6,7 @@ const cookies = document.cookie.split("token=")[1];
 let ws
 export function setupWs() {
 
-    ws = new WebSocket("ws://localhost:8080/ws");
+    ws = new WebSocket(`ws://${window.location.host}/ws`);
     ws.onopen = () => {
         console.log("is connected");
 
@@ -55,8 +56,7 @@ export function messages() {
                         </ul>
                     </div>
                     <div class="message">
-                        <h1>User Online:</h1>
-                        <div class="chat"></div>
+                         <div class="chat"></div>
                             <div>
                                 <input type="text" id="messageInput" placeholder="Type your message here..." />
                                 <button id="sendButton">Send</button>
@@ -64,7 +64,23 @@ export function messages() {
                     </div>
             </div>
     `;
-    sendMessage()
+    const query = new URLSearchParams(window.location.search);
+    let sendButton=document.getElementById("sendButton")
+    let messageInput=document.getElementById("messageInput")
+    if(query.get("receiver")){
+        getMessage(query.get("receiver"))
+        sendButton.style.display="block"
+        messageInput.style.display="block"
+        sendMessage()
+    }else{
+       
+        let chat=document.querySelector(".chat")
+        chat.className="chat welcome"
+        chat.textContent="WELCOME TO CHAT"
+        sendButton.style.display="none"
+        messageInput.style.display="none"
+    }
+    
 }
 
 
@@ -80,8 +96,8 @@ export async function fetchConnectedUsers() {
         })
 
         user_item()
-    }else{
-    console.error("Failed to fetch connected users:", response.status);
+    } else {
+        console.error("Failed to fetch connected users:", response.status);
     }
 }
 function addUser(userId, userName, status) {
@@ -128,30 +144,29 @@ function updateUserList(message) {
 
 function displayMessage(sender, createAt, content, isOwnMessage = false) {
     let log = document.querySelector(".chat");
-
-    const messageUser = document.createElement("div");// 
+    const parent = document.createElement("div");
+    const messageUser = document.createElement("div");
     const message_content = document.createElement("div");
     const time = document.createElement("div");
 
     messageUser.className = "messages";
     message_content.className = "message-content"
-    time.className = "time";
-    message_content.textContent = `${content}`;
-
-    // time.textContent = createAt
-
+    parent.className="parent"
+    message_content.textContent = `${sender} ${content}`;
+    time.textContent = getTimeDifferenceInHours(createAt)
+    
     if (isOwnMessage) {
         messageUser.classList = "messages sander";
-        time.textContent = createAt
+        time.className = "time sander";
+        
     } else {
         messageUser.className = "messages resiver";
-        time.textContent = createAt
+        time.className = "time resiver";
     }
-    console.log(createAt);
-
     messageUser.append(message_content, time);
-    log.appendChild(messageUser);
-    log.scrollTop = log.scrollHeight;
+    parent.appendChild(messageUser);
+    log.appendChild(parent)
+    //log.scrollTop = log.scrollHeight;
 }
 
 // function showTypingNotification(userId) {
@@ -168,7 +183,12 @@ export function user_item() {
             let id = clik.getAttribute("data-id")
             let url = `chat?receiver=${id}`
             history.pushState(null, "", url)
-            await getMessage(id)
+            let log = document.querySelector(".chat");
+            if (log) {
+                
+                log.innerHTML = ""
+            }
+            getMessage(id)
         })
 
     })
@@ -179,12 +199,9 @@ export function user_item() {
 function sendMessage() {
     const storedData = localStorage.getItem("data");
     const parsedData = JSON.parse(storedData);
-
     const chat = document.querySelector(".content_post");
-
     let message = chat.querySelector("#messageInput");
     let sendButton = chat.querySelector("#sendButton");
-    console.log(sendButton);
 
     sendButton.addEventListener("click", () => {
         let receiver = new URLSearchParams(location.search).get("receiver")
@@ -202,16 +219,15 @@ function sendMessage() {
             );
 
         }
-        console.log(new Date());
 
     });
 
 
 }
 async function getMessage(receiver) {
-    console.log(+receiver);
-
-    const response =await fetch("/api/messages", {
+    const storedData = localStorage.getItem("data");
+    const parsedData = JSON.parse(storedData);
+    const response = await fetch("/api/messages", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -224,11 +240,22 @@ async function getMessage(receiver) {
     if (response) {
         let data = await response.json()
         console.log(data);
+        let isOwen
+        data.forEach(d => {
+            if (parsedData.id === d.sender) {
+                isOwen = true
+            } else {
+                isOwen = false
+            }
+            
+            displayMessage(d.username, d.createAt, d.content, isOwen)
+        })
 
     } else {
         console.log("error");
     }
 }
+
 
 
 
