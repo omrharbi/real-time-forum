@@ -1,36 +1,50 @@
 import { alertPopup } from "./alert.js";
 
 export function likes(likeElements) {
-  if (document.cookie != "") {
-    likeElements.forEach(async (click) => {
-      let card_id = click.getAttribute("data-id_card");
-      let like = click.getAttribute("data-like");
-      const response = await fetch("/api/likes", {
-        method: "POST",
-        body: JSON.stringify({ card_id: +card_id }),
-      });
-      if (response.ok) {
-        let data = await response.json();
-        console.log(data);
-        data.forEach((el) => {
-          let tokens = document.cookie.split("token=");
-          if (el.Uuid === tokens[1]) {
-            localStorage.setItem("user_login", el.User_id);
-            if (el.UserLiked && like === "like") {
-              click.classList.add("clicked");
-              click.setAttribute("data-liked", "true");
-            } else if (el.UserDisliked && like === "Dislikes") {
-              click.classList.add("clicked_disliked");
-              click.setAttribute("data-liked", "true");
-            }
-          }
-        });
-      } else if (!response.ok) {
-        await status(response);
-      }
+  // if (document.cookie != "") {
+  // console.log(likeElements);
+
+  likeElements.forEach(async (click) => {
+
+
+    let card_id = click.getAttribute("data-id_card");
+    let like = click.getAttribute("data-id_card");
+
+
+
+    const response = await fetch("/api/likescheked", {
+      method: "POST",
+      body: JSON.stringify({ card_id: +card_id }),
     });
-  }
+    if (response.ok) {
+      let data = await response.json();
+      data.forEach(d => {
+        // if (like === d.Uuid&& d.UserLiked) {
+        //   console.log(click,"is liked ");
+
+        // }
+        console.log(like, "uuid", d.Uuid, d.UserLiked);
+
+      })
+
+      // console.log(data);
+      // data.forEach((el) => {
+      //   let tokens = document.cookie.split("token=");
+      //   if (el.Uuid === tokens[1]) {
+      //     localStorage.setItem("user_login", el.User_id);
+      //     if (el.UserLiked && like === "like") {
+      //       click.classList.add("clicked");
+      //       click.setAttribute("data-liked", "true");
+      //     } else if (el.UserDisliked && like === "Dislikes") {
+      //       click.classList.add("clicked_disliked");
+      //       click.setAttribute("data-liked", "true");
+      //     }
+      //   }
+      // });
+    }
+  });
 }
+// }
 
 export async function addLikes(card_id, liked, lik, dislk, click) {
   try {
@@ -75,5 +89,5 @@ export async function deletLikes(card_id) {
         alertPopup(data);
       }
     }
-  } catch (error) {}
+  } catch (error) { }
 }

@@ -1,5 +1,5 @@
 import {  addLikes, deletLikes } from "./likescomment.js";
-import {  fetchCard } from "./createcomment.js";
+// import {  fetchCard } from "./createcomment.js";
 
 export function checkandAdd() {
     document.body.addEventListener("click", async (e) => {
