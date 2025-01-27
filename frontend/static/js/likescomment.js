@@ -1,52 +1,32 @@
 import { alertPopup } from "./alert.js";
 
 export function likes(likeElements) {
-  // if (document.cookie != "") {
-  // console.log(likeElements);
+  const storedData = localStorage.getItem("data");
+  const parsedData = JSON.parse(storedData);
 
   likeElements.forEach(async (click) => {
-
-
     let card_id = click.getAttribute("data-id_card");
-    let like = click.getAttribute("data-id_card");
-
-
-
+    let data_like = click.getAttribute("data-like");
     const response = await fetch("/api/likescheked", {
       method: "POST",
       body: JSON.stringify({ card_id: +card_id }),
     });
     if (response.ok) {
       let data = await response.json();
-      data.forEach(d => {
-        // if (like === d.Uuid&& d.UserLiked) {
-        //   console.log(click,"is liked ");
 
-        // }
-        console.log(like, "uuid", d.Uuid, d.UserLiked);
-
+       data.forEach(d => {
+        if (parsedData.id === d.Id_user && d.UserLiked && data_like === "like") {
+          click.classList.add("clicked");
+          return
+        } else if (parsedData.id === d.Id_user && d.UserDisliked && data_like === "Dislikes") {
+          click.classList.add("clicked_disliked");
+        }
       })
-
-      // console.log(data);
-      // data.forEach((el) => {
-      //   let tokens = document.cookie.split("token=");
-      //   if (el.Uuid === tokens[1]) {
-      //     localStorage.setItem("user_login", el.User_id);
-      //     if (el.UserLiked && like === "like") {
-      //       click.classList.add("clicked");
-      //       click.setAttribute("data-liked", "true");
-      //     } else if (el.UserDisliked && like === "Dislikes") {
-      //       click.classList.add("clicked_disliked");
-      //       click.setAttribute("data-liked", "true");
-      //     }
-      //   }
-      // });
     }
   });
-}
-// }
+} 
 
-export async function addLikes(card_id, liked, lik, dislk, click) {
+export async function addLikes(card_id, liked ) {
   try {
     if (document.cookie != "") {
       let response = await fetch("/api/like", {
@@ -57,14 +37,17 @@ export async function addLikes(card_id, liked, lik, dislk, click) {
         },
         body: JSON.stringify({
           is_liked: +liked,
-          card_id: +card_id,
-          UserLiked: lik,
-          Userdisliked: dislk,
+          card_id: +card_id 
         }),
       });
+      if(response.ok){
+        console.log("success", "You have successfully liked the card");  
+      }
       if (response.status === 400) {
         const data = await response.json();
-        alertPopup(data);
+        console.log(data);
+        
+       // alertPopup(data);
       }
     }
   } catch (error) {

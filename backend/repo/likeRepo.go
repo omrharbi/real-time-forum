@@ -39,7 +39,7 @@ func NewLikesRepository(db *sql.DB) LikesRepository {
 
 // GetuserLiked implements likesRepository. // mybe is no working
 func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds {
-	querylike := `SELECT l.is_like=1 , l.is_like=0 , u.UUID FROM likes l JOIN card c 
+	querylike := `SELECT l.is_like=1 , l.is_like=0 , u.UUID,u.id as user_id  FROM likes l JOIN card c 
     on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =? `
 
 	likesusers := []models.ResponseUserLikeds{}
@@ -49,7 +49,7 @@ func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []mo
 	}
 	for rows.Next() {
 		likes := models.ResponseUserLikeds{}
-		err := rows.Scan(&likes.UserLiked, &likes.UserDisliked, &likes.Uuid)
+		err := rows.Scan(&likes.UserLiked, &likes.UserDisliked, &likes.Uuid, &likes.Id_user)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -72,7 +72,7 @@ func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id
 	if l.LikeExists(ctx, user_id, card_id) {
 		l.DeletLike(ctx, user_id, card_id)
 	}
-	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,? );"
+	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,?);"
 	_, err := l.db.ExecContext(ctx, query, user_id, card_id, is_liked)
 	if err != nil {
 		fmt.Println(err.Error())
