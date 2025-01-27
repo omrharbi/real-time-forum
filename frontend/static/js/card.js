@@ -19,6 +19,8 @@ export function cards(data, user_info) {
 }
 
 export function createPos(ele) {
+  console.log(ele);
+  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -65,8 +67,8 @@ export function createPos(ele) {
         </div>
         `;
 
-  let allLikes = document.querySelectorAll("#likes")
-  likes(allLikes)
+  // let allLikes = document.querySelectorAll("#likes")
+  // likes(allLikes)
   contents.querySelector(".link").addEventListener("click", () => {
     handleCommentClick(ele.id);
   });

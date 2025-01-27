@@ -4,8 +4,6 @@ import { fetchupdateCard } from "./createcomment.js";
 export function likes(likeElements) {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
-
-
   likeElements.forEach(async (click) => {
     let card_id = click.getAttribute("data-id_card");
     let data_like = click.getAttribute("data-like");

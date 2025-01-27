@@ -1,9 +1,7 @@
 import {  addLikes, deletLikes } from "./likescomment.js";
 // import {  fetchCard } from "./createcomment.js";
 
-export function checkandAdd() {
-    console.log("test");
-    
+export function checkandAdd() {    
     document.body.addEventListener("click", async (e) => {
         const click = e.target.closest(".action");
         if (!click || !click.matches(".is_liked, .disliked")) return;  
