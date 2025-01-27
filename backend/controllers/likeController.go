@@ -44,7 +44,7 @@ func (l *likesController) HandleAddLike(w http.ResponseWriter, r *http.Request) 
 		json.NewEncoder(w).Encode("Status Method Not Allowed")
 		return
 	}
-	id_user := l.user.GetUserId(r)
+	id_user := r.Context().Value("id_user").(int)
 	like := models.Like{}
 	decode := DecodeJson(r)
 	err := decode.Decode(&like)
@@ -68,7 +68,7 @@ func (l *likesController) HandleDeletLike(w http.ResponseWriter, r *http.Request
 		return
 	}
 	like := models.DeletLikes{}
-	id_user := l.user.GetUserId(r)
+	id_user := r.Context().Value("id_user").(int)
 	decode := DecodeJson(r)
 	err := decode.Decode(&like)
 	if err != nil {

@@ -41,7 +41,6 @@ async function fetchCommat() {
     }
   }
 }
-// await fetchdata()
 async function GetComments() {
   const urlParams = new URLSearchParams(window.location.search);
   const cardData = urlParams.get("card_id");

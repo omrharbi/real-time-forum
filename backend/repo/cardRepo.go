@@ -66,7 +66,8 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 		return []models.Card_View{}, 0
 	}
 	defer data_Rows.Close()
-
+	userConnect := ctx.Value("id_user").(int)
+	fmt.Println(userConnect)
 	for data_Rows.Next() {
 		Row := models.Card_View{}
 		err := data_Rows.Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt,

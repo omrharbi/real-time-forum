@@ -3,6 +3,7 @@ import { likes } from "./likescomment.js";
 import { cards } from "./card.js";
 
 import { alertPopup } from "./alert.js";
+import { fetchupdateCard } from "./createcomment.js";
 // navigate();
 let content = [];
 export function Profile() {
@@ -50,9 +51,9 @@ export async function fetchData(id) {
     let data = await response.json();
     let user_info = document.querySelector(".profile");
     content = cards(data, user_info);
-
-    // let like = document.querySelectorAll("#likes");
-    // likes(like);
+    let like = document.querySelectorAll("#likes");
+    likes(like);
+    // fetchupdateCard()
   } else if (response.status === 409 || response.status === 400) {
     const data = await response.json();
     alertPopup(data);

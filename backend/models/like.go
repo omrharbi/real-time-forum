@@ -14,4 +14,5 @@ type ResponseUserLikeds struct {
 	UserLiked    bool
 	UserDisliked bool
 	Uuid         string
+	Id_user      int
 }
