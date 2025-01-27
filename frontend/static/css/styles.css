@@ -10,8 +10,8 @@
 
 :root {
   --color-light: #EDF0F6;
-  --color-mid: #FFFFFF;
-  --color-dark: #FFFFFF;
+  --color-mid: #f7fdfa;
+  --color-dark: #F7FBF9;
   --color-white: #fff;
   --color-background: #262b3c;
   --color-button-hover-text: #161e27;
@@ -49,10 +49,12 @@ body {
 .content_post {
   position: relative;
   overflow-y: scroll;
-  max-height: 87vh;
+  max-height: 86.5vh;
   scrollbar-width: none;
+  border-radius: 15px;
   /* border-bottom: 1px solid var(--color-light); */
   -ms-overflow-style: none;
+  margin: 10px;
 }
 
 .content_post::-webkit-scrollbar {
@@ -70,8 +72,8 @@ main {
   border: 2px solid var(--color-light);
   width: 100%;
   min-width: 600px;
-
-  border-radius: 47px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
 }
 
 aside {
@@ -526,8 +528,13 @@ button:hover {
 
 .post,
 .commentFromPost {
-  padding: 12px;
-  border-bottom: 1px solid var(--color-light);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eaeaea;
+  transition: box-shadow 0.2s ease;
+  margin:  0 0 10px 0;
 }
 
 .post-header {
@@ -540,7 +547,9 @@ button:hover {
   width: 48px;
   height: 48px;
   border-radius: 50%;
+  object-fit: cover;
   margin-right: 12px;
+  border: 2px solid #f0f0f0;
 }
 
 .user-info {
@@ -568,6 +577,7 @@ button:hover {
   overflow: hidden;
   word-wrap: break-word;
   white-space: normal;
+  color: #161e27;
   height: max-content;
 }
 
@@ -653,6 +663,7 @@ button:hover {
   color: rgb(0, 0, 0);                                                          
   text-decoration: none;
   font-size: 20px;
+  cursor: pointer;
   font-weight: 400;
   transition: background-color 0.2s;
 }

@@ -52,7 +52,7 @@ export function messages() {
       
             <div class="chat-message chat-container">
                     <div class="users">
-                        <h1 class="user-online">User Online:</h1>
+                        <h1 class="user-online">My Friends  </h1>
                         <ul class="user-list" id="userList">
                             <!-- User items will be added dynamically -->
                         </ul>
