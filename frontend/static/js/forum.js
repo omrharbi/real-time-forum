@@ -15,15 +15,14 @@ export async function fetchData(page = 1) {
       let data = await response.json();
       let user_info = document.querySelector(".main");
       content = cards(data.posts, user_info);
-      // console.log(data.posts);
-
+      
       let like = document.querySelectorAll("#likes");
       likes(like);
-      fetchupdateCard()
+      
     }
   } else if (response.status === 400) {
     const data = await response.json();
-    alertPopup(data);
+    // alertPopup(data);
   } else if (response.status === 401) {
     history.pushState(null, "", "/login");
     //loadPage();

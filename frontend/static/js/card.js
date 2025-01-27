@@ -11,6 +11,7 @@ export function cards(data, user_info) {
   }
   content = data.map((ele) => {
     let contents = createPos(ele);
+     
     user_info.append(contents);
     return { data: ele.content, element: contents };
   });

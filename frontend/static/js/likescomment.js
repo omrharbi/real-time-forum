@@ -1,8 +1,10 @@
 import { alertPopup } from "./alert.js";
+import { fetchupdateCard } from "./createcomment.js";
 
 export function likes(likeElements) {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
+
 
   likeElements.forEach(async (click) => {
     let card_id = click.getAttribute("data-id_card");
@@ -13,7 +15,6 @@ export function likes(likeElements) {
     });
     if (response.ok) {
       let data = await response.json();
-
        data.forEach(d => {
         if (parsedData.id === d.Id_user && d.UserLiked && data_like === "like") {
           click.classList.add("clicked");
@@ -24,6 +25,7 @@ export function likes(likeElements) {
       })
     }
   });
+   
 } 
 
 export async function addLikes(card_id, liked ) {
@@ -36,16 +38,16 @@ export async function addLikes(card_id, liked ) {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          is_liked: +liked,
-          card_id: +card_id 
+          card_id: +card_id, 
+          is_liked: +liked
         }),
       });
       if(response.ok){
-        console.log("success", "You have successfully liked the card");  
+        alertPopup("success", "You have successfully liked the card");  
       }
       if (response.status === 400) {
         const data = await response.json();
-        console.log(data);
+        console.log();
         
        // alertPopup(data);
       }
@@ -69,7 +71,7 @@ export async function deletLikes(card_id) {
 
       if (response.status === 400) {
         const data = await response.json();
-        alertPopup(data);
+        // alertPopup(data);
       }
     }
   } catch (error) { }

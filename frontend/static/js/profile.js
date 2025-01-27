@@ -53,7 +53,7 @@ export async function fetchData(id) {
     content = cards(data, user_info);
     let like = document.querySelectorAll("#likes");
     likes(like);
-    fetchupdateCard()
+    // fetchupdateCard()
   } else if (response.status === 409 || response.status === 400) {
     const data = await response.json();
     alertPopup(data);
