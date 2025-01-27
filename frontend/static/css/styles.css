@@ -1480,6 +1480,6 @@ user chat
   transition: transform 0.3s ease, box-shadow 0.3s;
 } */
 
-/* ion-icon.md.hydrated {
+ion-icon.md.hydrated {
   color: #C0C7CD;
-} */
+}
