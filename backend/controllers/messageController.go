@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 
@@ -67,7 +68,16 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error retrieving cookie:", err)
 		return
 	}
+	remoteAddr := r.RemoteAddr
 
+	// If you only want the IP (without the port)
+	// Use net.SplitHostPort to separate IP and port
+	host, _, err := net.SplitHostPort(remoteAddr)
+	if err != nil {
+		fmt.Fprintf(w, "Error getting remote address: %v", err)
+		return
+	}
+	fmt.Println("host",host)
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError, "jjj")
