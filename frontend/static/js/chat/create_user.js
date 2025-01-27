@@ -1,8 +1,8 @@
 import { sendMessage } from "./compenetChat.js";
-import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
+import { GetMessage } from "./displyMessage.js";
 
 export function addUser(userId, userName, status) {
-  const userList = document.getElementById("userList");
+  const userList = document.querySelector(".aside-right");
   const userItem = document.createElement("li");
   userItem.className = "user-item";
   userItem.id = userId;
@@ -34,7 +34,6 @@ export function addUser(userId, userName, status) {
   statusDot.style.background = status === "online" ? "green" : "red";
   return userItem;
 }
-
 
 export function updateUserList(message) {
   console.log(message);

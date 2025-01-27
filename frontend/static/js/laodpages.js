@@ -56,6 +56,7 @@ function loadPage() {
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       Inf();
       break;
@@ -63,6 +64,7 @@ function loadPage() {
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       fetchCommat();
       GetComments();
@@ -72,6 +74,7 @@ function loadPage() {
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       fetchData("posts");
       profileInfo();
@@ -81,11 +84,8 @@ function loadPage() {
       section.classList.remove("sectionLogin");
       leftside();
       classes();
+      fetchConnectedUsers();
       logout();
-      break;
-    case "about":
-      section.classList.remove("sectionLogin");
-      section.innerHTML = about;
       break;
     default:
       section.innerHTML = "<h1>Page Not Found</h1>";

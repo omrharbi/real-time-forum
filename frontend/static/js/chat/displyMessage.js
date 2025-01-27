@@ -119,9 +119,11 @@ export function GetMessage(receiver) {
 }
 
 export async function fetchConnectedUsers() {
+  console.log("user");
+
   const response = await fetch("/api/connected");
   if (response.ok) {
-    const userList = document.getElementById("userList");
+    const userList = document.querySelector(".aside-right");
     userList.innerHTML = "";
     const users = await response.json();
     users.forEach((user) => {
