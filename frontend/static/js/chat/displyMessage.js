@@ -68,8 +68,6 @@ export async function getMessage(receiver, offset = 0) {
     if (data) {
       let isOwen;
       if (!data) return;
-      console.log(data);
-
       data.forEach((d) => {
         if (parsedData.id === d.sender) {
           isOwen = true;
@@ -85,17 +83,25 @@ export async function getMessage(receiver, offset = 0) {
   }
 }
 
+let throttledScrollHandler = null;
+
 export function GetMessage(receiver) {
   getMessage(receiver);
+
   let offset = 1;
   const chat = document.querySelector(".chat");
-  chat.addEventListener(
-    "scroll",
-    throttle(() => {
+
+  if (throttledScrollHandler) {
+    chat.removeEventListener("scroll", throttledScrollHandler);
+  }
+  throttledScrollHandler = throttle(() => {
+    if (chat.scrollTop === 0) {
       getMessage(receiver, offset);
-      offset++;
-    })
-  );
+      offset += 30;
+      console.log(offset);
+    }
+  }, 200);
+  chat.addEventListener("scroll", throttledScrollHandler);
 }
 
 export async function fetchConnectedUsers() {

@@ -30,8 +30,6 @@ window.addEventListener("popstate", (e) => {
 
 function loadPage() {
   const path = window.location.pathname.slice(1);
-  console.log(path);
-
   switch (path) {
     case "login":
       // document.head.title = "login";
@@ -48,9 +46,9 @@ function loadPage() {
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       messages();
       // user_item();
-      fetchConnectedUsers();
       addStyle();
       break;
     case "":

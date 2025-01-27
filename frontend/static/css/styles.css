@@ -9,9 +9,15 @@
 }
 
 :root {
+<<<<<<< HEAD
   --color-light: #60b1e7;
   --color-mid: #569fcf;
   --color-dark: #61cfdd;
+=======
+  --color-light: #EDF0F6;
+  --color-mid: #FFFFFF;
+  --color-dark: #FFFFFF;
+>>>>>>> 41b187dfa7fd7e2ce2f3e83b873859186f7e2c73
   --color-white: #fff;
   --color-background: #262b3c;
   --color-button-hover-text: #161e27;
@@ -51,7 +57,7 @@ body {
   overflow-y: scroll;
   max-height: 87vh;
   scrollbar-width: none;
-  border-bottom: 1px solid var(--color-light);
+  /* border-bottom: 1px solid var(--color-light); */
   -ms-overflow-style: none;
 }
 
@@ -67,10 +73,11 @@ section {
 }
 
 main {
-  border-left: 1px solid var(--color-light);
-  border-right: 1px solid var(--color-light);
+  border: 2px solid var(--color-light);
   width: 100%;
   min-width: 600px;
+
+  border-radius: 47px;
 }
 
 aside {
@@ -516,7 +523,7 @@ button:hover {
 }
 
 .headMian {
-  border-bottom: 1px solid var(--color-light);
+  /* border-bottom: 1px solid var(--color-light); */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -645,11 +652,11 @@ button:hover {
 }
 
 .nav-item {
-  display: flex;
+  display: flex;                                                                                                                                                                                                                                                                                                
   align-items: center;
   padding: 12px 8px;
   border-radius: 7px;
-  color: white;
+  color: rgb(0, 0, 0);                                                          
   text-decoration: none;
   font-size: 20px;
   font-weight: 400;
@@ -1443,18 +1450,7 @@ button:hover {
     margin: 3px;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
+  
 /* usre is not login */
 
 .aside-nav {
