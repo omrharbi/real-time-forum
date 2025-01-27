@@ -1,7 +1,7 @@
 import { fetchData } from "./forum.js";
 import { loadPage } from "./laodpages.js";
 
-export function checklogin() {
+export async function checklogin() {
   fetch("/api/isLogged").then((res) => {
     if (!res.ok) {
       history.pushState(null, "", "/login");

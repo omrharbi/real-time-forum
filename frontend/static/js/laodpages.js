@@ -16,6 +16,7 @@ import { classes } from "./popup.js";
 import { fetchData, Profile, profileInfo } from "./profile.js";
 import { Register } from "./register.js";
 import { fetchConnectedUsers } from "./chat/displyMessage.js";
+import { pageNotFound, RetunHome } from "./error.js";
 
 const section = document.querySelector("section");
 
@@ -28,7 +29,7 @@ window.addEventListener("popstate", (e) => {
   loadPage();
 });
 
-function loadPage() {
+async function loadPage() {
   const path = window.location.pathname.slice(1);
   switch (path) {
     case "login":
@@ -45,7 +46,7 @@ function loadPage() {
       break;
     case "chat":
       document.head.querySelector("title").innerText = path;
-      checklogin();
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
@@ -55,7 +56,7 @@ function loadPage() {
     case "":
     case "home":
       document.head.querySelector("title").innerText = "home";
-      checklogin();
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
@@ -65,7 +66,7 @@ function loadPage() {
     case "comment":
       document.head.querySelector("title").innerText = path;
 
-      checklogin();
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
@@ -77,7 +78,7 @@ function loadPage() {
     case "profile":
       document.head.querySelector("title").innerText = path;
 
-      checklogin();
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
@@ -87,7 +88,7 @@ function loadPage() {
       break;
     case "settings":
       document.head.querySelector("title").innerText = path;
-      checklogin();
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       classes();
@@ -95,7 +96,9 @@ function loadPage() {
       logout();
       break;
     default:
-      section.innerHTML = "<h1>Page Not Found</h1>";
+      section.classList.add("sectionLogin");
+      section.innerHTML = pageNotFound;
+      RetunHome()
       break;
   }
 }
