@@ -59,15 +59,6 @@ function loadPage() {
       classes();
       Inf();
       break;
-    case "categories":
-      checklogin();
-      section.classList.remove("sectionLogin");
-      leftside();
-      ProfileNav();
-      classes();
-      Inf();
-
-      break;
     case "comment":
       checklogin();
       section.classList.remove("sectionLogin");
