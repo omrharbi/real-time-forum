@@ -1,19 +1,12 @@
 import { fetchData } from "./forum.js";
- import { loadPage } from "./laodpages.js";
+import { loadPage } from "./laodpages.js";
 
 export function checklogin() {
   fetch("/api/isLogged").then((res) => {
-    const path = window.location.pathname;
-    if (res.ok) {
-      if (path === "/login" || path === "/register") {
-        history.pushState(null, "", "/");
-        loadPage();
-      }
-    } else {
-      if (path !== "/login" && path !== "/register") {
-        history.pushState(null, "", "/login");
-        loadPage();
-      }
+    console.log(res);
+    if (!res.ok) {
+      history.pushState(null, "", "/login");
+      loadPage();
     }
   });
 }

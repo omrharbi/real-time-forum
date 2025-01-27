@@ -48,14 +48,12 @@ export function updateUserList(message) {
     }
   } else {
     const user = addUser(message.online_users, message.userName, message.type);
-    document.querySelector("#userList").append(user);
+    document.querySelector(".aside-right").append(user);
   }
 }
 
 export function SetUserUp(message) {
-  const userlist = document.querySelector("#userList");
-  console.log(message);
-
+  const userlist = document.querySelector(".aside-right");
   let useritem = document.getElementById(message.sender);
   if (useritem) {
     useritem.remove();

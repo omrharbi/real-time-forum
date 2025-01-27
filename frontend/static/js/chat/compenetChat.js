@@ -79,12 +79,6 @@ export function messages() {
   chat.innerHTML += /*html*/ `
       
             <div class="chat-message chat-container">
-                    <div class="users">
-                        <h1 class="user-online">My Friends  </h1>
-                        <ul class="user-list" id="userList">
-                            <!-- User items will be added dynamically -->
-                        </ul>
-                    </div>
                     <div class="message">
                          <div class="chat"></div>
                          <div class="chat-input"></div>
@@ -94,6 +88,8 @@ export function messages() {
   const query = new URLSearchParams(window.location.search);
   if (query.get("receiver")) {
     GetMessage(query.get("receiver"));
+    let chat = document.querySelector(".chat");
+    chat.scrollBy(0, chat.scrollHeight)
     sendMessage();
   } else {
     let chat = document.querySelector(".chat");

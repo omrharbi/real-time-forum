@@ -102,9 +102,15 @@ let throttledScrollHandler = null;
 export function GetMessage(receiver) {
   getMessage(receiver);
 
-  let offset = 30;
-  const chat = document.querySelector(".chat");
+  let chat = document.querySelector(".chat");
+  if (!chat) {
+    console.error("Chat element not found");
+    return;
+  }
+  chat.scrollTop = chat.scrollHeight;
+  console.log(chat.scrollTop, chat.scrollHeight);
 
+  let offset = 30;
   if (throttledScrollHandler) {
     chat.removeEventListener("scroll", throttledScrollHandler);
   }
@@ -112,15 +118,14 @@ export function GetMessage(receiver) {
     if (chat.scrollTop === 0) {
       getMessage(receiver, offset);
       offset += 30;
-      console.log(offset);
+      console.log("Offset updated:", offset);
     }
   }, 200);
+
   chat.addEventListener("scroll", throttledScrollHandler);
 }
 
 export async function fetchConnectedUsers() {
-  console.log("user");
-
   const response = await fetch("/api/connected");
   if (response.ok) {
     const userList = document.querySelector(".aside-right");
