@@ -40,7 +40,6 @@ func (uc *UserController) HandleRegister(w http.ResponseWriter, r *http.Request)
 
 	ctx, cancel := context.WithTimeout(uc.ctx, 2*time.Second)
 	defer cancel()
-	fmt.Println(user)
 	timeex := time.Now().Add(5 * time.Hour).UTC()
 	userRegiseter, message, uuid := uc.userService.Register(ctx, timeex, &user)
 	fmt.Println(message.MessageError)
@@ -153,7 +152,6 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	cookies, err := r.Cookie("token")
 	if err != nil {
 		JsoneResponse(w, err.Error(), http.StatusUnauthorized)
-		fmt.Println(err, "Error")
 		return
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
