@@ -21,7 +21,8 @@ async function creatPost(categoriesSelected) {
     const data = await response.json();
     const post = createPos(data.message);
     console.log(post.message);
-    document.querySelector("article").prepend(post);
+    if (window.location.pathname === "/home")
+      document.querySelector("article").prepend(post);
     console.log("Success:", data);
   } else if (response.status === 400) {
     const data = await response.json();

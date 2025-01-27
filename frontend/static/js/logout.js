@@ -12,7 +12,6 @@ export async function logout() {
         },
         body: JSON.stringify({ uuid: Useruuid }),
       });
-       
     });
   } else {
     console.error("Logout button not found");

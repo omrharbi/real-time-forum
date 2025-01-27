@@ -12,8 +12,8 @@ function navigate(id) {
       for (let idl of ids) {
         document.getElementById(idl).classList.remove("active");
       }
-      history.pushState(null, "", `/${id}`);
       div.classList.add("active");
+      history.pushState(null, "", `/${id}`);
       loadPage();
     } else {
       e.preventDefault();

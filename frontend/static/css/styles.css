@@ -201,12 +201,12 @@ button:hover {
   accent-color: var(--color-action-hover);
 }
 
-.link-list a {
+.link-list span {
   text-decoration: none;
   color: var(--color-action-hover);
 }
 
-.link-list a:hover {
+.link-list span:hover {
   color: var(--color-logo);
 }
 

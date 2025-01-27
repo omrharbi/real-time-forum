@@ -11,8 +11,10 @@ type Messages struct {
 }
 type Resiver struct {
 	Receiver int `json:"receiver"`
+	Offste int `json:"offset"`
 }
 type OnlineUser struct {
 	Type        string `json:"type"`
 	OnlineUsers int    `json:"online_users"`
+	UserName    string `json:"userName"`
 }

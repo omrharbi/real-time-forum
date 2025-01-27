@@ -70,6 +70,7 @@ export function createPos(ele) {
   contents.querySelector(".link").addEventListener("click", () => {
     handleCommentClick(ele.id);
   });
+  contents.querySelector(".is_liked");
   return contents;
 }
 

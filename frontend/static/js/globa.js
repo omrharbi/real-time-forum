@@ -196,4 +196,40 @@ const setting = /*html*/ `
         <h1 id="logout" >Sign out</h1>
       </div>
 `;
+
+export const about = /*html*/ `
+  <div class="about-container">
+      <h2 class="about-title">About Us</h2>
+      <p class="about-subtitle">
+        A web forum project created by students at 01.edu
+      </p>
+
+      <div class="about-content">
+        <div class="about-card">
+          <h3>Our Project</h3>
+          <p>
+            We created this forum as part of our learning journey at 01.edu. Our
+            goal was to build a platform where users can communicate, share
+            ideas, and engage with each other through posts and comments.
+          </p>
+        </div>
+
+        <div class="team-grid">
+          <div class="team-member">
+            <span class="member-icon"><ion-icon name="person"></ion-icon></span>
+            <h3>Omar Rharbi</h3>
+            <p>
+              Led the development of core functionality and database integration
+            </p>
+          </div>
+
+          <div class="team-member">
+            <span class="member-icon"><ion-icon name="person"></ion-icon></span>
+            <h3>Yassine Bahbib</h3>
+            <p>Just for Logic</p>
+          </div>
+        </div>
+      </div>
+    </div>
+`;
 export { register, login, comments, profile, setting };

@@ -74,11 +74,8 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m.broadcastOnlineUserList("online", uuid.Iduser)
-
 	client := NewClient(conn, m, uuid.Iduser, uuid.Nickname, coock.Value)
-
-	log.Println("User Count:", m.Count[client.id_user])
+	m.broadcastOnlineUserList("online", client)
 
 	defer func() {
 		m.Count[client.id_user]--
@@ -86,16 +83,11 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 			if clientData, ok := clientsList[client.id_user]; ok && clientData != nil {
 				clientData.connection.Close()
 				delete(clientsList, client.id_user)
-				m.broadcastOnlineUserList("offline", client.id_user)
+				m.broadcastOnlineUserList("offline", client)
 			}
 		}
 	}()
 	m.addClient(client)
-	m.Read(client)
-}
-
-func (m *Manager) Read(client *Client) {
-	// go client.WriteMess()
 	client.ReadMess(m)
 }
 
@@ -113,7 +105,7 @@ func (m *Manager) HandleGetMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	Sender := r.Context().Value("id_user").(int)
-	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver)
+	mes, mesErr := m.MessageS.GetMessages(Sender, u_ms.Receiver, u_ms.Offste)
 	if mesErr.MessageError != "" {
 		JsoneResponse(w, mesErr.MessageError, http.StatusNotFound)
 		return
@@ -131,13 +123,17 @@ func (c *Client) ReadMess(mg *Manager) {
 			}
 			break
 		}
-		m.Firstname = c.Name_user
+		m.Username = c.Name_user
+		m.Sender = c.id_user
+		// m.Firstname = c.Name_user
 		m.Sender = c.id_user
 		c.Manager.Lock()
+		Seen := 0
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
+			Seen = 1
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
+		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
 		c.Manager.Unlock()
 	}
 }
@@ -149,16 +145,20 @@ func (m *Manager) addClient(client *Client) {
 	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
 		clientData.connection.Close()
 	}
+	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
+		clientData.connection.Close()
+	}
 	clientsList[client.id_user] = client
 }
 
-func (mu *Manager) broadcastOnlineUserList(typ string, id_user int) {
+func (mu *Manager) broadcastOnlineUserList(typ string, clien *Client) {
 	mu.Lock()
 	defer mu.Unlock()
 
 	message := models.OnlineUser{
 		Type:        typ,
-		OnlineUsers: id_user,
+		OnlineUsers: clien.id_user,
+		UserName:    clien.Name_user,
 	}
 	for _, connection := range clientsList {
 		connection.connection.WriteJSON(&message)

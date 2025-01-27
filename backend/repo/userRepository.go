@@ -35,28 +35,58 @@ func NewUserRepository(db *sql.DB) UserRepository {
 
 // UserConnect implements UserRepository.
 func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
-	query := `SELECT 
-            id,
+	query := `WITH last_messages AS (
+            SELECT
+                u.id AS user_id,
+                u.firstname,
+                u.lastname,
+                u.username,
+                u.age,
+                u.gender,
+				u.status,
+                u.CreateAt as user_created_at,
+				m.seen ,
+                COALESCE(m.content, "") as last_message_content,
+                COALESCE(m.sender, 0) as last_message_sender,
+                COALESCE(strftime('%Y-%m-%dT%H:%M:%SZ', m.created_at), "") AS sort_time
+            FROM
+                user u
+            LEFT JOIN messages m
+                ON m.id = (
+                    SELECT id
+                    FROM messages
+                    WHERE ((sender = u.id AND receiver = $1 ) OR (sender = $1 AND receiver= u.id))
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                )
+            WHERE
+                u.id != $1
+        )
+        SELECT
+            user_id AS id,
             username,
             firstname,
             lastname,
-            status
-        FROM user
-		WHERE id!=?
-        ORDER BY 
-            CASE 
-                WHEN status = 'online' THEN 1
-                ELSE 2
+            status, 
+			1 AS seen
+        FROM
+            last_messages
+        ORDER BY
+            CASE
+                WHEN sort_time = "" THEN 1 
+                ELSE 0
             END,
-            username ASC`
+            sort_time DESC,
+            username ASC; `
 	rows, err := u.db.Query(query, user)
+	us := []models.UUID{}
 	if err != nil {
 		fmt.Println(err)
+		return us
 	}
-	us := []models.UUID{}
 	for rows.Next() {
 		ussr := models.UUID{}
-		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status)
+		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status, &ussr.Seen)
 		us = append(us, ussr)
 	}
 	if err != nil {
@@ -104,29 +134,29 @@ func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) 
 
 // CheckAuthenticat implements UserRepository.
 func (u *userRepositoryImpl) CheckAuthenticat(uuid string) (bool, time.Time, int) {
-    stm := `SELECT 
+	stm := `SELECT 
             EXISTS (SELECT 1 FROM user WHERE UUID = ?),
             (SELECT expires  FROM user WHERE UUID = ? ) AS expires,
             (SELECT id  FROM user WHERE UUID = ? ) AS id_user; `
-    var exists bool
-    var expires sql.NullTime
-    var id any
+	var exists bool
+	var expires sql.NullTime
+	var id any
 
-    err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
-    if err != nil {
-        fmt.Println(err, "in User Repo")
-        return exists, time.Time{}, 0
-    }
-    if !expires.Valid {
-        return exists, time.Time{}, 0
-    }
-    if !time.Now().Before(expires.Time) {
-        return false, time.Time{}, 0
-    }
-    if id == nil {
-        return false, time.Time{}, 0
-    }
-    return exists, expires.Time, int(id.(int64))
+	err := u.db.QueryRow(stm, uuid, uuid, uuid).Scan(&exists, &expires, &id)
+	if err != nil {
+		fmt.Println(err, "in User Repo")
+		return exists, time.Time{}, 0
+	}
+	if !expires.Valid {
+		return exists, time.Time{}, 0
+	}
+	if !time.Now().Before(expires.Time) {
+		return false, time.Time{}, 0
+	}
+	if id == nil {
+		return false, time.Time{}, 0
+	}
+	return exists, expires.Time, int(id.(int64))
 }
 
 // CheckUser implements UserRepository.
