@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 
 	"real-time-froum/messages"
 	"real-time-froum/models"
@@ -13,7 +12,7 @@ import (
 type LikesRepository interface {
 	InserLike(ctx context.Context, user_id, card_id int, is_liked bool) (m messages.Messages)
 	GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds
-	GetLikes(ctx context.Context, card_id int) int
+	// GetLikes(ctx context.Context, card_id int) int
 	DeletLike(ctx context.Context, user_id, card_id int)
 	LikeExists(ctx context.Context, user_id, card_id int) bool
 }
@@ -26,17 +25,17 @@ func NewLikesRepository(db *sql.DB) LikesRepository {
 	return &likeRepositoryImpl{db: db}
 }
 
-// GetLikes implements likesRepository.
-func (l *likeRepositoryImpl) GetLikes(ctx context.Context, card_id int) int {
-	querylike := `SELECT  l.user_id FROM   card  c   JOIN  likes l WHERE   (l.is_like = 1 or l.is_like = 0 ) AND c.id = ? ` + strconv.Itoa(card_id)
-	userliked := 0
-	err := l.db.QueryRowContext(ctx, querylike).Scan(&userliked)
-	if err != nil {
-		fmt.Println(err)
-	}
+// // GetLikes implements likesRepository.
+// func (l *likeRepositoryImpl) GetLikes(ctx context.Context, card_id int) int {
+// 	querylike := `SELECT  l.user_id FROM   card  c   JOIN  likes l WHERE   (l.is_like = 1 or l.is_like = 0 ) AND c.id = ? ` + strconv.Itoa(card_id)
+// 	userliked := 0
+// 	err := l.db.QueryRowContext(ctx, querylike).Scan(&userliked)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	return userliked
-}
+// 	return userliked
+// }
 
 // GetuserLiked implements likesRepository. // mybe is no working
 func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds {
@@ -71,12 +70,7 @@ func (l *likeRepositoryImpl) DeletLike(ctx context.Context, user_id int, card_id
 // inserLike implements likesRepository.
 func (l *likeRepositoryImpl) InserLike(ctx context.Context, user_id int, card_id int, is_liked bool) (m messages.Messages) {
 	if l.LikeExists(ctx, user_id, card_id) {
-		query := `DELETE FROM likes WHERE user_id = ? AND card_id = ?`
-		_, err := l.db.ExecContext(ctx, query, user_id, card_id)
-		if err != nil {
-			fmt.Println(err.Error())
-			return
-		}
+		l.DeletLike(ctx, user_id, card_id)
 	}
 	query := "INSERT INTO likes(user_id, card_id, is_like) VALUES(?,?,? );"
 	_, err := l.db.ExecContext(ctx, query, user_id, card_id, is_liked)
