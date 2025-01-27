@@ -1,3 +1,4 @@
+import { loadPage } from "../laodpages.js";
 import { sendMessage } from "./compenetChat.js";
 import { GetMessage } from "./displyMessage.js";
 
@@ -28,8 +29,7 @@ export function addUser(userId, userName, status) {
     if (log) {
       log.innerHTML = "";
     }
-    GetMessage(userId);
-    sendMessage();
+    loadPage()
   });
   statusDot.style.background = status === "online" ? "green" : "red";
   return userItem;
