@@ -20,7 +20,7 @@ const main = /*html*/ `
       <aside class="aside-right">
         <input class="search" type="text" placeholder="Search.." data-search />
         <div class="link-list">
-          <a href="/about">about</a>
+          <span>about</span>
         </div>
       </aside>`;
 const nav_item = [
@@ -70,7 +70,7 @@ function rightSide() {
                 </nav> 
             </div>
             <div class="link-list">
-                <span >about</span>
+                <span>about</span>
             </div>
   `;
   const nav = aside.querySelector("nav");
