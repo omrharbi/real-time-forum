@@ -32,27 +32,29 @@ function loadPage() {
   const path = window.location.pathname.slice(1);
   switch (path) {
     case "login":
-      // document.head.title = "login";
+      document.head.querySelector("title").innerText = path;
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
       break;
     case "register":
+      document.head.querySelector("title").innerText = path;
       section.classList.add("sectionLogin");
       section.innerHTML = register;
       Register();
       break;
     case "chat":
+      document.head.querySelector("title").innerText = path;
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
       messages();
-      // user_item();
       addStyle();
       break;
     case "":
     case "home":
+      document.head.querySelector("title").innerText = "home";
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
@@ -61,6 +63,8 @@ function loadPage() {
       Inf();
       break;
     case "comment":
+      document.head.querySelector("title").innerText = path;
+
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
@@ -71,6 +75,8 @@ function loadPage() {
       // Inf();
       break;
     case "profile":
+      document.head.querySelector("title").innerText = path;
+
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();
@@ -80,6 +86,7 @@ function loadPage() {
       profileInfo();
       break;
     case "settings":
+      document.head.querySelector("title").innerText = path;
       checklogin();
       section.classList.remove("sectionLogin");
       leftside();

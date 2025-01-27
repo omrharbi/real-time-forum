@@ -53,6 +53,7 @@ export function displayMessage(
   //log.scrollTop = log.scrollHeight;
 }
 
+
 export async function getMessage(receiver, offset = 0) {
   const log = document.querySelector(".chat-input");
   log.innerHTML = chat;
@@ -99,8 +100,8 @@ export async function getMessage(receiver, offset = 0) {
 
 let throttledScrollHandler = null;
 
-export function GetMessage(receiver) {
-  getMessage(receiver);
+export async function GetMessage(receiver) {
+ await getMessage(receiver);
 
   let chat = document.querySelector(".chat");
   if (!chat) {
@@ -118,7 +119,6 @@ export function GetMessage(receiver) {
     if (chat.scrollTop === 0) {
       getMessage(receiver, offset);
       offset += 30;
-      console.log("Offset updated:", offset);
     }
   }, 200);
 
@@ -132,7 +132,6 @@ export async function fetchConnectedUsers() {
     userList.innerHTML = "";
     const users = await response.json();
     users.forEach((user) => {
-      console.log(user);
       addUser(user.id, user.username, user.status);
     });
   } else {

@@ -36,8 +36,6 @@ export function addUser(userId, userName, status) {
 }
 
 export function updateUserList(message) {
-  console.log(message);
-
   let id = document.getElementById(message.online_users);
   if (id) {
     let status = id.querySelector(".status");

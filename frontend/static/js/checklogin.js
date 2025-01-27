@@ -3,7 +3,6 @@ import { loadPage } from "./laodpages.js";
 
 export function checklogin() {
   fetch("/api/isLogged").then((res) => {
-    console.log(res);
     if (!res.ok) {
       history.pushState(null, "", "/login");
       loadPage();
