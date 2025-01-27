@@ -1,6 +1,7 @@
 import { Inf } from "./checklogin.js";
 import { comments, profile, setting } from "./globa.js";
 import { Change } from "./home.js";
+import { loadPage } from "./laodpages.js";
 import { Profile } from "./profile.js";
 
 const section = document.querySelector("section");
@@ -69,7 +70,7 @@ function rightSide() {
                 </nav> 
             </div>
             <div class="link-list">
-                <a href="/about">about</a>·<a href="/contact">contact</a>
+                <span >about</span>
             </div>
   `;
   const nav = aside.querySelector("nav");
@@ -144,6 +145,13 @@ function leftside() {
     const main = document.querySelector("main");
     main.innerHTML = setting;
   }
+  const link = document.querySelector(".link-list span");
+  if (link) {
+    link.addEventListener("click", () => {
+      history.pushState(null, "", "/about");
+      loadPage();
+    });
+  }
 }
 
 function SetPro() {
@@ -171,9 +179,9 @@ function SetIcon(nav) {
     // a.href = "#";
     a.id = obj.id;
     a.className = "nav-item";
-    // console.log(window.location.pathname.slice(1), obj.id);
-
-    if ("home" == obj.id) {
+    if (window.location.pathname.slice(1) === obj.id) {
+      a.classList.add("active");
+    } else if (obj.id === "home" && window.location.pathname.slice(1) == "") {
       a.classList.add("active");
     }
     a.innerHTML = /*html*/ `

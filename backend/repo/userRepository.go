@@ -45,6 +45,7 @@ func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
                 u.gender,
 				u.status,
                 u.CreateAt as user_created_at,
+				m.seen ,
                 COALESCE(m.content, "") as last_message_content,
                 COALESCE(m.sender, 0) as last_message_sender,
                 COALESCE(strftime('%Y-%m-%dT%H:%M:%SZ', m.created_at), "") AS sort_time
@@ -66,7 +67,8 @@ func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
             username,
             firstname,
             lastname,
-            status
+            status, 
+			1 AS seen
         FROM
             last_messages
         ORDER BY
@@ -84,7 +86,7 @@ func (u *userRepositoryImpl) UserConnect(user int) []models.UUID {
 	}
 	for rows.Next() {
 		ussr := models.UUID{}
-		err = rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname ,  &ussr.Status)
+		rows.Scan(&ussr.Iduser, &ussr.Nickname, &ussr.Firstname, &ussr.Lastname, &ussr.Status, &ussr.Seen)
 		us = append(us, ussr)
 	}
 	if err != nil {

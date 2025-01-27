@@ -9,15 +9,9 @@
 }
 
 :root {
-<<<<<<< HEAD
-  --color-light: #60b1e7;
-  --color-mid: #569fcf;
-  --color-dark: #61cfdd;
-=======
   --color-light: #EDF0F6;
   --color-mid: #FFFFFF;
   --color-dark: #FFFFFF;
->>>>>>> 41b187dfa7fd7e2ce2f3e83b873859186f7e2c73
   --color-white: #fff;
   --color-background: #262b3c;
   --color-button-hover-text: #161e27;
@@ -205,12 +199,12 @@ button:hover {
   accent-color: var(--color-action-hover);
 }
 
-.link-list a {
+.link-list span {
   text-decoration: none;
   color: var(--color-action-hover);
 }
 
-.link-list a:hover {
+.link-list span:hover {
   color: var(--color-logo);
 }
 

@@ -8,7 +8,8 @@ export function displayMessage(
   sender,
   createAt,
   content,
-  isOwnMessage = false
+  isOwnMessage = false,
+  fetched
 ) {
   let log = document.querySelector(".chat");
   const parent = document.createElement("div");
@@ -37,10 +38,18 @@ export function displayMessage(
     row.className = "row resiver";
   }
   messageUser.append(message_content, time);
+  console.log(fetched);
   row.append(userIcon, messageUser);
-  parent.appendChild(row);
-  log.appendChild(parent);
-  log.scrollBy(0, log.scrollHeight);
+
+  parent.prepend(row);
+  if (!fetched) {
+    log.appendChild(parent);
+  } else {
+    log.prepend(parent);
+  }
+  if (!fetched) {
+    log.scrollBy(0, log.scrollHeight);
+  }
   //log.scrollTop = log.scrollHeight;
 }
 
@@ -68,15 +77,20 @@ export async function getMessage(receiver, offset = 0) {
     if (data) {
       let isOwen;
       if (!data) return;
-      data.forEach((d) => {
-        if (parsedData.id === d.sender) {
+      for (let i = 0; i < data.length; i++) {
+        if (parsedData.id === data[i].sender) {
           isOwen = true;
         } else {
           isOwen = false;
         }
-
-        displayMessage(d.username, d.createAt, d.content, isOwen);
-      });
+        displayMessage(
+          data[i].username,
+          data[i].createAt,
+          data[i].content,
+          isOwen,
+          true
+        );
+      }
     }
   } else {
     console.log("error");
@@ -88,7 +102,7 @@ let throttledScrollHandler = null;
 export function GetMessage(receiver) {
   getMessage(receiver);
 
-  let offset = 1;
+  let offset = 30;
   const chat = document.querySelector(".chat");
 
   if (throttledScrollHandler) {

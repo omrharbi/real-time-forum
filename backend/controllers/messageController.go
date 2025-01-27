@@ -128,10 +128,12 @@ func (c *Client) ReadMess(mg *Manager) {
 		// m.Firstname = c.Name_user
 		m.Sender = c.id_user
 		c.Manager.Lock()
+		Seen := 0
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
+			Seen = 1
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt)
+		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
 		c.Manager.Unlock()
 	}
 }
