@@ -29,7 +29,7 @@ func main() {
 	SetupPageRoutes(mux)
 	SetupAPIRoutes(mux, ctx)
 
-	serverAddr := ":8080"
+	serverAddr := ":8081"
 	log.Printf("Server running at http://localhost%s/home\n", serverAddr)
 	err = http.ListenAndServe(serverAddr, mux)
 	if err != nil {
