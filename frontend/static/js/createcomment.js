@@ -1,7 +1,7 @@
 import { addLikes, deletLikes, likes } from "./likescomment.js";
-import { checkandAdd } from "./addlikes.js";
+// import { checkandAdd } from "./addlikes.js";
 import { GetComments } from "./comment.js";
-import { alertPopup } from "./alert.js";
+// import { alertPopup } from "./alert.js";
 import { getTimeDifferenceInHours, handleCommentClick } from "./card.js";
 const urlParams = new URLSearchParams(window.location.search);
 const pathname = location.pathname;
@@ -91,14 +91,13 @@ export function fetchupdateCard() {
           let data_like = click.getAttribute("data-like");
           let is_liked = click.querySelector("#is_liked")
           if (click.classList.contains("is_liked")) {
-            console.log(is_liked);
-
+            addLikes(cardData.id, 1)
           }
           console.log(cardData.id);
-           await  addLikes(cardData.id,1)
+          // await  addLikes(cardData.id,1)
           // if (data_like === "like") {
           //   deletLikes(cardData.id)
-            
+
           // } else if (data_like === "Dislikes") {
           //   deletLikes(cardData.id)
           // }
@@ -182,6 +181,6 @@ async function createComment(content) {
 }
 
 export {
-  likes, checkandAdd,
+  likes,  
   InitialComment, createComment
 };

@@ -67,8 +67,8 @@ export function createPos(ele) {
         </div>
         `;
 
-  // let allLikes = document.querySelectorAll("#likes")
-  // likes(allLikes)
+  let allLikes = document.querySelectorAll("#likes")
+  likes(allLikes)
   contents.querySelector(".link").addEventListener("click", () => {
     handleCommentClick(ele.id);
   });

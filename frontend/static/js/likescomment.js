@@ -1,4 +1,4 @@
-import { alertPopup } from "./alert.js";
+// import { alertPopup } from "./alert.js";
 import { fetchupdateCard } from "./createcomment.js";
 
 export function likes(likeElements) {
@@ -41,7 +41,9 @@ export async function addLikes(card_id, liked ) {
         }),
       });
       if(response.ok){
-        alertPopup("success", "You have successfully liked the card");  
+        console.log("You have successfully liked the card");
+        
+        // alertPopup("success", "You have successfully liked the card");  
       }
       if (response.status === 400) {
         const data = await response.json();
