@@ -318,7 +318,7 @@ button:hover {
 }
 
 .profile-nav span.active {
-  color: white;
+  color: rgb(80, 80, 80);
   border-bottom: 2px solid var(--color-action-hover);
 }
 
@@ -826,6 +826,7 @@ button:hover {
   z-index: -1;
   overflow-x: auto;
   border-bottom: 1px solid var(--color-light);
+  color: #161e27;
 }
 
 .settings-title {
@@ -851,6 +852,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--color-light);
+  color: black;
 }
 
 .header-nav {

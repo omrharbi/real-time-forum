@@ -16,13 +16,11 @@ export function setupWs() {
     const message = JSON.parse(event.data);
     switch (message.type) {
       case "online":
-        if (window.location.pathname === "/chat") updateUserList(message);
+        updateUserList(message);
         break;
       case "broadcast":
         const query = new URLSearchParams(window.location.search);
         if (window.location.pathname === "/chat") {
-          console.log(message);
-
           if (query.get("receiver") == message.sender) {
             displayMessage(
               message.username,
@@ -44,7 +42,7 @@ export function setupWs() {
         showTypingNotification(message.userId);
         break;
       case "offline":
-        if (window.location.pathname === "/chat") updateUserList(message);
+        updateUserList(message);
         break;
       default:
         console.warn("Unhandled message type:", message.type);

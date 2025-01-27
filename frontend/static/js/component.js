@@ -17,9 +17,6 @@ const main = /*html*/ `
 
       <div id="side-right"></div>
       <aside class="aside-right">
-        <input class="search" type="text" placeholder="Search.." data-search />
-        <div class="link-list">
-          <span>about</span>
         </div>
       </aside>`;
 const nav_item = [
@@ -40,6 +37,30 @@ const nav_item = [
     name: "home",
   },
 ];
+
+
+const categories = [
+  "General",
+  "Technology",
+  "Sports",
+  "Entertainment",
+  "Science",
+  "Health",
+  "Food",
+  "Travel",
+  "Fashion",
+  "Art",
+  "Music",
+];
+
+function Setcategories(div) {
+  for (let obj of categories) {
+    const divC = document.createElement("div");
+    divC.className = "category-item";
+    divC.innerText = obj;
+    div.append(divC);
+  }
+}
 
 function leftside() {
   section.innerHTML = main;
@@ -92,6 +113,7 @@ function leftside() {
 
   const div = aside.querySelector(".categories-list");
   SetIcon(nav);
+  Setcategories(div);
   section.prepend(aside);
   Change();
   if (window.location.pathname === "/comment") {
@@ -104,13 +126,6 @@ function leftside() {
   } else if (window.location.pathname === "/settings") {
     const main = document.querySelector("main");
     main.innerHTML = setting;
-  }
-  const link = document.querySelector(".link-list span");
-  if (link) {
-    link.addEventListener("click", () => {
-      history.pushState(null, "", "/about");
-      loadPage();
-    });
   }
 }
 
