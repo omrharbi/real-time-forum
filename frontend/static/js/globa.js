@@ -112,7 +112,7 @@ const register = /*html*/ `
 
 const comments = /*html*/ `
   <div class="alert"></div>
-            <div class="post commens-card">
+            <div class="post commens-card post-card">
                 <div class="post-header">
                     <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                     <div class="user-info">
@@ -124,6 +124,8 @@ const comments = /*html*/ `
                 <div class="post-content content">
                     
                 </div>
+                <div class="catgory">
+               </div>
                 <div class="post-actions ">
                     <div class="action active is_liked" data-context="comment" id="likes" data-liked="false" data-like="like" data-id_card="" >
                       <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
@@ -145,7 +147,7 @@ const comments = /*html*/ `
                     </div>
                 </div>
             </div>
-            <div class="post">
+            <div class="post post-card">
                 <div class="postReply">
                     <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                     <div class="writeReply">Write your reply</div>
