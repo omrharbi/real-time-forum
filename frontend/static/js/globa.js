@@ -13,7 +13,7 @@ const login = /*html*/ `
             <div class="input-box">
               <span class="icon"><ion-icon name="mail"></ion-icon></span>
               <input type="text" id="email" required />
-              <label>Email</label>
+              <label>Email Or User Name</label>
             </div>
             <div class="input-box">
               <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>

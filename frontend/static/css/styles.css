@@ -148,13 +148,14 @@ button:hover {
 .input-box-textarea textarea {
   width: 100%;
   height: 100%;
-  background: var(--color-button-hover-text);
+  background: #5058A0;
   border: none;
   outline: none;
   font-size: 1em;
   color: var(--color-action-hover);
   font-weight: 600;
   padding: 0 35px 0 5px;
+  border-radius: 5px;
 }
 
 .input-box-textarea textarea {
@@ -192,6 +193,7 @@ button:hover {
 
 .logoAndName h2 {
   margin-top: 5px;
+  color:#2D304D ;
   margin-left: 7px;
 }
 
@@ -386,7 +388,7 @@ button:hover {
   position: relative;
   width: 400px;
   height: 440px;
-  background: transparent;
+  background: #6A75CA;
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
@@ -401,7 +403,8 @@ button:hover {
 .register-link,
 .login-link,
 .home-link {
-  color: var(--color-action-hover);
+  color: #2D304D;
+  cursor: pointer;
 }
 
 .sectionLogin,
@@ -484,7 +487,7 @@ button:hover {
 .btn {
   width: 100%;
   height: 45px;
-  background: var(--color-action-hover);
+  background: #5058A0;
   border: none;
   outline: none;
   border-radius: 6px;
