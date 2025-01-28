@@ -48,17 +48,37 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 
 	offset := (page - 1) * postsPerPage
 
-	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
-              count(cm.id) comments,
-              (SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
-        		(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
-              FROM card c 
-              JOIN post p on c.id = p.card_id 
-              LEFT JOIN comment cm ON c.id = cm.target_id 
-              JOIN user u ON c.user_id = u.id
-              GROUP BY c.id  
-              ORDER BY c.id DESC
-              LIMIT ? OFFSET ?`
+	query := `SELECT 
+    c.id, 
+    u.UUID, 
+    c.content, 
+    c.created_at, 
+    u.firstname, 
+    u.lastname, 
+    u.username, 
+    u.Age, 
+    u.gender,
+    COUNT(cm.id) AS comments,
+    (SELECT COUNT(*) FROM likes l WHERE l.card_id = c.id AND l.is_like = 1) AS likes,
+    (SELECT COUNT(*) FROM likes l WHERE l.card_id = c.id AND l.is_like = 0) AS dislikes,
+    GROUP_CONCAT(ct.name, ',') AS categories
+FROM 
+    card c
+JOIN 
+    post p ON c.id = p.card_id
+LEFT JOIN 
+    comment cm ON c.id = cm.target_id
+JOIN 
+    user u ON c.user_id = u.id
+LEFT JOIN 
+    post_category pc ON p.id = pc.post_id
+LEFT JOIN 
+    category ct ON pc.category_id = ct.id
+GROUP BY 
+    c.id, u.UUID, u.firstname, u.lastname, u.username, u.Age, u.gender, c.content, c.created_at
+ORDER BY 
+    c.id DESC
+LIMIT ? OFFSET ?;`
 
 	data_Rows, err := c.db.QueryContext(ctx, query, postsPerPage, offset)
 	if err != nil {
@@ -72,7 +92,7 @@ func (c *cardRepositoryImpl) GetAllCardsForPages(ctx context.Context, page int, 
 		Row := models.Card_View{}
 		err := data_Rows.Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt,
 			&Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments,
-			&Row.Likes, &Row.DisLikes)
+			&Row.Likes, &Row.DisLikes, &Row.Categories)
 		if err != nil {
 			return nil, 0
 		}

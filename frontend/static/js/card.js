@@ -19,7 +19,8 @@ export function cards(data, user_info) {
 }
 
 export function createPos(ele) {
-  
+  console.log(ele);
+
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -85,7 +86,7 @@ export function createPos(ele) {
       allLikes.classList.remove("clicked");
       ele.likes--;
     } else {
-      addLikes(ele.id , true)
+      addLikes(ele.id, true);
       if (alldislike.classList.contains("clicked_disliked")) {
         alldislike.classList.remove("clicked_disliked");
         ele.dislikes--;
@@ -103,7 +104,7 @@ export function createPos(ele) {
       alldislike.classList.remove("clicked_disliked");
       ele.dislikes--;
     } else {
-      addLikes(ele.id , false)
+      addLikes(ele.id, false);
       if (allLikes.classList.contains("clicked")) {
         allLikes.classList.remove("clicked");
         ele.likes--;
