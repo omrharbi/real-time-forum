@@ -90,6 +90,8 @@ export function fetchupdateCard() {
           const cardData = await response.json();
           let data_like = click.getAttribute("data-like");
           let is_liked = click.querySelector("#is_liked")
+          console.log(is_liked);
+          
           if (click.classList.contains("is_liked")) {
             addLikes(cardData.id, 1)
           }
