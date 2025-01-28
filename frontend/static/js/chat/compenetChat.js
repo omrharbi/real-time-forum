@@ -51,8 +51,8 @@ export function setupWs() {
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    history.pushState(null, "", "/login");
-    loadPage();
+    // history.pushState(null, "", "/login");
+    // loadPage();
   };
 
   ws.onerror = (error) => {
@@ -87,7 +87,7 @@ export function messages() {
   if (query.get("receiver")) {
     GetMessage(query.get("receiver"));
     let chat = document.querySelector(".chat");
-    chat.scrollBy(0, chat.scrollHeight)
+    chat.scrollBy(0, chat.scrollHeight);
     sendMessage();
   } else {
     let chat = document.querySelector(".chat");

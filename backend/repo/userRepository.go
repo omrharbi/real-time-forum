@@ -114,6 +114,7 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 	Gender := html.EscapeString(users.Gender)
 	stm := "INSERT INTO user (username,firstname,lastname, Age ,gender ,email,password,status) VALUES(?,?,?,?,?,?,?,?)"
 	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password, "online")
+	fmt.Println(err ,"jjj")
 	return row, err
 }
 
