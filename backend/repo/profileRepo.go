@@ -34,9 +34,15 @@ func (p *ProfileRepositoryImpl) GetPostsProfile(user_id int) string {
 	u.gender,
     count(cm.id) comments,
 	(SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
-     (SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
+     (SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes,
+	 GROUP_CONCAT(ct.name , ', ') AS categories
 	FROM post p, card c, user u LEFT  JOIN comment cm
-	ON c.id = cm.target_id  WHERE p.card_id=c.id 
+	ON c.id = cm.target_id 
+	LEFT JOIN 
+    post_category pc ON p.id = pc.post_id
+	LEFT JOIN 
+    category ct ON pc.category_id = ct.id
+	WHERE p.card_id=c.id 
 	AND c.user_id=u.id AND u.id ="` + strconv.Itoa(user_id) + "\" GROUP BY c.id  ORDER BY c.id DESC"
 	return query
 }
@@ -56,10 +62,16 @@ func (p *ProfileRepositoryImpl) GetProfileByLikes(user_id int) string {
 		u.gender,
 		count(cm.id) comments,
 		(SELECT count(*) FROM likes l WHERE ( l.card_id =p.id  ) AND l.is_like = 1) as likes,
-     	(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes
-		 
+     	(SELECT count(*) FROM likes l WHERE( l.card_id =p.id )AND l.is_like = 0) as dislikes,
+		  GROUP_CONCAT(ct.name , ', ') AS categories
 		FROM post p, card c, likes l ,user u LEFT JOIN comment cm
-		ON c.id = cm.target_id  WHERE p.card_id=c.id AND l.is_like = 1
+		ON c.id = cm.target_id
+		LEFT JOIN 
+    post_category pc ON p.id = pc.post_id
+	LEFT JOIN 
+    category ct ON pc.category_id = ct.id
+		
+		WHERE p.card_id=c.id AND l.is_like = 1
 		AND c.user_id=u.id AND p.card_id = l.card_id AND l.user_id ="` + strconv.Itoa(user_id) + "\" GROUP BY c.id  ORDER BY c.id DESC"
 	return query
 }

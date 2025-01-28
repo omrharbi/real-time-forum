@@ -541,39 +541,41 @@ button:hover {
 
 .post,
 .commentFromPost {
+  
   background: #ffffff;
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid #eaeaea;
   transition: box-shadow 0.2s ease;
-  margin:  0 0 10px 0;
-  height: 25vh;
+  margin-bottom: 16px;
+  width: 100%;
+  
 }
 
 .post-header {
-  display: flex;
+ display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  gap: 16px;
 }
 
 .avatar {
-  width: 48px;
+ width: 48px;
   height: 48px;
   border-radius: 50%;
-  object-fit: cover;
-  margin-right: 12px;
-  border: 2px solid #f0f0f0;
 }
 
 .user-info {
-  flex-grow: 1;
+ display: flex;
+  flex-direction: column;
 }
 
 .display-name {
   font-weight: bold;
   margin-bottom: 2px;
   color: rgba(0, 0, 0, 0.288);
+  
+  
 }
 
 .username {
@@ -586,14 +588,11 @@ button:hover {
 }
 
 .post-content {
-  margin-bottom: 12px;
-  line-height: 1.4;
-  margin-left: 60px;
-  overflow: hidden;
+  line-height: 1.5;
   word-wrap: break-word;
   white-space: normal;
   color: #161e27;
-  height: max-content;
+  margin-top: 12px;
 }
 
 .post-actions {
@@ -601,20 +600,25 @@ button:hover {
   justify-content: space-between;
   max-width: 130px;
   color: var(--color-muted);
-  margin-left: 60px;
-  gap: 10px;
+  margin-left: 10px;
+  margin-top: 12px;
+  gap: 12px;
 }
 
 .action {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  cursor: pointer;
+  color: #6c757d;
 }
 
 .clicked {
   color: var(--color-action-hover);
 }
-
+.action:hover {
+  color: #495057;
+}
 .active:hover {
   cursor: pointer;
 }
@@ -681,6 +685,9 @@ button:hover {
   cursor: pointer;
   font-weight: 400;
   transition: background-color 0.2s;
+}
+.post {
+  height: auto; /* Automatically adjust height based on content */
 }
 
 .nav-item:hover {
@@ -791,19 +798,29 @@ button:hover {
 }
 
 .category-item {
-  padding: 8px 16px;
+  padding: 8px 12px;
   background: #6A75CA;
-  color: #161e27;
+  color: #ffffff;
   border-radius: 20px;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .category-item.selected {
   background: #2D304D;
   color: white;
 }
+.catgory {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
 
+.category-item:hover {
+  background-color: #575fcf;
+}
 .profile-header {
   width: 100%;
   z-index: -10;
@@ -1218,10 +1235,10 @@ button:hover {
   }
 
   .post-actions {
-    display: flex;
-    justify-content: space-around;
-    font-size: 0.8em;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
   }
 
   .post-actions .action {
@@ -1512,5 +1529,7 @@ category
 */
 
 .catgory {
-  height: 8vh; 
+  /* height: 14vh; */
+  display: flex;
+  flex-wrap: wrap;
 }

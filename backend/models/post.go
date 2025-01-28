@@ -25,4 +25,6 @@ type PostResponde struct {
 	Userdisliked int    `json:"userdisliked"`
 	Comments     string `json:"comments"`
 	CreatedAt    string `json:"date"`
+	Categories string `json:"categories"`
+
 }
