@@ -82,6 +82,15 @@ aside {
   overflow: hidden;
 }
 
+aside.aside-right {
+  width: 38%;
+  margin-top: 45px;
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
+  align-items: center;
+}
+
 button {
   width: 80px;
   height: 30px;
@@ -140,11 +149,11 @@ button:hover {
 .input-box-textarea textarea {
   width: 100%;
   height: 100%;
-  background: transparent;
+  background: var(--color-button-hover-text);
   border: none;
   outline: none;
   font-size: 1em;
-  color: var(--color-white);
+  color: var(--color-action-hover);
   font-weight: 600;
   padding: 0 35px 0 5px;
 }
@@ -309,7 +318,7 @@ button:hover {
 }
 
 .profile-nav span.active {
-  color: white;
+  color: rgb(80, 80, 80);
   border-bottom: 2px solid var(--color-action-hover);
 }
 
@@ -559,6 +568,7 @@ button:hover {
 .display-name {
   font-weight: bold;
   margin-bottom: 2px;
+  color: rgba(0, 0, 0, 0.288);
 }
 
 .username {
@@ -817,6 +827,7 @@ button:hover {
   z-index: -1;
   overflow-x: auto;
   border-bottom: 1px solid var(--color-light);
+  color: #161e27;
 }
 
 .settings-title {
@@ -842,6 +853,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--color-light);
+  color: black;
 }
 
 .header-nav {

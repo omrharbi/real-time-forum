@@ -191,11 +191,11 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		return models.ResponceUser{}, message, ""
 	}
 	if users.Age < 18 {
-		message.MessageError = "you still baby go to stady"
+		message.MessageError = "you have be 18 or more"
 		return models.ResponceUser{}, message, ""
 	}
 	if users.Gender != "male" && users.Gender != "femel" {
-		message.MessageError = "we don't suport you go to hell"
+		message.MessageError = "unknown gender"
 		return models.ResponceUser{}, message, ""
 	}
 	message = u.validateUser(users)

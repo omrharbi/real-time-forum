@@ -5,7 +5,12 @@ import { setupWs } from "./chat/compenetChat.js";
 import { loadPage } from "./laodpages.js";
 
 export async function Login() {
-  checklogin();
+  const res = await fetch("/api/isLogged")
+  if (res.ok) {
+    history.pushState( null, "" , "/")
+    loadPage()
+    return
+  }
   document.querySelector("#register").addEventListener("click", () => {
     history.pushState(null, "", "/register");
     loadPage();

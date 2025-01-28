@@ -1,9 +1,13 @@
 import { alertPopup } from "./alert.js";
-import { checklogin } from "./checklogin.js";
 import { setupWs } from "./chat/compenetChat.js";
 import { loadPage } from "./laodpages.js";
 export async function Register() {
-  checklogin();
+  const res = await fetch("/api/isLogged")
+  if (res.ok) {
+    history.pushState( null, "" , "/")
+    loadPage()
+    return
+  }
   document.querySelector("#login").addEventListener("click", () => {
     history.pushState(null, "", "/login");
     loadPage();

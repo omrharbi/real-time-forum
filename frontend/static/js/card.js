@@ -1,4 +1,5 @@
 import { loadPage } from "./laodpages.js";
+import { addLikes, deletLikes, likes } from "./likescomment.js";
 
 export function cards(data, user_info) {
   let content = [];
@@ -10,6 +11,7 @@ export function cards(data, user_info) {
   }
   content = data.map((ele) => {
     let contents = createPos(ele);
+
     user_info.append(contents);
     return { data: ele.content, element: contents };
   });
@@ -17,6 +19,7 @@ export function cards(data, user_info) {
 }
 
 export function createPos(ele) {
+  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -46,7 +49,7 @@ export function createPos(ele) {
                         </svg>
               <span id="is_liked" >${ele.likes}</span>
             </div>
-             <div class="action disliked" data-context="post" id="likes" data-liked="false"  data-like="Dislikes" data-id_card="${
+             <div class="action disliked" data-context="post" id="dislikes" data-liked="false"  data-like="Dislikes" data-id_card="${
                ele.id
              }">
               <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
@@ -67,10 +70,51 @@ export function createPos(ele) {
           </div>
         </div>
         `;
+
+  let allLikes = contents.querySelector("#likes");
+  let alldislike = contents.querySelector("#dislikes");
+  let countdislike = contents.querySelector("#is_Dislikes");
+  let countlike = contents.querySelector("#is_liked");
+  likes(allLikes, alldislike, ele.id);
   contents.querySelector(".link").addEventListener("click", () => {
     handleCommentClick(ele.id);
   });
-  contents.querySelector(".is_liked");
+  allLikes.addEventListener("click", () => {
+    if (allLikes.classList.contains("clicked")) {
+      deletLikes(ele.id);
+      allLikes.classList.remove("clicked");
+      ele.likes--;
+    } else {
+      addLikes(ele.id , true)
+      if (alldislike.classList.contains("clicked_disliked")) {
+        alldislike.classList.remove("clicked_disliked");
+        ele.dislikes--;
+      }
+      ele.likes++;
+      allLikes.classList.add("clicked");
+    }
+    countdislike.innerHTML = ele.dislikes;
+    countlike.innerHTML = ele.likes;
+  });
+
+  alldislike.addEventListener("click", () => {
+    if (alldislike.classList.contains("clicked_disliked")) {
+      deletLikes(ele.id);
+      alldislike.classList.remove("clicked_disliked");
+      ele.dislikes--;
+    } else {
+      addLikes(ele.id , false)
+      if (allLikes.classList.contains("clicked")) {
+        allLikes.classList.remove("clicked");
+        ele.likes--;
+      }
+      ele.dislikes++;
+      alldislike.classList.add("clicked_disliked");
+    }
+    countdislike.innerHTML = ele.dislikes;
+    countlike.innerHTML = ele.likes;
+  });
+
   return contents;
 }
 

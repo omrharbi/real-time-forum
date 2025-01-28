@@ -19,7 +19,7 @@ type Card_View struct {
 	LastName  string `json:"lastName"`
 	Likes     int    `json:"likes"`
 	DisLikes  int    `json:"dislikes"`
-	UserLiked int    `json:"userLiked"`
+	UserLiked any    `json:"userLiked"`
 	Comments  int    `json:"comments"`
 }
 
