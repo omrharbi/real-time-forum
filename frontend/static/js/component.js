@@ -118,7 +118,6 @@ function leftside() {
   Change();
   if (window.location.pathname === "/comment") {
     CommtSide();
-    document.querySelector("input").remove();
     return;
   } else if (window.location.pathname === "/profile") {
     SetPro();

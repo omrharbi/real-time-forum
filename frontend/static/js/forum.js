@@ -16,9 +16,6 @@ export async function fetchData(page = 1) {
       let user_info = document.querySelector(".main");
       content = cards(data.posts, user_info);
       
-      let like = document.querySelectorAll("#likes");
-      likes(like);
-      
     }
   } else if (response.status === 400) {
     const data = await response.json();
