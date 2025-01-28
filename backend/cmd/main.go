@@ -101,14 +101,13 @@ func SetupPageRoutes(mux *http.ServeMux) {
 	})
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "..") {
-			controllers.JsoneResponse(w, nil, http.StatusForbidden)
-			http.ServeFile(w, r, "../../frontend/templates/home.html")
+			controllers.JsoneResponseError(w, r, nil, http.StatusForbidden)
 			return
 		}
 		filename := "../../frontend" + r.URL.Path
 		file, err := os.ReadFile(filename)
 		if err != nil {
-			controllers.JsoneResponse(w, nil, http.StatusForbidden)
+			controllers.JsoneResponseError(w, r, nil, http.StatusForbidden)
 			//	utils.ErrorHandler(w, http.StatusNotFound, "Page Not Found", "The page you are looking for is not available!", nil)
 			return
 		}
