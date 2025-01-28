@@ -1,39 +1,8 @@
 import { loadPage } from "../laodpages.js";
-import { sendMessage } from "./compenetChat.js";
+import { addUser, sendMessage } from "./compenetChat.js";
 import { GetMessage } from "./displyMessage.js";
 
-export function addUser(userId, userName, status) {
-  const userList = document.querySelector(".aside-right");
-  const userItem = document.createElement("li");
-  userItem.className = "user-item";
-  userItem.id = userId;
-  userItem.dataset.id = userName;
 
-  const userIcon = document.createElement("div");
-  userIcon.className = "user-icon";
-  userIcon.textContent = userName[0].toUpperCase();
-
-  const userNameDiv = document.createElement("div");
-  userNameDiv.className = "user-name";
-  userNameDiv.textContent = userName;
-
-  const statusDot = document.createElement("span");
-  statusDot.className = "status";
-
-  userItem.append(userIcon, userNameDiv, statusDot);
-  userList.appendChild(userItem);
-  userItem.addEventListener("click", () => {
-    let url = `chat?receiver=${userId}`;
-    history.pushState(null, "", url);
-    let log = document.querySelector(".chat");
-    if (log) {
-      log.innerHTML = "";
-    }
-    loadPage()
-  });
-  statusDot.style.background = status === "online" ? "green" : "red";
-  return userItem;
-}
 
 export function updateUserList(message) {
   const data = JSON.parse(localStorage.getItem("data"))

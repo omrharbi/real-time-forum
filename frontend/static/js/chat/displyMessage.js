@@ -1,8 +1,8 @@
 import { getTimeDifferenceInHours } from "../card.js";
 import { throttle } from "../checklogin.js";
-import { chat } from "./compenetChat.js";
+import { addtoOfset, addUser, chat } from "./compenetChat.js";
 // import { user_item } from "./compenetChat.js";
-import { addUser } from "./create_user.js";
+// import { addUser } from "./create_user.js";
 
 export function displayMessage(
   sender,
@@ -113,14 +113,14 @@ export async function GetMessage(receiver) {
   chat.scrollTop = chat.scrollHeight;
   console.log(chat.scrollTop, chat.scrollHeight);
 
-  let offset = 30;
+  let offset = 0;
   if (throttledScrollHandler) {
     chat.removeEventListener("scroll", throttledScrollHandler);
   }
   throttledScrollHandler = throttle(() => {
     if (chat.scrollTop === 0) {
+      offset += 10 + addtoOfset;
       getMessage(receiver, offset);
-      offset += 30;
     }
   }, 200);
 

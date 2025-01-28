@@ -59,7 +59,7 @@ func (m *MessageRepositoryImpl) GetMeessage(senderID int, receiverID int, offste
 		LIMIT $3 OFFSET $4;
 `
 
-	row, err := m.db.Query(qury, senderID, receiverID, 30, offste)
+	row, err := m.db.Query(qury, senderID, receiverID, 10, offste)
 	if err != nil {
 		fmt.Println(err)
 		mss.MessageError = err.Error()

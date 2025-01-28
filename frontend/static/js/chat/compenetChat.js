@@ -28,6 +28,7 @@ export function setupWs() {
               message.content,
               false
             );
+            addtoOfset++;
           } else {
             document.getElementById("notify").play();
             showPopup(`you have message from ${message.username}`);
@@ -71,6 +72,40 @@ export const chat = /*html*/ `
     
 `;
 
+export function addUser(userId, userName, status) {
+  const userList = document.querySelector(".aside-right");
+  const userItem = document.createElement("li");
+  userItem.className = "user-item";
+  userItem.id = userId;
+  userItem.dataset.id = userName;
+
+  const userIcon = document.createElement("div");
+  userIcon.className = "user-icon";
+  userIcon.textContent = userName[0].toUpperCase();
+
+  const userNameDiv = document.createElement("div");
+  userNameDiv.className = "user-name";
+  userNameDiv.textContent = userName;
+
+  const statusDot = document.createElement("span");
+  statusDot.className = "status";
+
+  userItem.append(userIcon, userNameDiv, statusDot);
+  userList.appendChild(userItem);
+  userItem.addEventListener("click", () => {
+    let url = `chat?receiver=${userId}`;
+    history.pushState(null, "", url);
+    let log = document.querySelector(".chat");
+    if (log) {
+      log.innerHTML = "";
+    }
+    addtoOfset = 0;
+    loadPage();
+  });
+  statusDot.style.background = status === "online" ? "green" : "red";
+  return userItem;
+}
+
 export function messages() {
   const chat = document.querySelector(".content_post");
   chat.style.height = "100%";
@@ -85,6 +120,7 @@ export function messages() {
     `;
   const query = new URLSearchParams(window.location.search);
   if (query.get("receiver")) {
+    addtoOfset = 0;
     GetMessage(query.get("receiver"));
     let chat = document.querySelector(".chat");
     chat.scrollBy(0, chat.scrollHeight);
@@ -95,6 +131,8 @@ export function messages() {
     chat.textContent = "WELCOME TO CHAT";
   }
 }
+
+export let addtoOfset = 0;
 
 export function sendMessage() {
   const storedData = localStorage.getItem("data");
@@ -109,6 +147,7 @@ export function sendMessage() {
       const messages = message.value.trim();
       if (messages) {
         displayMessage(parsedData.firstname, new Date(), messages, true);
+        addtoOfset++;
         SetUserUp({ sender: receiver });
         ws.send(
           JSON.stringify({
