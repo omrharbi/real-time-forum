@@ -20,7 +20,7 @@ export function cards(data, user_info) {
 
 export function createPos(ele) {
   console.log(ele);
-
+  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -40,6 +40,9 @@ export function createPos(ele) {
           </div>
           <div class="post-content">
             ${ele.content}
+          </div>
+          <div class="catgory">
+              
           </div>
           <div class="post-actions">
             <div class="action active is_liked" data-context="post" id="likes" data-liked="false" data-like="like" data-id_card="${
@@ -70,8 +73,19 @@ export function createPos(ele) {
             </span>
           </div>
         </div>
+        
         `;
 
+  let catgory = contents.querySelector(".catgory");
+  let c = ele.categories.split(",");
+  c.forEach((element) => {
+    console.log(element);
+    
+    let CreatCate = document.createElement("span");
+    CreatCate.className = "category-item categories";
+    CreatCate.textContent = element;
+    catgory.appendChild(CreatCate);
+  });
   let allLikes = contents.querySelector("#likes");
   let alldislike = contents.querySelector("#dislikes");
   let countdislike = contents.querySelector("#is_Dislikes");

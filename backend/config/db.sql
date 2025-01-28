@@ -77,4 +77,6 @@ CREATE TABLE IF NOT EXISTS likes (
     (user_id, card_id)
 );
 
- INSERT INTO category (name) VALUES ('General') , ('Technology') , ('Sports') , ('Entertainment') , ('Science') , ('Food') , ('Travel') , ('Fashion') , ('Art') , ('Music') ON CONFLICT (name) DO NOTHING;
+ INSERT INTO category (name) VALUES ('General') , 
+ ('Technology') , ('Sports') , ('Entertainment') , ('Science') , ('Food') ,
+  ('Travel') , ('Fashion') , ('Art') , ('Music') --ON CONFLICT (name) DO NOTHING;

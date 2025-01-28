@@ -9,7 +9,7 @@
 }
 
 :root {
-  --color-light: #EDF0F6;
+  --color-light: #FFFF;
   --color-mid: #f7fdfa;
   --color-dark: #F7FBF9;
   --color-white: #fff;
@@ -20,7 +20,7 @@
   --color-action-hover: #1d9bf0;
   --color-search: #1e2936;
   --color-hover-nav: rgba(255, 255, 255, 0.1);
-  --color-new-post: #272e39;
+  --color-new-post: #FFFF;
   --color-name-user-secand: #8b949e;
   --color-red: #f52958;
   --color-hover-dislike: #cc3700;
@@ -34,7 +34,7 @@
 }
 
 body {
-  /* background: var(--color-background); */
+  background: var(--color-background);
   background:#F8FCFA;
   min-height: 100vh;
   display: flex;
@@ -52,6 +52,7 @@ body {
   border-radius: 15px;
   /* border-bottom: 1px solid var(--color-light); */
   -ms-overflow-style: none;
+  background: #EFF2F8;
   margin: 10px;
 }
 
@@ -70,8 +71,7 @@ main {
   border: 2px solid var(--color-light);
   width: 100%;
   min-width: 600px;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+ background: #EFF2F8;
 }
 
 aside {
@@ -86,6 +86,7 @@ aside.aside-right {
   display: flex;
   /* justify-content: center; */
   flex-direction: column;
+  background: #fff;
   align-items: center;
 }
 
@@ -147,13 +148,14 @@ button:hover {
 .input-box-textarea textarea {
   width: 100%;
   height: 100%;
-  background: var(--color-button-hover-text);
+  background: #5058A0;
   border: none;
   outline: none;
   font-size: 1em;
   color: var(--color-action-hover);
   font-weight: 600;
   padding: 0 35px 0 5px;
+  border-radius: 5px;
 }
 
 .input-box-textarea textarea {
@@ -191,6 +193,7 @@ button:hover {
 
 .logoAndName h2 {
   margin-top: 5px;
+  color:#2D304D ;
   margin-left: 7px;
 }
 
@@ -248,12 +251,13 @@ button:hover {
 .aside-nav button {
   display: flex;
   width: 130px;
+  color: black;
   justify-items: center;
   align-items: center;
   padding: 10px;
   height: 40px;
   margin-left: 10px;
-  background-color: var(--color-logo);
+  background-color: transparent;
   border: none;
   gap: 5px;
 }
@@ -267,7 +271,7 @@ button:hover {
 }
 
 .newPost-header button {
-  width: 70px;
+  width: 92px;
   height: 35px;
   justify-content: center;
   margin-top: auto;
@@ -279,7 +283,7 @@ button:hover {
   background: var(--color-new-post);
   padding: 5px;
   border: none;
-  color: white;
+  color: #2D304D;
   font-size: 1.2rem;
   resize: none;
   outline: none;
@@ -292,8 +296,9 @@ button:hover {
 }
 
 #choice-categories h1 {
-  font-weight: 100;
-  color: var(--color-white);
+  color: black;
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .newPost-header h1 {
@@ -383,7 +388,7 @@ button:hover {
   position: relative;
   width: 400px;
   height: 440px;
-  background: transparent;
+  background: #6A75CA;
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
@@ -398,7 +403,8 @@ button:hover {
 .register-link,
 .login-link,
 .home-link {
-  color: var(--color-action-hover);
+  color: #2D304D;
+  cursor: pointer;
 }
 
 .sectionLogin,
@@ -481,7 +487,7 @@ button:hover {
 .btn {
   width: 100%;
   height: 45px;
-  background: var(--color-action-hover);
+  background: #5058A0;
   border: none;
   outline: none;
   border-radius: 6px;
@@ -542,6 +548,7 @@ button:hover {
   border: 1px solid #eaeaea;
   transition: box-shadow 0.2s ease;
   margin:  0 0 10px 0;
+  height: 25vh;
 }
 
 .post-header {
@@ -785,7 +792,7 @@ button:hover {
 
 .category-item {
   padding: 8px 16px;
-  background: var(--color-white);
+  background: #6A75CA;
   color: #161e27;
   border-radius: 20px;
   cursor: pointer;
@@ -793,7 +800,7 @@ button:hover {
 }
 
 .category-item.selected {
-  background: var(--color-action-hover);
+  background: #2D304D;
   color: white;
 }
 
@@ -801,7 +808,8 @@ button:hover {
   width: 100%;
   z-index: -10;
   height: 150px;
-  background-color: var(--color-light);
+  border-radius: 7px;
+    background-color: #6A75CA;
 }
 
 .profile-content {
@@ -831,15 +839,18 @@ button:hover {
 .settings-title {
   text-align: center;
   padding: 15px;
-  margin: 0;
-  border-bottom: 1px solid var(--color-light);
-  font-size: 20px;
+  margin: 0;   
+   border-radius: 7px;
+   font-size: 20px;
+  background: #444A80;
 }
 
 .profile-section {
   padding: 20px;
   text-align: center;
-  border-bottom: 1px solid var(--color-light);
+  background: #6A75CA;
+    margin-top: 4px;
+    border-radius: 7px;
 }
 
 .signOut {
@@ -1017,7 +1028,9 @@ button:hover {
   opacity: 0.5;
 }
 
-
+.aside-left{
+  background: #ffff;
+}
 
 @media (max-width: 1300px) {
   .nav-item h1 {
@@ -1060,7 +1073,7 @@ button:hover {
     left: 0;
     bottom: 0;
     top: 0;
-    border-right: 1px solid var(--color-light);
+     
   }
 
   .aside-nav button {
@@ -1491,5 +1504,13 @@ user chat
 } */
 
 ion-icon.md.hydrated {
-  color: #C0C7CD;
+  color: #6A75CA;
+}
+
+/* 
+category
+*/
+
+.catgory {
+  height: 8vh; 
 }

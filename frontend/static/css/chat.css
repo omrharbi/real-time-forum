@@ -1,9 +1,9 @@
 :root {
-  --primary-green: #2DB67C;
-  --light-green: #eefcf5;
-  --medium-green: #e4f8ee;
-  --hover-green: #228F64;
-  --gradient-green: linear-gradient(145deg, #eefcf5, #e4f8ee);
+  --primary-green: #FFFF;
+  --light-green: #FFFF;
+  --medium-green: #FFFF;
+  --hover-green: #fFFF;
+  --gradient-green: #fffff;
   --text-dark: #1a2b3c;
   --text-light: #687684;
   --border-light: #e5e9eb;
@@ -48,7 +48,7 @@
   padding: 7px;
   cursor: pointer;
   height: 65px;
-  background-color: #afd1acb5;
+  background-color: #6A75CA;
   margin: 0 0px 2px;
   border-radius: 9px;
   width: 92%;
@@ -79,14 +79,15 @@
 .user-icon {
   width: 36px;
   height: 36px;
-  background-color: rgb(76, 175, 80);
-  color: white;
+  background-color: #FFFFFF;
+    color: #6A75CA;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 10px;
   font-weight: bold;
   border-radius: 50%;
+  border: 1px solid;
 }
 
 .status {
@@ -112,7 +113,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--gradient-green);
+  background: #ffff;
   border-radius: 13px;
 }
 .chat-message {
@@ -135,8 +136,8 @@
 
 
 .sander .message-content {
-  background: var(--primary-green);
-  color: var(--white);
+  background: #6A75CA;
+  color: var(--text-dark);
   border-radius: 20px 20px 20px 4px;
 }
 
@@ -234,22 +235,23 @@ input.input-chat {
   */
 
   .chat-input {
-    margin: 16px 24px;
-    background: var(--white);
-    border-radius: var(--border-radius-xl);
-    padding: 8px;
+    margin: 6px 24px;
+    background: #EFF2F8;
+    border-radius: 8px;
+    padding: 5px;
     display: flex;
     align-items: center;
-    box-shadow: var(--shadow-md);
+    
   }
-#messageInput {
-  flex: 1;
-  border: none;
-  outline: none;
-  height: 33px;
-  padding: 0 16px;
-  font-size: 16px;
-  color: #333;
+  #messageInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    height: 47px;
+    border-radius: 8px;
+    padding: 0 4px;
+    background: #ffff;
+    color: #333;
 }
 
 #messageInput::placeholder {
@@ -263,7 +265,7 @@ input.input-chat {
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #2DB67C;
+  background-color: #6A75CA;
   border: none;
   border-radius: 33%;
   margin-left: 8px;

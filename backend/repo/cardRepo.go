@@ -108,12 +108,15 @@ func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.
 	query := `SELECT c.id, u.UUID, c.content, c.created_at, u.firstname, u.lastname, u.username,u.Age,u.gender,
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.card_id =p.card_id  ) AND l.is_like = 1) as likes,
-        (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes
+        (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes,
+         GROUP_CONCAT(ct.name, ',') AS categories
        	FROM card c LEFT JOIN comment cm  on c.id=cm.card_id LEFT  JOIN post p on p.card_id=c.id
-		JOIN user u ON c.user_id = u.id
+		JOIN user u ON c.user_id = u.id 
+        LEFT JOIN post_category cp ON p.id = cp.post_id
+        LEFT JOIN category ct ON cp.category_id= ct.id
 		WHERE c.id =?;`
 	Row := &models.Card_View{}
-	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes)
+	err := c.db.QueryRowContext(ctx, query, targetID).Scan(&Row.Id, &Row.User_uuid, &Row.Content, &Row.CreatedAt, &Row.FirstName, &Row.LastName, &Row.Nickname, &Row.Age, &Row.Gender, &Row.Comments, &Row.Likes, &Row.DisLikes,&Row.Categories)
 	if err != nil {
 		return &models.Card_View{}
 	}
