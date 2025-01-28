@@ -34,10 +34,8 @@
 }
 
 body {
-  background: var(--color-background);
-  background: radial-gradient(circle at top,
-      var(--color-mid) 0%,
-      var(--color-dark) 100%);
+  /* background: var(--color-background); */
+  background:#F8FCFA;
   min-height: 100vh;
   display: flex;
   justify-content: center;
