@@ -69,10 +69,10 @@ func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, ex
 // Authentication implements UserService.
 func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, log *models.Login) (models.ResponceUser, messages.Messages, uuid.UUID) {
 	message := messages.Messages{}
-	email := strings.ToLower(log.Email)
-	username := strings.ToLower(log.Nickname)
-
-	if (log.Nickname == "" && log.Email == "") || !u.userRepo.EmailExists(ctx, email, username) {
+	// email := strings.ToLower(log.Email)
+	// username := strings.ToLower(log.Nickname)
+	//|| !u.userRepo.EmailExists(ctx, email, username)
+	if log.Email == "" {
 		message.MessageError = "Invalid email or Username"
 		return models.ResponceUser{}, message, uuid.UUID{}
 	} else {

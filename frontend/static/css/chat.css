@@ -113,7 +113,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--gradient-green);
+  background: #ffff;
   border-radius: 13px;
 }
 .chat-message {

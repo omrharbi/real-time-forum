@@ -8,8 +8,8 @@ const main = /*html*/ `
       <main class ="scroll">
         <div class="alert"></div>
         <div class="headMian">
-          <div> Posts </div>
-          <!-- <img class="logo" src="../static/imgs/logo.png" alt="logo" /> -->
+          <!-- <div> Posts </div> -->
+          <img class="logo" src="../static/imgs/logo.png" alt="logo" />
         </div>
         <article class="main content_post">
 
@@ -90,9 +90,9 @@ function leftside() {
                   <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                   <textarea maxlength="1000" placeholder="What's up?" id="content" required></textarea>
                 </div>
-                <div class="openCategories" id="choice-categories">
+                <button class="openCategories" id="choice-categories">
                   <h1>Categories</h1>
-                </div>
+                </button>
               </div>
             </div>
             <div id="categories-popup">
