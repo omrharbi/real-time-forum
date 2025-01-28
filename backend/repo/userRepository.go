@@ -114,7 +114,7 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 	Gender := html.EscapeString(users.Gender)
 	stm := "INSERT INTO user (username,firstname,lastname, Age ,gender ,email,password,status) VALUES(?,?,?,?,?,?,?,?)"
 	row, err := u.db.ExecContext(ctx, stm, Nickname, Firstname, Lastname, users.Age, Gender, Email, Password, "online")
-	fmt.Println(err ,"jjj")
+	fmt.Println(err, "jjj")
 	return row, err
 }
 
@@ -122,11 +122,9 @@ func (u *userRepositoryImpl) InsertUser(ctx context.Context, users *models.User,
 func (u *userRepositoryImpl) SelectUser(ctx context.Context, log *models.Login) *models.User {
 	user := &models.User{}
 	email := strings.ToLower(log.Email)
-	username := strings.ToLower(log.Nickname)
-
 	password := strings.ToLower(log.Password)
 	query := "select id,email,password, firstname ,lastname FROM user where email=? or username=?"
-	err := u.db.QueryRowContext(ctx, query, email, username, password).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname)
+	err := u.db.QueryRowContext(ctx, query, email, email, password).Scan(&user.Id, &user.Email, &user.Password, &user.Firstname, &user.Lastname)
 	if err != nil {
 		fmt.Println("error to select user", err)
 	}
