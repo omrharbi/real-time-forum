@@ -39,6 +39,7 @@ func main() {
 
 func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	db := config.Config()
+
 	userRepo := repo.NewUserRepository(db.Connection)
 	cardRepo := repo.NewcardRepository(db.Connection)
 	categoryRepo := repo.NewCategoryRepository(db.Connection)

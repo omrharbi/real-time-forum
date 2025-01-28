@@ -35,9 +35,7 @@
 
 body {
   background: var(--color-background);
-  background: radial-gradient(circle at top,
-      var(--color-mid) 0%,
-      var(--color-dark) 100%);
+  background:#F8FCFA;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -54,6 +52,7 @@ body {
   border-radius: 15px;
   /* border-bottom: 1px solid var(--color-light); */
   -ms-overflow-style: none;
+  background: #fff;
   margin: 10px;
 }
 
@@ -72,14 +71,23 @@ main {
   border: 2px solid var(--color-light);
   width: 100%;
   min-width: 600px;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+ background: #EFF2F8;
 }
 
 aside {
   display: flex;
   width: 18%;
   overflow: hidden;
+}
+
+aside.aside-right {
+  width: 38%;
+  margin-top: 45px;
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
+  background: #fff;
+  align-items: center;
 }
 
 button {
@@ -309,7 +317,7 @@ button:hover {
 }
 
 .profile-nav span.active {
-  color: white;
+  color: rgb(80, 80, 80);
   border-bottom: 2px solid var(--color-action-hover);
 }
 
@@ -559,6 +567,7 @@ button:hover {
 .display-name {
   font-weight: bold;
   margin-bottom: 2px;
+  color: rgba(0, 0, 0, 0.288);
 }
 
 .username {
@@ -817,6 +826,7 @@ button:hover {
   z-index: -1;
   overflow-x: auto;
   border-bottom: 1px solid var(--color-light);
+  color: #161e27;
 }
 
 .settings-title {
@@ -842,6 +852,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--color-light);
+  color: black;
 }
 
 .header-nav {
@@ -1007,7 +1018,9 @@ button:hover {
   opacity: 0.5;
 }
 
-
+.aside-left{
+  background: #ffff;
+}
 
 @media (max-width: 1300px) {
   .nav-item h1 {
@@ -1050,7 +1063,7 @@ button:hover {
     left: 0;
     bottom: 0;
     top: 0;
-    border-right: 1px solid var(--color-light);
+     
   }
 
   .aside-nav button {
@@ -1481,5 +1494,5 @@ user chat
 } */
 
 ion-icon.md.hydrated {
-  color: #C0C7CD;
+  color: #6A75CA;
 }

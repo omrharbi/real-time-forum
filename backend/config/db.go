@@ -11,6 +11,10 @@ type Database struct {
 }
 
 func InitDataBase() error {
+	_, err := os.Stat("../../app.db")
+	if err == nil {
+		return nil
+	}
 	db, err := sql.Open("sqlite3", "../../app.db")
 	if err != nil {
 		log.Fatal("error opening database: ", err)

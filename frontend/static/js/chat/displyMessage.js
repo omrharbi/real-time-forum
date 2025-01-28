@@ -53,6 +53,7 @@ export function displayMessage(
   //log.scrollTop = log.scrollHeight;
 }
 
+
 export async function getMessage(receiver, offset = 0) {
   const log = document.querySelector(".chat-input");
   log.innerHTML = chat;
@@ -99,12 +100,18 @@ export async function getMessage(receiver, offset = 0) {
 
 let throttledScrollHandler = null;
 
-export function GetMessage(receiver) {
-  getMessage(receiver);
+export async function GetMessage(receiver) {
+ await getMessage(receiver);
+
+  let chat = document.querySelector(".chat");
+  if (!chat) {
+    console.error("Chat element not found");
+    return;
+  }
+  chat.scrollTop = chat.scrollHeight;
+  console.log(chat.scrollTop, chat.scrollHeight);
 
   let offset = 30;
-  const chat = document.querySelector(".chat");
-
   if (throttledScrollHandler) {
     chat.removeEventListener("scroll", throttledScrollHandler);
   }
@@ -112,20 +119,19 @@ export function GetMessage(receiver) {
     if (chat.scrollTop === 0) {
       getMessage(receiver, offset);
       offset += 30;
-      console.log(offset);
     }
   }, 200);
+
   chat.addEventListener("scroll", throttledScrollHandler);
 }
 
 export async function fetchConnectedUsers() {
   const response = await fetch("/api/connected");
   if (response.ok) {
-    const userList = document.getElementById("userList");
+    const userList = document.querySelector(".aside-right");
     userList.innerHTML = "";
     const users = await response.json();
     users.forEach((user) => {
-      console.log(user);
       addUser(user.id, user.username, user.status);
     });
   } else {

@@ -1,8 +1,9 @@
+import { loadPage } from "../laodpages.js";
 import { sendMessage } from "./compenetChat.js";
-import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
+import { GetMessage } from "./displyMessage.js";
 
 export function addUser(userId, userName, status) {
-  const userList = document.getElementById("userList");
+  const userList = document.querySelector(".aside-right");
   const userItem = document.createElement("li");
   userItem.className = "user-item";
   userItem.id = userId;
@@ -28,17 +29,17 @@ export function addUser(userId, userName, status) {
     if (log) {
       log.innerHTML = "";
     }
-    GetMessage(userId);
-    sendMessage();
+    loadPage()
   });
   statusDot.style.background = status === "online" ? "green" : "red";
   return userItem;
 }
 
-
 export function updateUserList(message) {
-  console.log(message);
-
+  const data = JSON.parse(localStorage.getItem("data"))
+  if (data.id == message.online_users) {
+    return
+  }
   let id = document.getElementById(message.online_users);
   if (id) {
     let status = id.querySelector(".status");
@@ -49,14 +50,12 @@ export function updateUserList(message) {
     }
   } else {
     const user = addUser(message.online_users, message.userName, message.type);
-    document.querySelector("#userList").append(user);
+    document.querySelector(".aside-right").append(user);
   }
 }
 
 export function SetUserUp(message) {
-  const userlist = document.querySelector("#userList");
-  console.log(message);
-
+  const userlist = document.querySelector(".aside-right");
   let useritem = document.getElementById(message.sender);
   if (useritem) {
     useritem.remove();

@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -64,7 +63,6 @@ func (m MeddlewireController) AuthenticateMiddleware(next http.Handler) http.Han
 				Name:   "token",
 				Value:  "",
 			})
-			fmt.Println("Log out")
 			return
 		} else {
 			next.ServeHTTP(w, r)
