@@ -1,8 +1,6 @@
 const login = /*html*/ `
     <div class="logoAndName">
-        <a href="/home">
           <img class="logo" src="../static/imgs/logo.png" alt="logo" />
-        </a>
         <h2>Bluezone</h2>
       </div>
       <div class="alert"></div>
@@ -43,9 +41,7 @@ const login = /*html*/ `
 const register = /*html*/ `
     <div class="alert"></div>
         <div class="logoAndName">
-            <a href="/home">
                 <img class="logo" src="../static/imgs/logo.png" alt="logo" />
-            </a>
             <h2>Bluezone</h2>
         </div>
         <div class="wrapper active">
