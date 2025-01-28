@@ -93,6 +93,7 @@ async function loadPage() {
       leftside();
       classes();
       fetchConnectedUsers();
+      console.log("log");
       logout();
       break;
     default:

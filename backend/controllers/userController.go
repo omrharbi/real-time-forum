@@ -94,8 +94,6 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logout.Id = r.Context().Value("id_user").(int)
-	logout.Id = r.Context().Value("id_user").(int)
-
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 	message, uuid := uc.userService.UUiduser(logout.Uuid)
@@ -110,6 +108,9 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 	}
 	if client, ok := clientsList[logout.Id]; ok && client != nil {
 		client.connection.Close()
+		delete(clientsList, logout.Id)
+		m := new(Manager)
+		m.broadcastOnlineUserList("offline", client)
 	}
 	uc.ClearCookies(w)
 	w.WriteHeader(http.StatusOK)
@@ -156,7 +157,6 @@ func (uc *UserController) HandleIsLogged(w http.ResponseWriter, r *http.Request)
 	}
 	is, expire, _ := uc.userService.CheckAuth(r.Context(), cookies.Value)
 	if !time.Now().Before(expire) {
-		fmt.Println("expire")
 		http.SetCookie(w, &http.Cookie{
 			MaxAge: -1,
 			Name:   "token",

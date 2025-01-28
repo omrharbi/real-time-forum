@@ -1,4 +1,5 @@
- 
+import { loadPage } from "./laodpages.js";
+
 export async function logout() {
   let Useruuid = getCookie("token");
   const LogoutItem = document.querySelector(".signOut");
@@ -12,6 +13,8 @@ export async function logout() {
         },
         body: JSON.stringify({ uuid: Useruuid }),
       });
+      history.pushState(null, "", "/login");
+      loadPage();
     });
   } else {
     console.error("Logout button not found");

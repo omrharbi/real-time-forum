@@ -51,7 +51,7 @@ export function setupWs() {
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    history.pushState("", "", "/login");
+    history.pushState(null, "", "/login");
     loadPage();
   };
 
