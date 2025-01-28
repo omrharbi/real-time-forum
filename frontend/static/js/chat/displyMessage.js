@@ -53,7 +53,6 @@ export function displayMessage(
   //log.scrollTop = log.scrollHeight;
 }
 
-
 export async function getMessage(receiver, offset = 0) {
   const log = document.querySelector(".chat-input");
   log.innerHTML = chat;
@@ -76,9 +75,12 @@ export async function getMessage(receiver, offset = 0) {
   if (response) {
     let data = await response.json();
     if (data) {
+      console.log(data);
+
       let isOwen;
-      if (!data) return;
       for (let i = 0; i < data.length; i++) {
+        console.log(parsedData, data[i].sender);
+
         if (parsedData.id === data[i].sender) {
           isOwen = true;
         } else {
@@ -101,7 +103,7 @@ export async function getMessage(receiver, offset = 0) {
 let throttledScrollHandler = null;
 
 export async function GetMessage(receiver) {
- await getMessage(receiver);
+  await getMessage(receiver);
 
   let chat = document.querySelector(".chat");
   if (!chat) {
