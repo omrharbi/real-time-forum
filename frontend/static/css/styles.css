@@ -568,6 +568,7 @@ button:hover {
 .display-name {
   font-weight: bold;
   margin-bottom: 2px;
+  color: rgba(0, 0, 0, 0.288);
 }
 
 .username {

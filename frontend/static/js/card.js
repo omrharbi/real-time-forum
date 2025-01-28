@@ -19,6 +19,7 @@ export function cards(data, user_info) {
 }
 
 export function createPos(ele) {
+  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">

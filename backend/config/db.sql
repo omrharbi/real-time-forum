@@ -77,13 +77,4 @@ CREATE TABLE IF NOT EXISTS likes (
     (user_id, card_id)
 );
 
-INSERT INTO category (name) VALUES ('General');
-INSERT INTO category (name) VALUES ('Technology');
-INSERT INTO category (name) VALUES ('Sports');
-INSERT INTO category (name) VALUES ('Entertainment');
-INSERT INTO category (name) VALUES ('Science');
-INSERT INTO category (name) VALUES ('Food');
-INSERT INTO category (name) VALUES ('Travel');
-INSERT INTO category (name) VALUES ('Fashion');
-INSERT INTO category (name) VALUES ('Art');
-INSERT INTO category (name) VALUES ('Music');
+ INSERT INTO category (name) VALUES ('General') , ('Technology') , ('Sports') , ('Entertainment') , ('Science') , ('Food') , ('Travel') , ('Fashion') , ('Art') , ('Music') ON CONFLICT (name) DO NOTHING;

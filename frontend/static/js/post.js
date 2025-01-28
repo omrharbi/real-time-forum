@@ -22,7 +22,7 @@ async function creatPost(categoriesSelected) {
     const post = createPos(data.message);
     
 
-    if (window.location.pathname === "/home")
+    if (window.location.pathname === "/home" || window.location.pathname === "/")
       document.querySelector("article").prepend(post);
     console.log("Success:", data);
   } else if (response.status === 400) {

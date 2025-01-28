@@ -36,6 +36,10 @@ export function addUser(userId, userName, status) {
 }
 
 export function updateUserList(message) {
+  const data = JSON.parse(localStorage.getItem("data"))
+  if (data.id == message.online_users) {
+    return
+  }
   let id = document.getElementById(message.online_users);
   if (id) {
     let status = id.querySelector(".status");
