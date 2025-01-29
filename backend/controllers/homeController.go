@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -62,6 +63,7 @@ func (h *HomeController) GetCard_handler(res http.ResponseWriter, req *http.Requ
 		return
 	}
 	id, err := strconv.Atoi(req.FormValue("id"))
+	fmt.Println(id)
 	if err != nil {
 		JsoneResponse(res, "Status Bad Request ID Uncorect", http.StatusBadRequest)
 		return

@@ -291,7 +291,7 @@ button:hover {
   resize: none;
   outline: none;
   min-height: 200px;
-  margin-left: -15px;
+  margin-left: -4px;
 }
 
 .newPost-content img {
@@ -568,13 +568,14 @@ button:hover {
 
 .user-info {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
 }
 
 .display-name {
   font-weight: bold;
   margin-bottom: 2px;
   color: rgba(0, 0, 0, 0.288);
+  margin-right: 10px;
 }
 
 .username {

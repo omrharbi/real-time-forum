@@ -27,7 +27,7 @@ async function fetchCommat() {
       method: "GET",
     });
     if (response.ok) {
-      data = await response.json();      
+      data = await response.json();
       fullname.textContent = data.lastName + " " + data.firstName;
       content.textContent = data.content;
       username.textContent = data.lastName;
@@ -36,22 +36,29 @@ async function fetchCommat() {
       comments.textContent = data.comments;
       let catgory = document.querySelector(".catgory");
       let c = data.categories.split(",");
+      console.log(data);
+      
+      if (data.categories==="") {
+        catgory.style.display = "none"
+      }
       c.forEach((element) => {
         console.log(element);
-        
+
         let CreatCate = document.createElement("span");
         CreatCate.className = "category-item categories";
         CreatCate.textContent = element;
         catgory.appendChild(CreatCate);
       });
-      likes(cards , disliked , data.id)
+
+
+      likes(cards, disliked, data.id)
       cards.addEventListener("click", () => {
         if (cards.classList.contains("clicked")) {
-          deletLikes(ele.id);
+          deletLikes(data.id);
           cards.classList.remove("clicked");
-          ele.likes--;
+          data.likes--;
         } else {
-          addLikes(data.id , true)
+          addLikes(data.id, true)
           if (disliked.classList.contains("clicked_disliked")) {
             disliked.classList.remove("clicked_disliked");
             data.dislikes--;
@@ -62,14 +69,14 @@ async function fetchCommat() {
         is_Dislikes.innerHTML = data.dislikes;
         is_liked.innerHTML = data.likes;
       });
-    
+
       disliked.addEventListener("click", () => {
         if (disliked.classList.contains("clicked_disliked")) {
           deletLikes(data.id);
           disliked.classList.remove("clicked_disliked");
           data.dislikes--;
         } else {
-          addLikes(data.id , false)
+          addLikes(data.id, false)
           if (cards.classList.contains("clicked")) {
             cards.classList.remove("clicked");
             data.likes--;

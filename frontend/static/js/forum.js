@@ -2,7 +2,7 @@
 import { cards } from "./card.js";
 import { alertPopup } from "./alert.js";
 import { likes } from "./likescomment.js";
-import { fetchupdateCard } from "./createcomment.js";
+// import { fetchupdateCard } from "./createcomment.js";
 let content = [];
 export async function fetchData(page = 1) {
   const response = await fetch(`/api/home?page=${page}`, {

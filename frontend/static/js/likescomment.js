@@ -1,5 +1,5 @@
 // import { alertPopup } from "./alert.js";
-import { fetchupdateCard } from "./createcomment.js";
+// import { fetchupdateCard } from "./createcomment.js";
 
 export async function likes(likeElements ,alldislike,card_id ) {
   const storedData = localStorage.getItem("data");

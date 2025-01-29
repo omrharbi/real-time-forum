@@ -76,12 +76,13 @@ export function createPos(ele) {
 
   let catgory = contents.querySelector(".catgory");
   let c = ele.categories.split(",");
-  c.forEach((element) => {
-    let CreatCate = document.createElement("span");
-    CreatCate.className = "category-item categories";
-    CreatCate.textContent = element;
-    catgory.appendChild(CreatCate);
-  });
+    c.forEach((element) => {
+      let CreatCate = document.createElement("span");
+      CreatCate.className = "category-item categories";
+      CreatCate.textContent = element;
+      catgory.appendChild(CreatCate);
+    });
+  
   let allLikes = contents.querySelector("#likes");
   let alldislike = contents.querySelector("#dislikes");
   let countdislike = contents.querySelector("#is_Dislikes");

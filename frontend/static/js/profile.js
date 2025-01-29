@@ -1,10 +1,7 @@
-import { navigate } from "./home.js";
-import { likes } from "./likescomment.js";
+ import { likes } from "./likescomment.js";
 import { cards } from "./card.js";
 
 import { alertPopup } from "./alert.js";
-import { fetchupdateCard } from "./createcomment.js";
-// navigate();
 let content = [];
 export function Profile() {
   const profileNav = document.querySelectorAll(".profile-nav span");

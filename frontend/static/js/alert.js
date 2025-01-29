@@ -29,7 +29,8 @@ export function alertPopup(data) {
         const popup = document.getElementById('popup');
         popup.classList.remove('show');
         if(params==="/comment"){
-            location.href=`/comment?card_id=${cardId}`
+            
+            // location.href=`/comment?card_id=${cardId}`
         }
         
     }

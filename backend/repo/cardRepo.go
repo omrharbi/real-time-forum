@@ -109,7 +109,7 @@ func (c *cardRepositoryImpl) GetCard(ctx context.Context, targetID int) *models.
        (SELECT count(*) FROM comment cm WHERE cm.target_id = c.id) as comments,
         (SELECT count(*) FROM likes l WHERE ( l.card_id =p.card_id  ) AND l.is_like = 1) as likes,
         (SELECT count(*) FROM likes l WHERE( l.card_id =p.card_id )AND l.is_like = 0) as dislikes,
-         GROUP_CONCAT(ct.name, ',') AS categories
+         COALESCE(GROUP_CONCAT(ct.name ORDER BY ct.name , ','), '') AS categories
        	FROM card c LEFT JOIN comment cm  on c.id=cm.card_id LEFT  JOIN post p on p.card_id=c.id
 		JOIN user u ON c.user_id = u.id 
         LEFT JOIN post_category cp ON p.id = cp.post_id

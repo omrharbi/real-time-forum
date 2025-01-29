@@ -7,9 +7,11 @@ const pathname = location.pathname;
 const cardDatas = urlParams.get("card_id");
 // checkandAdd();
 async function InitialComment(ele, comments) {
+  
   if (ele.length > 0) {
     ele.map((data) => {
-      console.log(data, "ini");
+      console.log(data);
+     
 
       let div = document.createElement("div");
       div.className = "commens-card";
@@ -111,40 +113,37 @@ async function InitialComment(ele, comments) {
       });
       return { data: data.content, element: div };
     });
-
-    fetchupdateCard();
   }
 }
 
-export function fetchupdateCard() {
-  let like = document.querySelectorAll("#likes");
-  like.forEach((click) => {
-    click.addEventListener("click", async (e) => {
-      try {
-        let cardId = click.getAttribute("data-id_card");
-        console.log(cardId, "card id ");
+// export function fetchupdateCard() {
+//   let like = document.querySelectorAll("#likes");
+//   like.forEach((click) => {
+//     click.addEventListener("click", async (e) => {
+//       try {
+//         let cardId = click.getAttribute("data-id_card");
+//         console.log(cardId, "card id ");
 
-        const response = await fetch(`/api/card?id=${cardId}`, {
-          method: "GET",
-        });
-        if (response.ok) {
-          const cardData = await response.json();
-          let data_like = click.getAttribute("data-like");
-          let is_liked = click.querySelector("#is_liked");
-          if (click.classList.contains("is_liked")) {
-            console.log(is_liked);
-          }
-          console.log(cardData.id);
-          await addLikes(cardData.id, 1);
-        }
+//         const response = await fetch(`/api/card?id=${cardId}`, {
+//           method: "GET",
+//         });
+//         if (response.ok) {
+//           const cardData = await response.json();
+//            let is_liked = click.querySelector("#is_liked");
+//           if (click.classList.contains("is_liked")) {
+//             console.log(is_liked);
+//           }
+//           console.log(cardData.id);
+//           await addLikes(cardData.id, true);
+//         }
         
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        alert("An error occurred while fetching the card data.");
-      }
-    });
-  });
-}
+//       } catch (error) {
+//         console.error("Fetch Error:", error);
+//         alert("An error occurred while fetching the card data.");
+//       }
+//     });
+//   });
+// }
 
 
 async function createComment(content) {
