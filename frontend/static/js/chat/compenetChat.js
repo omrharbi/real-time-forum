@@ -14,13 +14,12 @@ export function setupWs() {
   ws.onmessage = async (event) => {
     const message = JSON.parse(event.data);
     console.log(message);
-
+    const query = new URLSearchParams(window.location.search);
     switch (message.type) {
       case "online":
         updateUserList(message);
         break;
       case "broadcast":
-        const query = new URLSearchParams(window.location.search);
         if (window.location.pathname === "/chat") {
           if (query.get("receiver") == message.sender) {
             displayMessage(
@@ -42,7 +41,7 @@ export function setupWs() {
         break;
       case "typing":
         showTypingNotification(message.sender);
-        debounce(() => { });
+        debounce(() => {});
         break;
       case "offline":
         updateUserList(message);
@@ -65,8 +64,8 @@ export function setupWs() {
 }
 function showTypingNotification(id) {
   const user = document.getElementById(id);
-  const typing = user.querySelector(".type")
-  typing.textContent = "tayping..."
+  const typing = user.querySelector(".type");
+  typing.textContent = "tayping...";
   addStyle("typing.css");
 }
 
@@ -101,7 +100,7 @@ export function addUser(userId, userName, status) {
 
   const statusDot = document.createElement("span");
   statusDot.className = "status";
-  userNameDiv.appendChild(type)
+  userNameDiv.appendChild(type);
   userItem.append(userIcon, userNameDiv, statusDot);
   userList.appendChild(userItem);
   userItem.addEventListener("click", () => {
