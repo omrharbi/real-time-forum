@@ -22,13 +22,14 @@ const main = /*html*/ `
       </aside>`;
 const nav_item = [
   {
+    id: "log-out",
+    name: "log-out",
+  },
+  {
     id: "chat",
     name: "chatbubbles",
   },
-  {
-    id: "settings",
-    name: "settings",
-  },
+  
   {
     id: "profile",
     name: "person-circle",

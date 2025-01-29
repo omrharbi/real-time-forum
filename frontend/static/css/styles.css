@@ -43,7 +43,9 @@ body {
   transition: all 0.3s ease;
   color: var(--color-white);
 }
-
+h1 {
+  text-transform: capitalize;
+}
 .content_post {
   position: relative;
   overflow-y: scroll;

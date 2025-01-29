@@ -23,7 +23,7 @@ function navigate(id) {
   });
 }
 
-const ids = ["chat", "home", "profile", "settings"];
+const ids = ["chat", "home", "profile",  "log-out"];
 
 function Change() {
   for (let idl of ids) {

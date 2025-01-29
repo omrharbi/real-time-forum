@@ -53,6 +53,9 @@ async function loadPage() {
       messages();
       addStyle();
       break;
+    case "log-out":
+      logout()
+      break;
     case "":
     case "home":
       document.head.querySelector("title").innerText = "home";
@@ -65,7 +68,6 @@ async function loadPage() {
       break;
     case "comment":
       document.head.querySelector("title").innerText = path;
-
       await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
@@ -73,11 +75,9 @@ async function loadPage() {
       classes();
       fetchCommat();
       GetComments();
-      // Inf();
       break;
     case "profile":
       document.head.querySelector("title").innerText = path;
-
       await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
@@ -86,16 +86,7 @@ async function loadPage() {
       fetchData("posts");
       profileInfo();
       break;
-    case "settings":
-      document.head.querySelector("title").innerText = path;
-      await checklogin();
-      section.classList.remove("sectionLogin");
-      leftside();
-      classes();
-      fetchConnectedUsers();
-      console.log("log");
-      logout();
-      break;
+
     default:
       section.classList.add("sectionLogin");
       section.innerHTML = pageNotFound;
@@ -103,6 +94,7 @@ async function loadPage() {
       break;
   }
 }
+
 
 loadPage();
 export { loadPage };
