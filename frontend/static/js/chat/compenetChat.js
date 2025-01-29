@@ -5,8 +5,6 @@ import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
 
 let ws;
 export function setupWs() {
-  console.log("from login");
-
   ws = new WebSocket(`ws://${window.location.host}/ws`);
   ws.onopen = () => {
     console.log("is connected");
@@ -58,8 +56,6 @@ export function setupWs() {
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    history.pushState(null, "", "/login");
-    loadPage()
   };
 
   ws.onerror = (error) => {

@@ -110,12 +110,11 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		message := models.OnlineUser{
 			Type: "reload",
 		}
-		client.connection.WriteJSON(message)
-		client.connection.Close()
-		delete(clientsList, logout.Id)
-
+		client.connection.WriteJSON(&message)
 		m := new(Manager)
 		m.broadcastOnlineUserList("offline", client)
+		client.connection.Close()
+		delete(clientsList, logout.Id)
 	}
 	uc.ClearCookies(w)
 	w.WriteHeader(http.StatusOK)
