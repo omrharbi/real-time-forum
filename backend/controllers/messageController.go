@@ -134,7 +134,9 @@ func (c *Client) ReadMess(mg *Manager) {
 			receiverClient.connection.WriteJSON(m)
 			Seen = 1
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
+		if m.Type == "broadcast" {
+			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
+		}
 		c.Manager.Unlock()
 	}
 }

@@ -41,7 +41,8 @@ export function setupWs() {
         }
         break;
       case "typing":
-        showTypingNotification(message.userId);
+        showTypingNotification(message.sender);
+        debounce(() => { });
         break;
       case "offline":
         updateUserList(message);
@@ -51,7 +52,6 @@ export function setupWs() {
         break;
       default:
         console.warn("Unhandled message type:", message.type);
-
     }
   };
 
@@ -62,6 +62,12 @@ export function setupWs() {
   ws.onerror = (error) => {
     console.error("WebSocket error:", error);
   };
+}
+function showTypingNotification(id) {
+  const user = document.getElementById(id);
+  const typing = user.querySelector(".type")
+  typing.textContent = "tayping..."
+  addStyle("typing.css");
 }
 
 export const chat = /*html*/ `
@@ -146,25 +152,36 @@ export function sendMessage() {
   const parsedData = JSON.parse(storedData);
   let token = getCookie("token");
 
-
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
   message.addEventListener("keypress", (e) => {
     if (!token) {
-      logout()
+      logout();
     }
+    let receiver = new URLSearchParams(location.search).get("receiver");
     if (e.key === "Enter") {
       e.preventDefault();
       sendButton.click();
+      return;
     }
+
+    console.log();
+
+    ws.send(
+      JSON.stringify({
+        type: "typing",
+        sender: parsedData.id,
+        receiver: +receiver,
+        createAt: new Date(),
+      })
+    );
   });
   sendButton.addEventListener(
     "click",
     debounce(() => {
-
       if (!token) {
-        logout()
+        logout();
       }
       let receiver = new URLSearchParams(location.search).get("receiver");
       const messages = message.value.trim();
@@ -198,9 +215,9 @@ export function showPopup(message) {
   }, 5000);
 }
 
-export function addStyle() {
+export function addStyle(name) {
   let style = document.createElement("link");
   style.rel = "stylesheet";
-  style.href = "../static/css/chat.css";
+  style.href = `./static/css/${name}`;
   document.head.appendChild(style);
 }

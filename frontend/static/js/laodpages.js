@@ -51,7 +51,7 @@ async function loadPage() {
       leftside();
       fetchConnectedUsers();
       messages();
-      addStyle();
+      addStyle("chat.css");
       break;
     case "log-out":
       logout()
