@@ -107,8 +107,13 @@ func (uc *UserController) HandleLogOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if client, ok := clientsList[logout.Id]; ok && client != nil {
+		message := models.OnlineUser{
+			Type: "reload",
+		}
+		client.connection.WriteJSON(message)
 		client.connection.Close()
 		delete(clientsList, logout.Id)
+
 		m := new(Manager)
 		m.broadcastOnlineUserList("offline", client)
 	}
