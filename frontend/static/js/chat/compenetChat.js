@@ -41,7 +41,7 @@ export function setupWs() {
         }
         break;
       case "typing":
-        showTypingNotification(message.userId);
+          showTypingNotification(message.userId);
         break;
       case "offline":
         updateUserList(message);
@@ -51,7 +51,6 @@ export function setupWs() {
         break;
       default:
         console.warn("Unhandled message type:", message.type);
-
     }
   };
 
@@ -142,26 +141,34 @@ export function sendMessage() {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
   let token = getCookie("token");
-  
 
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
   message.addEventListener("keypress", (e) => {
-    if(!token){
-      logout()
+    if (!token) {
+      logout();
     }
+    let receiver = new URLSearchParams(location.search).get("receiver");
     if (e.key === "Enter") {
       e.preventDefault();
       sendButton.click();
+      return;
     }
+    ws.send(
+      JSON.stringify({
+        type: "typing",
+        sender: parsedData.id,
+        receiver: +receiver,
+        createAt: new Date(),
+      })
+    );
   });
   sendButton.addEventListener(
     "click",
     debounce(() => {
-
-      if(!token){
-        logout()
+      if (!token) {
+        logout();
       }
       let receiver = new URLSearchParams(location.search).get("receiver");
       const messages = message.value.trim();
