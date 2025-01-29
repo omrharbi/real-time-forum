@@ -41,7 +41,8 @@ export function setupWs() {
         }
         break;
       case "typing":
-          showTypingNotification(message.userId);
+        showTypingNotification(message.userId);
+        debounce(() => {});
         break;
       case "offline":
         updateUserList(message);
