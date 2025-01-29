@@ -191,7 +191,7 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		message.MessageError = "you have be 18 or more"
 		return models.ResponceUser{}, message, ""
 	}
-	if users.Gender != "male" && users.Gender != "femel" {
+	if users.Gender != "male" && users.Gender != "female" {
 		message.MessageError = "unknown gender"
 		return models.ResponceUser{}, message, ""
 	}
