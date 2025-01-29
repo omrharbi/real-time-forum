@@ -125,10 +125,7 @@ func (c *Client) ReadMess(mg *Manager) {
 		m.Username = c.Name_user
 		m.Sender = c.id_user
 		m.Sender = c.id_user
-		if clien, ok := clientsList[c.id_user]; !ok {
-			clien.connection.WriteJSON(models.OnlineUser{
-				Type: "reload",
-			})
+		if _, ok := clientsList[c.id_user]; !ok {
 			return
 		}
 		c.Manager.Lock()

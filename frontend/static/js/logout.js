@@ -13,7 +13,7 @@ export async function logout() {
   loadPage();
 }
 
-function getCookie(name) {
+export function getCookie(name) {
   const cookies = document.cookie.split("; ");
   for (let i = 0; i < cookies.length; i++) {
     const [key, value] = cookies[i].split("=");

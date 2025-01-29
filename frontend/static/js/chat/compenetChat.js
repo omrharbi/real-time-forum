@@ -1,5 +1,6 @@
 import { debounce } from "../checklogin.js";
 import { loadPage } from "../laodpages.js";
+import { getCookie, logout } from "../logout.js";
 import { SetUserUp, updateUserList } from "./create_user.js";
 import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
 
@@ -140,10 +141,16 @@ export let addtoOfset = 0;
 export function sendMessage() {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
+  let token = getCookie("token");
+  
+
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
   message.addEventListener("keypress", (e) => {
+    if(!token){
+      logout()
+    }
     if (e.key === "Enter") {
       e.preventDefault();
       sendButton.click();
@@ -152,6 +159,10 @@ export function sendMessage() {
   sendButton.addEventListener(
     "click",
     debounce(() => {
+
+      if(!token){
+        logout()
+      }
       let receiver = new URLSearchParams(location.search).get("receiver");
       const messages = message.value.trim();
       if (messages) {
