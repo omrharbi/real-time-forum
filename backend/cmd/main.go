@@ -97,50 +97,19 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 }
 
 func SetupPageRoutes(mux *http.ServeMux) {
-	// mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-	// 	if r.Method != http.MethodGet {
-	// 		// handlers.JsoneResponseError(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
-	// 		return
-	// 	}
-
-	// 	suffix := r.URL.Path[len("/static/"):]
-
-	// 	if strings.Contains(suffix, ".css/") || strings.Contains(suffix, ".js/") || strings.Contains(suffix, ".png/") {
-	// 		// handlers.JsoneResponseError(w, r, "Not Found", http.StatusNotFound)
-	// 		return
-	// 	}
-
-	// 	if strings.Contains(suffix, ".js") {
-	// 		http.ServeFile(w, r, "../../frontend/static/"+suffix)
-	// 		return
-	// 	}
-
-	// 	allowedFiles := map[string]bool{
-	// 		"css/alert.css":       true,
-	// 		"css/styles.css":      true,
-	// 		"css/chat.css":        true,
-	// 		"imgs/logo.png":       true,
-	// 		"imgs/profilePic.png": true,
-	// 	}
-
-	// 	if !allowedFiles[suffix] {
-	// 		// handlers.JsoneResponseError(w, r, "Access Forbidden", http.StatusForbidden)
-	// 		return
-	// 	}
-	// 	http.ServeFile(w, r, "../../frontend/static/"+suffix)
-	// })
-
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "../../frontend/templates/home.html")
 	})
-
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "..") {
+			controllers.JsoneResponse(w, nil, http.StatusForbidden)
+			http.ServeFile(w, r, "../../frontend/templates/home.html")
 			return
 		}
 		filename := "../../frontend" + r.URL.Path
 		file, err := os.ReadFile(filename)
 		if err != nil {
+			controllers.JsoneResponse(w, nil, http.StatusForbidden)
 			//	utils.ErrorHandler(w, http.StatusNotFound, "Page Not Found", "The page you are looking for is not available!", nil)
 			return
 		}
