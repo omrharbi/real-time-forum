@@ -109,7 +109,6 @@ func SetupPageRoutes(mux *http.ServeMux) {
 		file, err := os.ReadFile(filename)
 		if err != nil {
 			controllers.JsoneResponseError(w, r, nil, http.StatusForbidden)
-			//	utils.ErrorHandler(w, http.StatusNotFound, "Page Not Found", "The page you are looking for is not available!", nil)
 			return
 		}
 		http.ServeContent(w, r, filename, time.Now(), strings.NewReader(string(file)))

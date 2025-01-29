@@ -34,10 +34,12 @@ func JsoneResponseError(w http.ResponseWriter, r *http.Request, message any, cod
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	data := ErrorPageData{
+		Code:    code,
+		Message: message,
+	}
 	w.WriteHeader(code)
-
-	err = tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 	}

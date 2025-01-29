@@ -1008,7 +1008,7 @@ button:hover {
   padding: 40px 60px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  background-color: var(--color-light);
+  background-color: #6A75CA;
 }
 
 .status-code {
@@ -1543,4 +1543,12 @@ category
   /* height: 14vh; */
   display: flex;
   flex-wrap: wrap;
+}
+
+.message-error{
+  display: flex
+;
+    flex-direction: column;
+    background: #333657;
+    border-radius: 13px;
 }
