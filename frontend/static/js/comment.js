@@ -27,14 +27,23 @@ async function fetchCommat() {
       method: "GET",
     });
     if (response.ok) {
-      data = await response.json();
-      
+      data = await response.json();      
       fullname.textContent = data.lastName + " " + data.firstName;
       content.textContent = data.content;
       username.textContent = data.lastName;
       is_liked.textContent = data.likes;
       is_Dislikes.textContent = data.dislikes;
       comments.textContent = data.comments;
+      let catgory = document.querySelector(".catgory");
+      let c = data.categories.split(",");
+      c.forEach((element) => {
+        console.log(element);
+        
+        let CreatCate = document.createElement("span");
+        CreatCate.className = "category-item categories";
+        CreatCate.textContent = element;
+        catgory.appendChild(CreatCate);
+      });
       likes(cards , disliked , data.id)
       cards.addEventListener("click", () => {
         if (cards.classList.contains("clicked")) {

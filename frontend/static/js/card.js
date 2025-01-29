@@ -18,8 +18,7 @@ export function cards(data, user_info) {
   return content;
 }
 
-export function createPos(ele) {
-  
+export function createPos(ele) {  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -39,6 +38,9 @@ export function createPos(ele) {
           </div>
           <div class="post-content">
             ${ele.content}
+          </div>
+          <div class="catgory">
+              
           </div>
           <div class="post-actions">
             <div class="action active is_liked" data-context="post" id="likes" data-liked="false" data-like="like" data-id_card="${
@@ -69,8 +71,17 @@ export function createPos(ele) {
             </span>
           </div>
         </div>
+        
         `;
 
+  let catgory = contents.querySelector(".catgory");
+  let c = ele.categories.split(",");
+  c.forEach((element) => {
+    let CreatCate = document.createElement("span");
+    CreatCate.className = "category-item categories";
+    CreatCate.textContent = element;
+    catgory.appendChild(CreatCate);
+  });
   let allLikes = contents.querySelector("#likes");
   let alldislike = contents.querySelector("#dislikes");
   let countdislike = contents.querySelector("#is_Dislikes");
@@ -85,7 +96,7 @@ export function createPos(ele) {
       allLikes.classList.remove("clicked");
       ele.likes--;
     } else {
-      addLikes(ele.id , true)
+      addLikes(ele.id, true);
       if (alldislike.classList.contains("clicked_disliked")) {
         alldislike.classList.remove("clicked_disliked");
         ele.dislikes--;
@@ -103,7 +114,7 @@ export function createPos(ele) {
       alldislike.classList.remove("clicked_disliked");
       ele.dislikes--;
     } else {
-      addLikes(ele.id , false)
+      addLikes(ele.id, false);
       if (allLikes.classList.contains("clicked")) {
         allLikes.classList.remove("clicked");
         ele.likes--;
