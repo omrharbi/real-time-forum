@@ -33,11 +33,12 @@ func (l *likesController) LikesCheckedHandle(w http.ResponseWriter, r *http.Requ
 		JsoneResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	liked.User_Id = r.Context().Value("id_user").(int)
 	dislike := l.likes.ChecklikesUser(r.Context(), liked)
 	json.NewEncoder(w).Encode(dislike)
 }
 
-func (l *likesController) 	HandleAddLike(w http.ResponseWriter, r *http.Request) {
+func (l *likesController) HandleAddLike(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)

@@ -11,7 +11,7 @@ import (
 
 type LikesRepository interface {
 	InserLike(ctx context.Context, user_id, card_id int, is_liked bool) (m messages.Messages)
-	GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds
+	GetuserLiked(ctx context.Context, card_id int, userid int) []models.ResponseUserLikeds
 	// GetLikes(ctx context.Context, card_id int) int
 	DeletLike(ctx context.Context, user_id, card_id int)
 	LikeExists(ctx context.Context, user_id, card_id int) bool
@@ -25,25 +25,13 @@ func NewLikesRepository(db *sql.DB) LikesRepository {
 	return &likeRepositoryImpl{db: db}
 }
 
-// // GetLikes implements likesRepository.
-// func (l *likeRepositoryImpl) GetLikes(ctx context.Context, card_id int) int {
-// 	querylike := `SELECT  l.user_id FROM   card  c   JOIN  likes l WHERE   (l.is_like = 1 or l.is_like = 0 ) AND c.id = ? ` + strconv.Itoa(card_id)
-// 	userliked := 0
-// 	err := l.db.QueryRowContext(ctx, querylike).Scan(&userliked)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	return userliked
-// }
-
 // GetuserLiked implements likesRepository. // mybe is no working
-func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int) []models.ResponseUserLikeds {
+func (l *likeRepositoryImpl) GetuserLiked(ctx context.Context, card_id int, userid int) []models.ResponseUserLikeds {
 	querylike := `SELECT l.is_like=1 , l.is_like=0 , u.UUID,u.id as user_id  FROM likes l JOIN card c 
-    on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =? `
+    on l.card_id=c.id JOIN user u ON u.id=l.user_id  WHERE  l.card_id =? and l.user_id=? `
 
 	likesusers := []models.ResponseUserLikeds{}
-	rows, err := l.db.QueryContext(ctx, querylike, card_id)
+	rows, err := l.db.QueryContext(ctx, querylike, card_id, userid)
 	if err != nil {
 		fmt.Println("Error in likws get user liked", err)
 	}

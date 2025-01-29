@@ -32,7 +32,7 @@ func (l *likesServiceImpl) DeletLike(ctx context.Context, like models.DeletLikes
 }
 
 func (l *likesServiceImpl) ChecklikesUser(ctx context.Context, like models.Like) []models.ResponseUserLikeds {
-	likes := l.like.GetuserLiked(ctx, like.Card_Id)
+	likes := l.like.GetuserLiked(ctx, like.Card_Id,like.User_Id)
 	// fmt.Println(likes)
 	return likes
 }
