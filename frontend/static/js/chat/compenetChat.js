@@ -14,6 +14,8 @@ export function setupWs() {
 
   ws.onmessage = async (event) => {
     const message = JSON.parse(event.data);
+    console.log(message);
+
     switch (message.type) {
       case "online":
         updateUserList(message);
@@ -44,6 +46,9 @@ export function setupWs() {
         break;
       case "offline":
         updateUserList(message);
+        break;
+      case "reload":
+        window.location.reload();
         break;
       default:
         console.warn("Unhandled message type:", message.type);
@@ -141,12 +146,12 @@ export function sendMessage() {
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
- message.addEventListener("keypress", (e) => {
-   if (e.key === "Enter") {
-     e.preventDefault(); 
-     sendButton.click(); 
-   }
- });
+  message.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendButton.click();
+    }
+  });
   sendButton.addEventListener(
     "click",
     debounce(() => {
