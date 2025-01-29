@@ -88,11 +88,14 @@ export function addUser(userId, userName, status) {
 
   const userNameDiv = document.createElement("div");
   userNameDiv.className = "user-name";
+
+  const type = document.createElement("div");
+  type.className = "type";
   userNameDiv.textContent = userName;
 
   const statusDot = document.createElement("span");
   statusDot.className = "status";
-
+  userNameDiv.appendChild(type)
   userItem.append(userIcon, userNameDiv, statusDot);
   userList.appendChild(userItem);
   userItem.addEventListener("click", () => {
@@ -142,13 +145,13 @@ export function sendMessage() {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
   let token = getCookie("token");
-  
+
 
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
   message.addEventListener("keypress", (e) => {
-    if(!token){
+    if (!token) {
       logout()
     }
     if (e.key === "Enter") {
@@ -160,7 +163,7 @@ export function sendMessage() {
     "click",
     debounce(() => {
 
-      if(!token){
+      if (!token) {
         logout()
       }
       let receiver = new URLSearchParams(location.search).get("receiver");

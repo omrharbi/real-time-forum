@@ -1546,8 +1546,7 @@ category
 }
 
 .message-error{
-  display: flex
-;
+  display: flex;
     flex-direction: column;
     background: #333657;
     border-radius: 13px;

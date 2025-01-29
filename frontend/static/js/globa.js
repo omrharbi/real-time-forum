@@ -230,4 +230,14 @@ export const about = /*html*/ `
       </div>
     </div>
 `;
+
+export const type =/*html*/`
+  <div class="chat-bubble">
+<div class="typing">
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+</div>
+` 
 export { register, login, comments, profile, setting };
