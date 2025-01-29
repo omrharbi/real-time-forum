@@ -11,7 +11,6 @@ export async function logout() {
   });
   history.pushState(null, "", "/login");
   loadPage();
-
 }
 
 function getCookie(name) {

@@ -52,13 +52,14 @@ export function setupWs() {
         break;
       default:
         console.warn("Unhandled message type:", message.type);
+
     }
   };
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    // history.pushState(null, "", "/login");
-    // loadPage();
+    history.pushState(null, "", "/login");
+    loadPage()
   };
 
   ws.onerror = (error) => {

@@ -124,7 +124,6 @@ func (c *Client) ReadMess(mg *Manager) {
 		}
 		m.Username = c.Name_user
 		m.Sender = c.id_user
-		// m.Firstname = c.Name_user
 		m.Sender = c.id_user
 		c.Manager.Lock()
 		Seen := 0
