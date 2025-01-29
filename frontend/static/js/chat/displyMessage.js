@@ -75,12 +75,8 @@ export async function getMessage(receiver, offset = 0) {
   if (response) {
     let data = await response.json();
     if (data) {
-      console.log(data);
-
       let isOwen;
       for (let i = 0; i < data.length; i++) {
-        console.log(parsedData, data[i].sender);
-
         if (parsedData.id === data[i].sender) {
           isOwen = true;
         } else {
@@ -111,8 +107,6 @@ export async function GetMessage(receiver) {
     return;
   }
   chat.scrollTop = chat.scrollHeight;
-  console.log(chat.scrollTop, chat.scrollHeight);
-
   let offset = 0;
   if (throttledScrollHandler) {
     chat.removeEventListener("scroll", throttledScrollHandler);

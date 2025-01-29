@@ -101,6 +101,7 @@ export function addUser(userId, userName, status) {
     }
     addtoOfset = 0;
     loadPage();
+    // sendMessage();
   });
   statusDot.style.background = status === "online" ? "green" : "red";
   return userItem;
@@ -140,6 +141,12 @@ export function sendMessage() {
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
+ message.addEventListener("keypress", (e) => {
+   if (e.key === "Enter") {
+     e.preventDefault(); 
+     sendButton.click(); 
+   }
+ });
   sendButton.addEventListener(
     "click",
     debounce(() => {

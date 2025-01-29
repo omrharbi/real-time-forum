@@ -18,9 +18,7 @@ export function cards(data, user_info) {
   return content;
 }
 
-export function createPos(ele) {
-  console.log(ele);
-  
+export function createPos(ele) {  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -79,8 +77,6 @@ export function createPos(ele) {
   let catgory = contents.querySelector(".catgory");
   let c = ele.categories.split(",");
   c.forEach((element) => {
-    console.log(element);
-    
     let CreatCate = document.createElement("span");
     CreatCate.className = "category-item categories";
     CreatCate.textContent = element;
