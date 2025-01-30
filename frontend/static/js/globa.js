@@ -1,8 +1,6 @@
 const login = /*html*/ `
     <div class="logoAndName">
-        <a href="/home">
           <img class="logo" src="../static/imgs/logo.png" alt="logo" />
-        </a>
         <h2>Bluezone</h2>
       </div>
       <div class="alert"></div>
@@ -13,7 +11,7 @@ const login = /*html*/ `
             <div class="input-box">
               <span class="icon"><ion-icon name="mail"></ion-icon></span>
               <input type="text" id="email" required />
-              <label>Email</label>
+              <label>Email Or User Name</label>
             </div>
             <div class="input-box">
               <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
@@ -43,9 +41,7 @@ const login = /*html*/ `
 const register = /*html*/ `
     <div class="alert"></div>
         <div class="logoAndName">
-            <a href="/home">
                 <img class="logo" src="../static/imgs/logo.png" alt="logo" />
-            </a>
             <h2>Bluezone</h2>
         </div>
         <div class="wrapper active">
@@ -116,7 +112,7 @@ const register = /*html*/ `
 
 const comments = /*html*/ `
   <div class="alert"></div>
-            <div class="post commens-card">
+            <div class="post commens-card post-card">
                 <div class="post-header">
                     <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                     <div class="user-info">
@@ -128,6 +124,8 @@ const comments = /*html*/ `
                 <div class="post-content content">
                     
                 </div>
+                <div class="catgory">
+               </div>
                 <div class="post-actions ">
                     <div class="action active is_liked" data-context="comment" id="likes" data-liked="false" data-like="like" data-id_card="" >
                       <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
@@ -135,7 +133,7 @@ const comments = /*html*/ `
                     </svg>
                         <span id="is_liked"></span>
                     </div>
-                    <div  class="action disliked" id="likes" data-liked="false"  data-like="Dislikes" data-id_card="">
+                    <div  class="action disliked" id="dislikes" data-liked="false"  data-like="Dislikes" data-id_card="">
                       <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10 1c.072 0 .145 0 .218.006A4.1 4.1 0 0 1 14 5.184V9h3.138a1.751 1.751 0 0 1 1.234 2.993L10.59 19.72a.836.836 0 0 1-1.18 0l-7.782-7.727A1.751 1.751 0 0 1 2.861 9H6V5.118a4.134 4.134 0 0 1 .854-2.592A3.99 3.99 0 0 1 10 1Zm0 17.193 7.315-7.264a.251.251 0 0 0-.177-.429H12.5V5.184A2.631 2.631 0 0 0 10.136 2.5a2.441 2.441 0 0 0-1.856.682A2.478 2.478 0 0 0 7.5 5v5.5H2.861a.251.251 0 0 0-.176.429L10 18.193Z"></path>
                     </svg>  
@@ -149,7 +147,7 @@ const comments = /*html*/ `
                     </div>
                 </div>
             </div>
-            <div class="post">
+            <div class="post post-card">
                 <div class="postReply">
                     <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                     <div class="writeReply">Write your reply</div>
@@ -232,4 +230,14 @@ export const about = /*html*/ `
       </div>
     </div>
 `;
+
+export const type =/*html*/`
+  <div class="chat-bubble">
+<div class="typing">
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+</div>
+` 
 export { register, login, comments, profile, setting };

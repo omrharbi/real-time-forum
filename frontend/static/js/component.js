@@ -1,4 +1,3 @@
-import { Inf } from "./checklogin.js";
 import { comments, profile, setting } from "./globa.js";
 import { Change } from "./home.js";
 import { loadPage } from "./laodpages.js";
@@ -9,6 +8,7 @@ const main = /*html*/ `
       <main class ="scroll">
         <div class="alert"></div>
         <div class="headMian">
+          <!-- <div> Posts </div> -->
           <img class="logo" src="../static/imgs/logo.png" alt="logo" />
         </div>
         <article class="main content_post">
@@ -18,33 +18,28 @@ const main = /*html*/ `
 
       <div id="side-right"></div>
       <aside class="aside-right">
-        <input class="search" type="text" placeholder="Search.." data-search />
-        <div class="link-list">
-          <a href="/about">about</a>
         </div>
       </aside>`;
 const nav_item = [
   {
+    id: "log-out",
+    name: "log-out",
+  },
+  {
     id: "chat",
     name: "chatbubbles",
   },
-  {
-    id: "settings",
-    name: "settings",
-  },
+  
   {
     id: "profile",
     name: "person-circle",
-  },
-  {
-    id: "categories",
-    name: "filter-circle",
   },
   {
     id: "home",
     name: "home",
   },
 ];
+
 
 const categories = [
   "General",
@@ -60,22 +55,13 @@ const categories = [
   "Music",
 ];
 
-function rightSide() {
-  const aside = section.querySelector(".aside-right");
-  aside.innerHTML = /*html*/ `
-       <input class="search" type="text" placeholder="Search.." data-search />
-          <div class="header-nav">
-                <h1>Choose Your Categories:</h1>
-                <nav class="profile-nav">
-                </nav> 
-            </div>
-            <div class="link-list">
-                <span >about</span>
-            </div>
-  `;
-  const nav = aside.querySelector("nav");
-  SetcategoriesOption(nav);
-  section.append(aside);
+function Setcategories(div) {
+  for (let obj of categories) {
+    const divC = document.createElement("div");
+    divC.className = "category-item";
+    divC.innerText = obj;
+    div.append(divC);
+  }
 }
 
 function leftside() {
@@ -105,9 +91,9 @@ function leftside() {
                   <img src="../static/imgs/profilePic.png" class="avatar" alt="Profile picture" />
                   <textarea maxlength="1000" placeholder="What's up?" id="content" required></textarea>
                 </div>
-                <div class="openCategories" id="choice-categories">
+                <button class="openCategories" id="choice-categories">
                   <h1>Categories</h1>
-                </div>
+                </button>
               </div>
             </div>
             <div id="categories-popup">
@@ -132,11 +118,8 @@ function leftside() {
   Setcategories(div);
   section.prepend(aside);
   Change();
-  if (window.location.pathname === "/categories") {
-    rightSide();
-  } else if (window.location.pathname === "/comment") {
+  if (window.location.pathname === "/comment") {
     CommtSide();
-    document.querySelector("input").remove();
     return;
   } else if (window.location.pathname === "/profile") {
     SetPro();
@@ -144,13 +127,6 @@ function leftside() {
   } else if (window.location.pathname === "/settings") {
     const main = document.querySelector("main");
     main.innerHTML = setting;
-  }
-  const link = document.querySelector(".link-list span");
-  if (link) {
-    link.addEventListener("click", () => {
-      history.pushState(null, "", "/about");
-      loadPage();
-    });
   }
 }
 
@@ -164,19 +140,9 @@ function CommtSide() {
   main.innerHTML = comments;
 }
 
-function SetcategoriesOption(nav) {
-  for (let obj of categories) {
-    const divC = document.createElement("span");
-    divC.innerText = obj;
-    // divC.href = "#";
-    nav.append(divC);
-  }
-}
-
 function SetIcon(nav) {
   for (let obj of nav_item) {
     const a = document.createElement("span");
-    // a.href = "#";
     a.id = obj.id;
     a.className = "nav-item";
     if (window.location.pathname.slice(1) === obj.id) {
@@ -193,13 +159,5 @@ function SetIcon(nav) {
   }
 }
 
-function Setcategories(div) {
-  for (let obj of categories) {
-    const divC = document.createElement("div");
-    divC.className = "category-item";
-    divC.innerText = obj;
-    div.append(divC);
-  }
-}
 
-export { leftside, rightSide };
+export { leftside };

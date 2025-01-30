@@ -1,12 +1,17 @@
 import { debounce } from "../checklogin.js";
+import { type } from "../globa.js";
 import { loadPage } from "../laodpages.js";
+import { getCookie, logout } from "../logout.js";
 import { SetUserUp, updateUserList } from "./create_user.js";
-import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
+import {
+  displayMessage,
+  GetMessage,
+  getMessage,
+  ShowTyoing,
+} from "./displyMessage.js";
 
 let ws;
 export function setupWs() {
-  console.log("from login");
-
   ws = new WebSocket(`ws://${window.location.host}/ws`);
   ws.onopen = () => {
     console.log("is connected");
@@ -14,22 +19,24 @@ export function setupWs() {
 
   ws.onmessage = async (event) => {
     const message = JSON.parse(event.data);
+    const query = new URLSearchParams(window.location.search);
     switch (message.type) {
       case "online":
-        if (window.location.pathname === "/chat") updateUserList(message);
+        updateUserList(message);
         break;
       case "broadcast":
-        const query = new URLSearchParams(window.location.search);
+        const user = document.getElementById(message.sender);
+        user.querySelector(".type").textContent = "";
         if (window.location.pathname === "/chat") {
-          console.log(message);
-
           if (query.get("receiver") == message.sender) {
+            document.querySelector(".typ")?.remove();
             displayMessage(
               message.username,
               message.createAt,
               message.content,
               false
             );
+            addtoOfset++;
           } else {
             document.getElementById("notify").play();
             showPopup(`you have message from ${message.username}`);
@@ -41,10 +48,13 @@ export function setupWs() {
         }
         break;
       case "typing":
-        showTypingNotification(message.userId);
+        showTypingNotification(message, query);
         break;
       case "offline":
-        if (window.location.pathname === "/chat") updateUserList(message);
+        updateUserList(message);
+        break;
+      case "reload":
+        window.location.reload();
         break;
       default:
         console.warn("Unhandled message type:", message.type);
@@ -53,8 +63,6 @@ export function setupWs() {
 
   ws.onclose = () => {
     console.log("WebSocket connection closed.");
-    history.pushState("", "", "/login");
-    loadPage();
   };
 
   ws.onerror = (error) => {
@@ -62,8 +70,35 @@ export function setupWs() {
   };
 }
 
+const clearTyping = debounce((typing, row) => {
+  typing.textContent = "";
+  row?.remove();
+}, 2000);
+
+function showTypingNotification(message, query) {
+  const user = document.getElementById(message.sender);
+  const typing = user.querySelector(".type");
+  typing.textContent = "tayping...";
+  const chat = document.querySelector(".chat");
+  addStyle("typing.css");
+  let row = document.querySelector(".typ");
+  if (
+    query.get("receiver") == message.sender &&
+    window.location.pathname === "/chat"
+  ) {
+    const inDown = chat.scrollHeight - chat.scrollTop === chat.clientHeight;
+    if (!row) {
+      row = ShowTyoing(message);
+    }
+    if (inDown) {
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }
+  clearTyping(typing, row);
+}
+
 export const chat = /*html*/ `
-    
+      </div>
             <input type="text" id="messageInput" placeholder="Type your message here..." />
             <div id="sendButton" >
                <svg   xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
@@ -73,27 +108,64 @@ export const chat = /*html*/ `
     
 `;
 
+export function addUser(userId, userName, status) {
+  const userList = document.querySelector(".aside-right");
+  const userItem = document.createElement("li");
+  userItem.className = "user-item";
+  userItem.id = userId;
+  userItem.dataset.id = userName;
+
+  const userIcon = document.createElement("div");
+  userIcon.className = "user-icon";
+  userIcon.textContent = userName[0].toUpperCase();
+
+  const userNameDiv = document.createElement("div");
+  userNameDiv.className = "user-name";
+
+  const type = document.createElement("div");
+  type.className = "type";
+  userNameDiv.textContent = userName;
+
+  const statusDot = document.createElement("span");
+  statusDot.className = "status";
+  userNameDiv.appendChild(type);
+  userItem.append(userIcon, userNameDiv, statusDot);
+  userList.appendChild(userItem);
+  userItem.addEventListener("click", () => {
+    let url = `chat?receiver=${userId}`;
+    history.pushState(null, "", url);
+    let log = document.querySelector(".chat");
+    if (log) {
+      log.innerHTML = "";
+    }
+    addtoOfset = 0;
+    loadPage();
+    // sendMessage();
+  });
+  statusDot.style.background = status === "online" ? "green" : "red";
+  return userItem;
+}
+
 export function messages() {
   const chat = document.querySelector(".content_post");
   chat.style.height = "100%";
   chat.innerHTML += /*html*/ `
       
             <div class="chat-message chat-container">
-                    <div class="users">
-                        <h1 class="user-online">My Friends  </h1>
-                        <ul class="user-list" id="userList">
-                            <!-- User items will be added dynamically -->
-                        </ul>
-                    </div>
                     <div class="message">
-                         <div class="chat"></div>
+                         <div class="chat">
+                            <div class="log-typing"></div>
+                         </div>
                          <div class="chat-input"></div>
                     </div>
             </div>
     `;
   const query = new URLSearchParams(window.location.search);
   if (query.get("receiver")) {
+    addtoOfset = 0;
     GetMessage(query.get("receiver"));
+    let chat = document.querySelector(".chat");
+    chat.scrollBy(0, chat.scrollHeight);
     sendMessage();
   } else {
     let chat = document.querySelector(".chat");
@@ -102,19 +174,46 @@ export function messages() {
   }
 }
 
+export let addtoOfset = 0;
+
 export function sendMessage() {
   const storedData = localStorage.getItem("data");
   const parsedData = JSON.parse(storedData);
+  let token = getCookie("token");
+
   const chat = document.querySelector(".content_post");
   let message = chat.querySelector("#messageInput");
   let sendButton = chat.querySelector("#sendButton");
+  message.addEventListener("keypress", (e) => {
+    if (!token) {
+      logout();
+    }
+    let receiver = new URLSearchParams(location.search).get("receiver");
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendButton.click();
+      return;
+    }
+    ws.send(
+      JSON.stringify({
+        type: "typing",
+        sender: parsedData.id,
+        receiver: +receiver,
+        createAt: new Date(),
+      })
+    );
+  });
   sendButton.addEventListener(
     "click",
     debounce(() => {
+      if (!token) {
+        logout();
+      }
       let receiver = new URLSearchParams(location.search).get("receiver");
       const messages = message.value.trim();
       if (messages) {
         displayMessage(parsedData.firstname, new Date(), messages, true);
+        addtoOfset++;
         SetUserUp({ sender: receiver });
         ws.send(
           JSON.stringify({
@@ -142,9 +241,9 @@ export function showPopup(message) {
   }, 5000);
 }
 
-export function addStyle() {
+export function addStyle(name) {
   let style = document.createElement("link");
   style.rel = "stylesheet";
-  style.href = "../static/css/chat.css";
+  style.href = `./static/css/${name}`;
   document.head.appendChild(style);
 }

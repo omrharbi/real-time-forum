@@ -1,8 +1,9 @@
 import { getTimeDifferenceInHours } from "../card.js";
 import { throttle } from "../checklogin.js";
-import { chat } from "./compenetChat.js";
+import { type } from "../globa.js";
+import { addtoOfset, addUser, chat } from "./compenetChat.js";
 // import { user_item } from "./compenetChat.js";
-import { addUser } from "./create_user.js";
+// import { addUser } from "./create_user.js";
 
 export function displayMessage(
   sender,
@@ -53,6 +54,32 @@ export function displayMessage(
   //log.scrollTop = log.scrollHeight;
 }
 
+export function ShowTyoing(message) {
+  let log = document.querySelector(".chat");
+  const parent = document.createElement("div");
+  const messageUser = document.createElement("div");
+  const message_content = document.createElement("div");
+  const userIcon = document.createElement("div");
+  const row = document.createElement("div");
+
+  messageUser.className = "messages";
+  message_content.className = "message-content";
+  message_content.innerHTML = type;
+  parent.className = "parent typ";
+
+  userIcon.className = "user-icon message-icon";
+  userIcon.textContent = message.username[0].toUpperCase();
+
+  messageUser.className = "messages resiver";
+  row.className = "row resiver";
+  messageUser.append(message_content);
+  row.append(userIcon, messageUser);
+  // row.innerHTML = type
+  parent.prepend(row);
+  log.appendChild(parent);
+  return parent;
+}
+
 export async function getMessage(receiver, offset = 0) {
   const log = document.querySelector(".chat-input");
   log.innerHTML = chat;
@@ -76,7 +103,6 @@ export async function getMessage(receiver, offset = 0) {
     let data = await response.json();
     if (data) {
       let isOwen;
-      if (!data) return;
       for (let i = 0; i < data.length; i++) {
         if (parsedData.id === data[i].sender) {
           isOwen = true;
@@ -99,33 +125,36 @@ export async function getMessage(receiver, offset = 0) {
 
 let throttledScrollHandler = null;
 
-export function GetMessage(receiver) {
-  getMessage(receiver);
+export async function GetMessage(receiver) {
+  await getMessage(receiver);
 
-  let offset = 30;
-  const chat = document.querySelector(".chat");
-
+  let chat = document.querySelector(".chat");
+  if (!chat) {
+    console.error("Chat element not found");
+    return;
+  }
+  chat.scrollTop = chat.scrollHeight;
+  let offset = 0;
   if (throttledScrollHandler) {
     chat.removeEventListener("scroll", throttledScrollHandler);
   }
   throttledScrollHandler = throttle(() => {
     if (chat.scrollTop === 0) {
+      offset += 10 + addtoOfset;
       getMessage(receiver, offset);
-      offset += 30;
-      console.log(offset);
     }
   }, 200);
+
   chat.addEventListener("scroll", throttledScrollHandler);
 }
 
 export async function fetchConnectedUsers() {
   const response = await fetch("/api/connected");
   if (response.ok) {
-    const userList = document.getElementById("userList");
+    const userList = document.querySelector(".aside-right");
     userList.innerHTML = "";
     const users = await response.json();
     users.forEach((user) => {
-      console.log(user);
       addUser(user.id, user.username, user.status);
     });
   } else {

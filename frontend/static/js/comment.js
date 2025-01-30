@@ -1,7 +1,8 @@
-import { InitialComment } from "./createcomment.js";
+import { InitialComment, likes } from "./createcomment.js";
 // import { checklogin } from "./checklogin.js";
 
 import { alertPopup } from "./alert.js";
+import { addLikes, deletLikes } from "./likescomment.js";
 // await checklogin()
 
 async function fetchCommat() {
@@ -11,7 +12,8 @@ async function fetchCommat() {
   let content = document.querySelector(".content");
   let time = document.querySelector(".time");
   let username = document.querySelector(".username");
-  let cards = document.querySelectorAll("#likes");
+  let cards = document.querySelector("#likes");
+  let disliked = document.querySelector("#dislikes")
   let is_liked = document.querySelector("#is_liked");
   let is_Dislikes = document.querySelector("#is_Dislikes");
   let comments = document.querySelector(".comments");
@@ -32,8 +34,58 @@ async function fetchCommat() {
       is_liked.textContent = data.likes;
       is_Dislikes.textContent = data.dislikes;
       comments.textContent = data.comments;
-      cards.forEach(async (card) => {
-        card.setAttribute("data-id_card", data.id);
+      let catgory = document.querySelector(".catgory");
+      let c = data.categories.split(",");
+      console.log(data);
+      
+      if (data.categories==="") {
+        catgory.style.display = "none"
+      }
+      c.forEach((element) => {
+        console.log(element);
+
+        let CreatCate = document.createElement("span");
+        CreatCate.className = "category-item categories";
+        CreatCate.textContent = element;
+        catgory.appendChild(CreatCate);
+      });
+
+
+      likes(cards, disliked, data.id)
+      cards.addEventListener("click", () => {
+        if (cards.classList.contains("clicked")) {
+          deletLikes(data.id);
+          cards.classList.remove("clicked");
+          data.likes--;
+        } else {
+          addLikes(data.id, true)
+          if (disliked.classList.contains("clicked_disliked")) {
+            disliked.classList.remove("clicked_disliked");
+            data.dislikes--;
+          }
+          data.likes++;
+          cards.classList.add("clicked");
+        }
+        is_Dislikes.innerHTML = data.dislikes;
+        is_liked.innerHTML = data.likes;
+      });
+
+      disliked.addEventListener("click", () => {
+        if (disliked.classList.contains("clicked_disliked")) {
+          deletLikes(data.id);
+          disliked.classList.remove("clicked_disliked");
+          data.dislikes--;
+        } else {
+          addLikes(data.id, false)
+          if (cards.classList.contains("clicked")) {
+            cards.classList.remove("clicked");
+            data.likes--;
+          }
+          data.dislikes++;
+          disliked.classList.add("clicked_disliked");
+        }
+        is_Dislikes.innerHTML = data.dislikes;
+        is_liked.innerHTML = data.likes;
       });
     } else if (response.status === 409 || response.status === 400) {
       const data = await response.json();
@@ -41,7 +93,6 @@ async function fetchCommat() {
     }
   }
 }
-// await fetchdata()
 async function GetComments() {
   const urlParams = new URLSearchParams(window.location.search);
   const cardData = urlParams.get("card_id");

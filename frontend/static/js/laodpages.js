@@ -16,6 +16,7 @@ import { classes } from "./popup.js";
 import { fetchData, Profile, profileInfo } from "./profile.js";
 import { Register } from "./register.js";
 import { fetchConnectedUsers } from "./chat/displyMessage.js";
+import { pageNotFound, RetunHome } from "./error.js";
 
 const section = document.querySelector("section");
 
@@ -28,79 +29,72 @@ window.addEventListener("popstate", (e) => {
   loadPage();
 });
 
-function loadPage() {
+async function loadPage() {
   const path = window.location.pathname.slice(1);
   switch (path) {
     case "login":
-      // document.head.title = "login";
+      document.head.querySelector("title").innerText = path;
       section.classList.add("sectionLogin");
       section.innerHTML = login;
       Login();
       break;
     case "register":
+      document.head.querySelector("title").innerText = path;
       section.classList.add("sectionLogin");
       section.innerHTML = register;
       Register();
       break;
     case "chat":
-      checklogin();
+      document.head.querySelector("title").innerText = path;
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
       fetchConnectedUsers();
       messages();
-      // user_item();
-      addStyle();
+      addStyle("chat.css");
+      break;
+    case "log-out":
+      logout()
       break;
     case "":
     case "home":
-      checklogin();
+      document.head.querySelector("title").innerText = "home";
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       Inf();
-      break;
-    case "categories":
-      checklogin();
-      section.classList.remove("sectionLogin");
-      leftside();
-      ProfileNav();
-      classes();
-      Inf();
-
       break;
     case "comment":
-      checklogin();
+      document.head.querySelector("title").innerText = path;
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       fetchCommat();
       GetComments();
-      // Inf();
       break;
     case "profile":
-      checklogin();
+      document.head.querySelector("title").innerText = path;
+      await checklogin();
       section.classList.remove("sectionLogin");
       leftside();
+      fetchConnectedUsers();
       classes();
       fetchData("posts");
       profileInfo();
       break;
-    case "settings":
-      checklogin();
-      section.classList.remove("sectionLogin");
-      leftside();
-      classes();
-      logout();
-      break;
-    case "about":
-      section.classList.remove("sectionLogin");
-      section.innerHTML = about;
-      break;
+
     default:
-      section.innerHTML = "<h1>Page Not Found</h1>";
+      section.classList.add("sectionLogin");
+      section.innerHTML = pageNotFound;
+      RetunHome()
       break;
   }
 }
+
 
 loadPage();
 export { loadPage };

@@ -1,4 +1,5 @@
 import { loadPage } from "./laodpages.js";
+import { addLikes, deletLikes, likes } from "./likescomment.js";
 
 export function cards(data, user_info) {
   let content = [];
@@ -10,13 +11,14 @@ export function cards(data, user_info) {
   }
   content = data.map((ele) => {
     let contents = createPos(ele);
+
     user_info.append(contents);
     return { data: ele.content, element: contents };
   });
   return content;
 }
 
-export function createPos(ele) {
+export function createPos(ele) {  
   let contents = document.createElement("div");
   contents.innerHTML = `
         <div class="post commens-card">
@@ -37,6 +39,9 @@ export function createPos(ele) {
           <div class="post-content">
             ${ele.content}
           </div>
+          <div class="catgory">
+              
+          </div>
           <div class="post-actions">
             <div class="action active is_liked" data-context="post" id="likes" data-liked="false" data-like="like" data-id_card="${
               ele.id
@@ -46,7 +51,7 @@ export function createPos(ele) {
                         </svg>
               <span id="is_liked" >${ele.likes}</span>
             </div>
-             <div class="action disliked" data-context="post" id="likes" data-liked="false"  data-like="Dislikes" data-id_card="${
+             <div class="action disliked" data-context="post" id="dislikes" data-liked="false"  data-like="Dislikes" data-id_card="${
                ele.id
              }">
               <svg width="17" height="17" viewBox="0 0 20 20" fill="currentColor">
@@ -66,11 +71,62 @@ export function createPos(ele) {
             </span>
           </div>
         </div>
+        
         `;
+
+  let catgory = contents.querySelector(".catgory");
+  let c = ele.categories.split(",");
+    c.forEach((element) => {
+      let CreatCate = document.createElement("span");
+      CreatCate.className = "category-item categories";
+      CreatCate.textContent = element;
+      catgory.appendChild(CreatCate);
+    });
+  
+  let allLikes = contents.querySelector("#likes");
+  let alldislike = contents.querySelector("#dislikes");
+  let countdislike = contents.querySelector("#is_Dislikes");
+  let countlike = contents.querySelector("#is_liked");
+  likes(allLikes, alldislike, ele.id);
   contents.querySelector(".link").addEventListener("click", () => {
     handleCommentClick(ele.id);
   });
-  contents.querySelector(".is_liked");
+  allLikes.addEventListener("click", () => {
+    if (allLikes.classList.contains("clicked")) {
+      deletLikes(ele.id);
+      allLikes.classList.remove("clicked");
+      ele.likes--;
+    } else {
+      addLikes(ele.id, true);
+      if (alldislike.classList.contains("clicked_disliked")) {
+        alldislike.classList.remove("clicked_disliked");
+        ele.dislikes--;
+      }
+      ele.likes++;
+      allLikes.classList.add("clicked");
+    }
+    countdislike.innerHTML = ele.dislikes;
+    countlike.innerHTML = ele.likes;
+  });
+
+  alldislike.addEventListener("click", () => {
+    if (alldislike.classList.contains("clicked_disliked")) {
+      deletLikes(ele.id);
+      alldislike.classList.remove("clicked_disliked");
+      ele.dislikes--;
+    } else {
+      addLikes(ele.id, false);
+      if (allLikes.classList.contains("clicked")) {
+        allLikes.classList.remove("clicked");
+        ele.likes--;
+      }
+      ele.dislikes++;
+      alldislike.classList.add("clicked_disliked");
+    }
+    countdislike.innerHTML = ele.dislikes;
+    countlike.innerHTML = ele.likes;
+  });
+
   return contents;
 }
 

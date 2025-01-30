@@ -69,10 +69,7 @@ func (u *userServiceImpl) AuthenticatLogin(UUID string) (m messages.Messages, ex
 // Authentication implements UserService.
 func (u *userServiceImpl) Authentication(ctx context.Context, time time.Time, log *models.Login) (models.ResponceUser, messages.Messages, uuid.UUID) {
 	message := messages.Messages{}
-	email := strings.ToLower(log.Email)
-	username := strings.ToLower(log.Nickname)
-
-	if (log.Nickname == "" && log.Email == "") || !u.userRepo.EmailExists(ctx, email, username) {
+	if log.Email == "" {
 		message.MessageError = "Invalid email or Username"
 		return models.ResponceUser{}, message, uuid.UUID{}
 	} else {
@@ -191,11 +188,11 @@ func (u *userServiceImpl) Register(ctx context.Context, timeex time.Time, users 
 		return models.ResponceUser{}, message, ""
 	}
 	if users.Age < 18 {
-		message.MessageError = "you still baby go to stady"
+		message.MessageError = "you have be 18 or more"
 		return models.ResponceUser{}, message, ""
 	}
-	if users.Gender != "male" && users.Gender != "femel" {
-		message.MessageError = "we don't suport you go to hell"
+	if users.Gender != "male" && users.Gender != "female" {
+		message.MessageError = "unknown gender"
 		return models.ResponceUser{}, message, ""
 	}
 	message = u.validateUser(users)

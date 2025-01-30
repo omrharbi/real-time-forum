@@ -13,7 +13,7 @@ type Post struct {
 type PostResponde struct {
 	Card_Id      int    `json:"id"`
 	Post_Id      int    `json:"post_id"`
-	User_uuid    string    `json:"user_uuid"`
+	User_uuid    string    `json:"-"`
 	FirstName    string `json:"firstName"`
 	LastName     string `json:"lastName"`
 	Nickname     string `json:"nickname"`
@@ -25,4 +25,6 @@ type PostResponde struct {
 	Userdisliked int    `json:"userdisliked"`
 	Comments     string `json:"comments"`
 	CreatedAt    string `json:"date"`
+	Categories string `json:"categories"`
+
 }

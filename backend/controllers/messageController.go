@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"sync"
 
@@ -68,16 +67,6 @@ func (m *Manager) ServWs(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error retrieving cookie:", err)
 		return
 	}
-	remoteAddr := r.RemoteAddr
-
-	// If you only want the IP (without the port)
-	// Use net.SplitHostPort to separate IP and port
-	host, _, err := net.SplitHostPort(remoteAddr)
-	if err != nil {
-		fmt.Fprintf(w, "Error getting remote address: %v", err)
-		return
-	}
-	fmt.Println("host",host)
 	mes, uuid := m.user.userService.UUiduser(coock.Value)
 	if mes.MessageError != "" {
 		fmt.Println(mes.MessageError, "jjj")
@@ -135,15 +124,19 @@ func (c *Client) ReadMess(mg *Manager) {
 		}
 		m.Username = c.Name_user
 		m.Sender = c.id_user
-		// m.Firstname = c.Name_user
 		m.Sender = c.id_user
+		if _, ok := clientsList[c.id_user]; !ok {
+			return
+		}
 		c.Manager.Lock()
 		Seen := 0
 		if receiverClient, ok := clientsList[m.Receiver]; ok {
 			receiverClient.connection.WriteJSON(m)
 			Seen = 1
 		}
-		mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
+		if m.Type == "broadcast" {
+			mg.MessageS.AddMessages(m.Sender, m.Receiver, m.Content, m.CreateAt, Seen)
+		}
 		c.Manager.Unlock()
 	}
 }
@@ -152,9 +145,6 @@ func (m *Manager) addClient(client *Client) {
 	defer m.Unlock()
 	m.Lock()
 	m.Count[client.id_user]++
-	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
-		clientData.connection.Close()
-	}
 	if clientData, ok := clientsList[client.id_user]; ok && clientData != nil && client.uid != clientData.uid {
 		clientData.connection.Close()
 	}

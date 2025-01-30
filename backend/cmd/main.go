@@ -18,6 +18,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var ValidPath = map[string]bool{
+	"/":         true,
+	"/home":     true,
+	"/chat":     true,
+	"/profile":  true,
+	"/comment":  true,
+	"/log-out":  true,
+	"/register": true,
+	"/login":    true,
+}
+
 func main() {
 	err := config.InitDataBase()
 	if err != nil {
@@ -39,6 +50,7 @@ func main() {
 
 func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 	db := config.Config()
+
 	userRepo := repo.NewUserRepository(db.Connection)
 	cardRepo := repo.NewcardRepository(db.Connection)
 	categoryRepo := repo.NewCategoryRepository(db.Connection)
@@ -96,51 +108,24 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 }
 
 func SetupPageRoutes(mux *http.ServeMux) {
-	// mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-	// 	if r.Method != http.MethodGet {
-	// 		// handlers.JsoneResponseError(w, r, "Method Not Allowed", http.StatusMethodNotAllowed)
-	// 		return
-	// 	}
-
-	// 	suffix := r.URL.Path[len("/static/"):]
-
-	// 	if strings.Contains(suffix, ".css/") || strings.Contains(suffix, ".js/") || strings.Contains(suffix, ".png/") {
-	// 		// handlers.JsoneResponseError(w, r, "Not Found", http.StatusNotFound)
-	// 		return
-	// 	}
-
-	// 	if strings.Contains(suffix, ".js") {
-	// 		http.ServeFile(w, r, "../../frontend/static/"+suffix)
-	// 		return
-	// 	}
-
-	// 	allowedFiles := map[string]bool{
-	// 		"css/alert.css":       true,
-	// 		"css/styles.css":      true,
-	// 		"css/chat.css":        true,
-	// 		"imgs/logo.png":       true,
-	// 		"imgs/profilePic.png": true,
-	// 	}
-
-	// 	if !allowedFiles[suffix] {
-	// 		// handlers.JsoneResponseError(w, r, "Access Forbidden", http.StatusForbidden)
-	// 		return
-	// 	}
-	// 	http.ServeFile(w, r, "../../frontend/static/"+suffix)
-	// })
-
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../frontend/templates/home.html")
-	})
+		code := 200
 
+		if !ValidPath[r.URL.Path] {
+			code = http.StatusNotFound
+		}
+		controllers.JsoneResponseError(w, r, http.StatusText(code), code)
+		// http.ServeFile(w, r, "../../frontend/templates/home.html")
+	})
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "..") {
+			controllers.JsoneResponseError(w, r, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 		filename := "../../frontend" + r.URL.Path
 		file, err := os.ReadFile(filename)
 		if err != nil {
-			//	utils.ErrorHandler(w, http.StatusNotFound, "Page Not Found", "The page you are looking for is not available!", nil)
+			controllers.JsoneResponseError(w, r, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 		http.ServeContent(w, r, filename, time.Now(), strings.NewReader(string(file)))
