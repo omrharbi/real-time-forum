@@ -1,8 +1,14 @@
 import { debounce } from "../checklogin.js";
+import { type } from "../globa.js";
 import { loadPage } from "../laodpages.js";
 import { getCookie, logout } from "../logout.js";
 import { SetUserUp, updateUserList } from "./create_user.js";
-import { displayMessage, GetMessage, getMessage } from "./displyMessage.js";
+import {
+  displayMessage,
+  GetMessage,
+  getMessage,
+  ShowTyoing,
+} from "./displyMessage.js";
 
 let ws;
 export function setupWs() {
@@ -13,15 +19,17 @@ export function setupWs() {
 
   ws.onmessage = async (event) => {
     const message = JSON.parse(event.data);
-    console.log(message);
     const query = new URLSearchParams(window.location.search);
     switch (message.type) {
       case "online":
         updateUserList(message);
         break;
       case "broadcast":
+        const user = document.getElementById(message.sender);
+        user.querySelector(".type").textContent = "";
         if (window.location.pathname === "/chat") {
           if (query.get("receiver") == message.sender) {
+            document.querySelector(".typ")?.remove();
             displayMessage(
               message.username,
               message.createAt,
@@ -40,8 +48,7 @@ export function setupWs() {
         }
         break;
       case "typing":
-        showTypingNotification(message.sender);
-        debounce(() => {});
+        showTypingNotification(message, query);
         break;
       case "offline":
         updateUserList(message);
@@ -62,15 +69,36 @@ export function setupWs() {
     console.error("WebSocket error:", error);
   };
 }
-function showTypingNotification(id) {
-  const user = document.getElementById(id);
+
+const clearTyping = debounce((typing, row) => {
+  typing.textContent = "";
+  row?.remove();
+}, 2000);
+
+function showTypingNotification(message, query) {
+  const user = document.getElementById(message.sender);
   const typing = user.querySelector(".type");
   typing.textContent = "tayping...";
+  const chat = document.querySelector(".chat");
   addStyle("typing.css");
+  let row = document.querySelector(".typ");
+  if (
+    query.get("receiver") == message.sender &&
+    window.location.pathname === "/chat"
+  ) {
+    const inDown = chat.scrollHeight - chat.scrollTop === chat.clientHeight;
+    if (!row) {
+      row = ShowTyoing(message);
+    }
+    if (inDown) {
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }
+  clearTyping(typing, row);
 }
 
 export const chat = /*html*/ `
-    
+      </div>
             <input type="text" id="messageInput" placeholder="Type your message here..." />
             <div id="sendButton" >
                <svg   xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
@@ -125,7 +153,9 @@ export function messages() {
       
             <div class="chat-message chat-container">
                     <div class="message">
-                         <div class="chat"></div>
+                         <div class="chat">
+                            <div class="log-typing"></div>
+                         </div>
                          <div class="chat-input"></div>
                     </div>
             </div>
@@ -164,9 +194,6 @@ export function sendMessage() {
       sendButton.click();
       return;
     }
-
-    console.log();
-
     ws.send(
       JSON.stringify({
         type: "typing",

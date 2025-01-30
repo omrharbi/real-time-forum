@@ -18,6 +18,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var ValidPath = map[string]bool{
+	"/":         true,
+	"/home":     true,
+	"/chat":     true,
+	"/profile":  true,
+	"/comment":  true,
+	"/log-out":  true,
+	"/register": true,
+	"/login":    true,
+}
+
 func main() {
 	err := config.InitDataBase()
 	if err != nil {
@@ -98,17 +109,23 @@ func SetupAPIRoutes(mux *http.ServeMux, ctx context.Context) {
 
 func SetupPageRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../../frontend/templates/home.html")
+		code := 200
+
+		if !ValidPath[r.URL.Path] {
+			code = http.StatusNotFound
+		}
+		controllers.JsoneResponseError(w, r, http.StatusText(code), code)
+		// http.ServeFile(w, r, "../../frontend/templates/home.html")
 	})
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "..") {
-			controllers.JsoneResponseError(w, r, nil, http.StatusForbidden)
+			controllers.JsoneResponseError(w, r, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 		filename := "../../frontend" + r.URL.Path
 		file, err := os.ReadFile(filename)
 		if err != nil {
-			controllers.JsoneResponseError(w, r, nil, http.StatusForbidden)
+			controllers.JsoneResponseError(w, r, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 		http.ServeContent(w, r, filename, time.Now(), strings.NewReader(string(file)))

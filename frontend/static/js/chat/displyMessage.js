@@ -1,5 +1,6 @@
 import { getTimeDifferenceInHours } from "../card.js";
 import { throttle } from "../checklogin.js";
+import { type } from "../globa.js";
 import { addtoOfset, addUser, chat } from "./compenetChat.js";
 // import { user_item } from "./compenetChat.js";
 // import { addUser } from "./create_user.js";
@@ -51,6 +52,32 @@ export function displayMessage(
     log.scrollBy(0, log.scrollHeight);
   }
   //log.scrollTop = log.scrollHeight;
+}
+
+export function ShowTyoing(message) {
+  let log = document.querySelector(".chat");
+  const parent = document.createElement("div");
+  const messageUser = document.createElement("div");
+  const message_content = document.createElement("div");
+  const userIcon = document.createElement("div");
+  const row = document.createElement("div");
+
+  messageUser.className = "messages";
+  message_content.className = "message-content";
+  message_content.innerHTML = type;
+  parent.className = "parent typ";
+
+  userIcon.className = "user-icon message-icon";
+  userIcon.textContent = message.username[0].toUpperCase();
+
+  messageUser.className = "messages resiver";
+  row.className = "row resiver";
+  messageUser.append(message_content);
+  row.append(userIcon, messageUser);
+  // row.innerHTML = type
+  parent.prepend(row);
+  log.appendChild(parent);
+  return parent;
 }
 
 export async function getMessage(receiver, offset = 0) {

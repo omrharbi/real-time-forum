@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -32,7 +31,8 @@ type ErrorPageData struct {
 func JsoneResponseError(w http.ResponseWriter, r *http.Request, message any, code int) {
 	tmpl, err := template.ParseFiles("../../frontend/templates/home.html")
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+		return
 	}
 	data := ErrorPageData{
 		Code:    code,
